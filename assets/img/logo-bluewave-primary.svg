@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 340" role="img" aria-labelledby="title desc">
+  <title id="title">BlueWave Solutions</title>
+  <desc id="desc">Logo principal BlueWave Solutions en version symbole plus logotype, au rendu sobre et institutionnel.</desc>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(62 24)">
+      <path
+        d="M20 118c20-28 52-45 93-51 40-5 77 2 112 22-23 2-43 10-61 25-24 18-50 27-80 27-24 0-45-8-64-23z"
+        fill="#1186B5"
+      />
+      <path
+        d="M28 150c22 11 48 16 78 16 35 0 67-10 95-29 19-13 35-30 47-49-8 29-24 52-49 71-25 20-55 30-90 30-29 0-56-13-81-39z"
+        fill="#0F3557"
+      />
+      <path
+        d="M171 0c18 0 33 7 45 20 12 12 18 28 18 47-16-10-34-15-54-15-13 0-24 2-35 6 1-17 7-31 18-42 11-11 24-16 40-16z"
+        fill="#D7A84A"
+      />
+      <path
+        d="M18 176c24 13 51 19 80 19 30 0 57-6 81-19"
+        stroke="#0F3557"
+        stroke-linecap="round"
+        stroke-width="7"
+      />
+    </g>
+    <g transform="translate(36 228)">
+      <text
+        x="0"
+        y="38"
+        fill="#0F3557"
+        font-family="Manrope, Avenir Next, Segoe UI, Arial, sans-serif"
+        font-size="60"
+        font-weight="800"
+        letter-spacing="-1.6"
+      >
+        BlueWave
+      </text>
+      <text
+        x="6"
+        y="82"
+        fill="#4C647C"
+        font-family="Manrope, Avenir Next, Segoe UI, Arial, sans-serif"
+        font-size="28"
+        font-weight="600"
+        letter-spacing="8"
+      >
+        SOLUTIONS
+      </text>
+    </g>
+  </g>
+</svg>

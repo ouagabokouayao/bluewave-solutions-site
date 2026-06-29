@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-labelledby="title desc">
+  <title id="title">BlueWave Solutions Social Profile</title>
+  <desc id="desc">Image carrée pour profil de réseaux sociaux BlueWave Solutions.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#123652"/>
+      <stop offset="100%" stop-color="#0F3557"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1080" rx="220" fill="url(#bg)"/>
+  <circle cx="860" cy="228" r="118" fill="rgba(215,168,74,0.18)"/>
+  <g transform="translate(184 172)">
+    <path
+      d="M65 345c52-70 134-113 238-126 103-14 197 6 285 55-57 5-109 26-154 61-59 45-126 68-201 68-60 0-116-19-168-58z"
+      fill="#34B4E6"
+    />
+    <path
+      d="M85 425c57 29 123 43 200 43 89 0 170-25 244-75 49-33 89-77 120-127-20 74-61 133-124 181-64 50-140 75-229 75-74 0-145-32-211-97z"
+      fill="#F3F7FB"
+    />
+    <path
+      d="M438 55c46 0 83 16 113 49 30 31 44 71 45 121-40-27-86-40-137-40-31 0-61 5-89 15 5-43 20-77 45-104 24-27 52-41 83-41z"
+      fill="#E2B85C"
+    />
+    <path
+      d="M54 493c63 33 133 49 210 49 80 0 150-17 212-50"
+      stroke="#F3F7FB"
+      stroke-linecap="round"
+      stroke-width="18"
+    />
+  </g>
+</svg>

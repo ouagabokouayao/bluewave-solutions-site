@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Cartographie d'acteurs et de gouvernance | BlueWave Solutions</title>
+  <style>
+    :root {
+      --bg: #eef3f6;
+      --paper: #ffffff;
+      --ink: #173042;
+      --ink-soft: #4f6270;
+      --line: #d8e1e8;
+      --accent: #0d5c82;
+      --accent-soft: #edf5fa;
+      --gold: #c79f4a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: A4;
+      margin: 10mm;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+      line-height: 1.45;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .sheet {
+      width: min(210mm, 100%);
+      margin: 0 auto;
+      min-height: 297mm;
+      padding: 14mm 12mm;
+      background: var(--paper);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 22px;
+      padding-bottom: 11px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-logo {
+      width: 198px;
+      height: auto;
+    }
+
+    .header-copy {
+      max-width: 450px;
+      text-align: right;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.14;
+      letter-spacing: -0.03em;
+    }
+
+    .baseline {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 12.8px;
+    }
+
+    .intro {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fbfdff, #f4f8fb);
+    }
+
+    .intro p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 12px;
+      margin-top: 12px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 13px 15px;
+      background: #fff;
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 11.8px;
+      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 12.1px;
+    }
+
+    .bullet-list,
+    .contact-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .bullet-list li,
+    .contact-list li {
+      color: var(--ink-soft);
+      font-size: 12.1px;
+    }
+
+    .bullet-list li::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 10px;
+      border-radius: 50%;
+      background: var(--gold);
+      vertical-align: middle;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid #d9e7f1;
+      background: var(--accent-soft);
+      color: var(--ink);
+      font-size: 11.1px;
+      font-weight: 600;
+    }
+
+    .contact-list strong {
+      color: var(--ink);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-size: 10.7px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .sheet {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        padding: 0;
+      }
+
+      .header,
+      .intro,
+      .card,
+      .footer-note {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+
+    @media screen and (max-width: 900px) {
+      .sheet {
+        padding: 24px 18px;
+        min-height: auto;
+      }
+
+      .header,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-copy {
+        max-width: none;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <header class="header">
+      <img
+        class="brand-logo"
+        src="../../../assets/img/logo-bluewave-horizontal.svg"
+        alt="BlueWave Solutions"
+      >
+
+      <div class="header-copy">
+        <p class="eyebrow">Offre d'entree de marche</p>
+        <h1>Cartographie d'acteurs et de gouvernance</h1>
+        <p class="baseline">Une lecture courte et structurante pour clarifier les parties prenantes, les interfaces de decision et les besoins de coordination.</p>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>
+        Cette offre est pensee comme une porte d'entree BlueWave orientee gouvernance. Elle permet
+        de mettre a plat un ecosysteme d'acteurs, d'identifier les zones de friction ou de
+        chevauchement et de preparer une concertation, une feuille de route ou une action collective
+        plus lisible.
+      </p>
+    </section>
+
+    <section class="grid">
+      <div class="stack">
+        <article class="card">
+          <h2>A quoi sert cette cartographie</h2>
+          <p>
+            Rendre un systeme d'acteurs plus comprehensible, clarifier les roles et interfaces,
+            reperer les points de blocage et fournir une base utile avant une strategie, un atelier
+            ou un projet multi-acteurs.
+          </p>
+        </article>
+
+        <article class="card">
+          <h2>Pour quels types d'acteurs</h2>
+          <div class="chips">
+            <span class="chip">Institutions</span>
+            <span class="chip">Administrations techniques</span>
+            <span class="chip">Collectivites</span>
+            <span class="chip">Programmes multi-acteurs</span>
+            <span class="chip">Partenaires techniques</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>Ce que couvre la mission</h2>
+          <ul class="bullet-list">
+            <li>identification des acteurs cles et de leurs positions</li>
+            <li>clarification des roles, competences, interfaces et chevauchements</li>
+            <li>lecture des relations, tensions, complementarites et zones de blocage</li>
+            <li>formulation de reperes de gouvernance et de coordination</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Livrables remis</h2>
+          <ul class="bullet-list">
+            <li>cartographie d'acteurs</li>
+            <li>note de gouvernance synthetique</li>
+            <li>schema d'articulation institutionnelle</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="stack">
+        <article class="card">
+          <h2>Valeur ajoutee BlueWave</h2>
+          <p>
+            BlueWave apporte une lecture croisee entre gouvernance, territoire, environnement et
+            aide a la decision, utile dans les contextes ou la complexite institutionnelle freine
+            l'action.
+          </p>
+        </article>
+
+        <article class="card">
+          <h2>Formats possibles d'intervention</h2>
+          <ul class="bullet-list">
+            <li>mission courte de cadrage</li>
+            <li>appui preparatoire a une concertation ou un atelier</li>
+            <li>premier livrable de clarification avant projet ou strategie</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Suites possibles</h2>
+          <ul class="bullet-list">
+            <li>appui a la coordination d'acteurs</li>
+            <li>dispositif de concertation ou de dialogue territorial</li>
+            <li>note d'arbitrage ou de gouvernance</li>
+            <li>accompagnement d'une feuille de route institutionnelle ou partenariale</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Coordonnees BlueWave</h2>
+          <ul class="contact-list">
+            <li><strong>Email :</strong> <a href="mailto:bluewavesolutions3399@gmail.com">bluewavesolutions3399@gmail.com</a></li>
+            <li><strong>Telephone :</strong> (+33) 6 51 67 68 12</li>
+            <li><strong>Adresse :</strong> Le Cube, Aix-Marseille Universite, 29 avenue Robert Schuman, 13100 Aix-en-Provence</li>
+            <li><strong>LinkedIn :</strong> <a href="https://www.linkedin.com/company/bluewave-solutions3399/?viewAsMember=true" target="_blank" rel="noopener noreferrer">BlueWave Solutions</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      BlueWave Solutions - Bureau d'etude, de conseil et de recherche appliquee dedie aux enjeux du
+      littoral, de l'environnement, des territoires et des dynamiques maritimes.
+    </p>
+  </main>
+</body>
+</html>

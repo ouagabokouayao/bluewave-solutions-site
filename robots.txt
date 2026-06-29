@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /documents/marche-penetration-bluewave/mini-projets-vitrines/cartographie-acteurs-gouvernance.html
+Allow: /documents/marche-penetration-bluewave/mini-projets-vitrines/fiche-projet-cotier-maritime-financable.html
+Allow: /documents/marche-penetration-bluewave/mini-projets-vitrines/mini-dossier-financement-climat-littoral.html
+Disallow: /charte-graphique.html
+Disallow: /pitch-deck-template.html
+Disallow: /actualites-participations.html
+Disallow: /documents/
+Disallow: /signature-mail-bluewave-preview.html
+Disallow: /signature-mail-bluewave-snippet.html
+Disallow: /signature-mail-bluewave-ultra-compatible.html
+Disallow: /exports/
+Disallow: /README.md

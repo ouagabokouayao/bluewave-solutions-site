@@ -1,0 +1,20 @@
+.DS_Store
+.codex-backups/
+exports/
+
+# Documents internes : exclus du depot public, sauf supports publics lies depuis le site.
+documents/*
+!documents/marche-penetration-bluewave/
+documents/marche-penetration-bluewave/*
+!documents/marche-penetration-bluewave/mini-projets-vitrines/
+documents/marche-penetration-bluewave/mini-projets-vitrines/*
+!documents/marche-penetration-bluewave/mini-projets-vitrines/cartographie-acteurs-gouvernance.html
+!documents/marche-penetration-bluewave/mini-projets-vitrines/fiche-projet-cotier-maritime-financable.html
+!documents/marche-penetration-bluewave/mini-projets-vitrines/mini-dossier-financement-climat-littoral.html
+
+# Fichiers de travail non necessaires a GitHub Pages.
+signature-mail-bluewave-*.html
+pitch-deck-template.html
+charte-graphique.html
+actualites-participations.html
+logo-bluewave.png

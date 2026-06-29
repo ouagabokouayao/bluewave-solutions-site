@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 132" role="img" aria-labelledby="title desc">
+  <title id="title">BlueWave Solutions</title>
+  <desc id="desc">Logo horizontal de BlueWave Solutions avec symbole marin, horizon solaire et typographie institutionnelle.</desc>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(8 10)">
+      <path
+        d="M12 62c12-17 31-27 56-30 24-3 47 1 68 13-14 2-27 7-38 15-14 10-30 15-48 15-15 0-28-4-38-13z"
+        fill="#1186B5"
+      />
+      <path
+        d="M18 81c14 7 30 10 48 10 22 0 41-6 58-18 12-8 22-18 29-30-5 18-15 33-30 45-16 13-34 19-56 19-19 0-35-6-49-17z"
+        fill="#0F3557"
+      />
+      <path
+        d="M105 0c12 0 22 5 30 13 8 8 12 18 12 31-11-6-23-10-36-10-8 0-16 1-23 4 1-11 5-20 12-27 7-7 16-11 27-11z"
+        fill="#D7A84A"
+      />
+      <path
+        d="M12 96c16 8 33 12 51 12 18 0 35-4 50-12"
+        stroke="#0F3557"
+        stroke-linecap="round"
+        stroke-width="5"
+      />
+    </g>
+    <g transform="translate(176 26)">
+      <text
+        x="0"
+        y="42"
+        fill="#0F3557"
+        font-family="Manrope, Avenir Next, Segoe UI, Arial, sans-serif"
+        font-size="46"
+        font-weight="800"
+        letter-spacing="-1.2"
+      >
+        BlueWave
+      </text>
+      <text
+        x="2"
+        y="80"
+        fill="#4C647C"
+        font-family="Manrope, Avenir Next, Segoe UI, Arial, sans-serif"
+        font-size="25"
+        font-weight="600"
+        letter-spacing="6"
+      >
+        SOLUTIONS
+      </text>
+    </g>
+  </g>
+</svg>

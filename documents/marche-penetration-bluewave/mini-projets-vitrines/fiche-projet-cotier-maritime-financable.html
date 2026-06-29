@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Fiche projet cotier ou maritime financable | BlueWave Solutions</title>
+  <style>
+    :root {
+      --bg: #eef3f6;
+      --paper: #ffffff;
+      --ink: #173042;
+      --ink-soft: #4f6270;
+      --line: #d8e1e8;
+      --accent: #0d5c82;
+      --accent-soft: #edf5fa;
+      --gold: #c79f4a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: A4;
+      margin: 10mm;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+      line-height: 1.45;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .sheet {
+      width: min(210mm, 100%);
+      margin: 0 auto;
+      min-height: 297mm;
+      padding: 14mm 12mm;
+      background: var(--paper);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 22px;
+      padding-bottom: 11px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-logo {
+      width: 198px;
+      height: auto;
+    }
+
+    .header-copy {
+      max-width: 450px;
+      text-align: right;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.14;
+      letter-spacing: -0.03em;
+    }
+
+    .baseline {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 12.8px;
+    }
+
+    .intro {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fbfdff, #f4f8fb);
+    }
+
+    .intro p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 12px;
+      margin-top: 12px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 13px 15px;
+      background: #fff;
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 11.8px;
+      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 12.1px;
+    }
+
+    .bullet-list,
+    .contact-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .bullet-list li,
+    .contact-list li {
+      color: var(--ink-soft);
+      font-size: 12.1px;
+    }
+
+    .bullet-list li::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 10px;
+      border-radius: 50%;
+      background: var(--gold);
+      vertical-align: middle;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid #d9e7f1;
+      background: var(--accent-soft);
+      color: var(--ink);
+      font-size: 11.1px;
+      font-weight: 600;
+    }
+
+    .contact-list strong {
+      color: var(--ink);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-size: 10.7px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .sheet {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        padding: 0;
+      }
+
+      .header,
+      .intro,
+      .card,
+      .footer-note {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+
+    @media screen and (max-width: 900px) {
+      .sheet {
+        padding: 24px 18px;
+        min-height: auto;
+      }
+
+      .header,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-copy {
+        max-width: none;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <header class="header">
+      <img
+        class="brand-logo"
+        src="../../../assets/img/logo-bluewave-horizontal.svg"
+        alt="BlueWave Solutions"
+      >
+
+      <div class="header-copy">
+        <p class="eyebrow">Offre d'entree de marche</p>
+        <h1>Fiche projet cotier ou maritime financable</h1>
+        <p class="baseline">Une lecture courte et structurante pour transformer une idee en projet presentable et preparer le dialogue avec partenaires ou financeurs.</p>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>
+        Cette offre est pensee comme une porte d'entree BlueWave orientee structuration de projet.
+        Elle permet de passer d'un besoin, d'une opportunite ou d'une intuition a une premiere fiche
+        projet lisible, mobilisable et credibilisee, sans pretendre couvrir a elle seule un montage
+        complet ni garantir un acces au financement.
+      </p>
+    </section>
+
+    <section class="grid">
+      <div class="stack">
+        <article class="card">
+          <h2>A quoi sert cette fiche projet</h2>
+          <p>
+            Rendre une idee ou une opportunite plus presentable, clarifier l'objet du projet, ses
+            objectifs, ses beneficiaires et ses partenariats potentiels, et fournir une base utile
+            pour premiers echanges avec collectivites, programmes, partenaires ou financeurs.
+          </p>
+        </article>
+
+        <article class="card">
+          <h2>Pour quels types d'acteurs</h2>
+          <div class="chips">
+            <span class="chip">Collectivites</span>
+            <span class="chip">Etablissements publics</span>
+            <span class="chip">ONG et associations</span>
+            <span class="chip">Programmes et cooperations</span>
+            <span class="chip">Porteurs de projets</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>Ce que couvre la mission</h2>
+          <ul class="bullet-list">
+            <li>clarification du besoin, du probleme traite et de l'objet du projet</li>
+            <li>cadrage des objectifs, beneficiaires, partenaires et perimetre d'intervention</li>
+            <li>formulation d'une logique de projet cotiere ou maritime lisible</li>
+            <li>mise en coherence avec un programme, un cadre partenarial ou une opportunite de dialogue</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Livrables remis</h2>
+          <ul class="bullet-list">
+            <li>fiche projet ou concept note courte</li>
+            <li>trame de logique d'intervention ou theorie du changement simple</li>
+            <li>reperes sur cibles, partenariats, impacts attendus et suites possibles</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="stack">
+        <article class="card">
+          <h2>Valeur ajoutee BlueWave</h2>
+          <p>
+            BlueWave aide a transformer un besoin diffus en projet presentable, en reliant lecture
+            territoriale, gouvernance, opportunites et utilite strategique. L'approche fait le lien
+            entre la comprehension d'un contexte et l'entree dans une logique de projet structure.
+          </p>
+        </article>
+
+        <article class="card">
+          <h2>Formats possibles d'intervention</h2>
+          <ul class="bullet-list">
+            <li>mission courte de cadrage projet</li>
+            <li>appui preparatoire a un echange avec partenaire, programme ou bailleur</li>
+            <li>premier livrable avant montage plus approfondi, consortium ou feuille de route</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Suites possibles</h2>
+          <ul class="bullet-list">
+            <li>etude preparatoire ou diagnostic complementaire</li>
+            <li>montage de projet plus detaille ou appui a consortium</li>
+            <li>mini dossier financement climat / littoral</li>
+            <li>assistance a maitrise d'ouvrage ou accompagnement de mise en oeuvre</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Coordonnees BlueWave</h2>
+          <ul class="contact-list">
+            <li><strong>Email :</strong> <a href="mailto:bluewavesolutions3399@gmail.com">bluewavesolutions3399@gmail.com</a></li>
+            <li><strong>Telephone :</strong> (+33) 6 51 67 68 12</li>
+            <li><strong>Adresse :</strong> Le Cube, Aix-Marseille Universite, 29 avenue Robert Schuman, 13100 Aix-en-Provence</li>
+            <li><strong>LinkedIn :</strong> <a href="https://www.linkedin.com/company/bluewave-solutions3399/?viewAsMember=true" target="_blank" rel="noopener noreferrer">BlueWave Solutions</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      BlueWave Solutions - Offres d'entree de mission. Offre 04 concue comme passerelle entre la
+      lecture du territoire, des acteurs, des opportunites et l'entree dans une logique de projet.
+    </p>
+  </main>
+</body>
+</html>
