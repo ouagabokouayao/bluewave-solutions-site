@@ -1583,7 +1583,10 @@ img {
   .page-lead,
   .section-heading,
   .about-copy,
-  .contact-copy {
+  .contact-copy,
+  .priority-services-grid,
+  .service-priority-card,
+  .service-detail-grid {
     min-width: 0;
     max-width: 100%;
   }
@@ -1617,6 +1620,21 @@ img {
   .section h2,
   .hero-card h2 {
     overflow-wrap: break-word;
+  }
+
+  .service-priority-card,
+  .service-priority-card p,
+  .service-priority-card li,
+  .service-priority-card h3,
+  .service-detail-grid {
+    overflow-wrap: anywhere;
+  }
+
+  .service-priority-card .button {
+    width: 100%;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
   }
 
   .section {
