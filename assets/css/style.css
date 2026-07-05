@@ -527,7 +527,8 @@ img {
 .audience-grid,
 .methodology-grid,
 .differentiators-grid,
-.zone-grid {
+.zone-grid,
+.priority-services-grid {
   display: grid;
   gap: 1.25rem;
   margin-top: 2rem;
@@ -543,6 +544,10 @@ img {
 .services-grid,
 .zone-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.priority-services-grid {
+  grid-template-columns: 1fr;
 }
 
 .value-card,
@@ -593,6 +598,49 @@ img {
     linear-gradient(180deg, rgba(15, 91, 120, 0.08), rgba(255, 255, 255, 0.94)),
     #fff;
   border-color: rgba(15, 91, 120, 0.24);
+}
+
+.service-priority-card {
+  padding: 1.9rem;
+}
+
+.service-priority-card > p {
+  max-width: 82ch;
+}
+
+.service-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.15rem;
+}
+
+.service-detail-grid h4 {
+  margin: 0 0 0.55rem;
+  color: var(--color-primary-dark);
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.service-list {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-ink-soft);
+}
+
+.service-ref {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(18, 32, 51, 0.08);
+  font-size: 0.95rem;
+}
+
+.service-ref a {
+  color: var(--color-primary-dark);
+  font-weight: 800;
 }
 
 .offer-note-flash-page .section-alt .info-band .info-pill {
@@ -1363,6 +1411,8 @@ img {
   .methodology-grid,
   .differentiators-grid,
   .zone-grid,
+  .priority-services-grid,
+  .service-detail-grid,
   .hero-metrics {
     grid-template-columns: 1fr;
   }
