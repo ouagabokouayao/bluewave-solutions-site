@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Matrice acteurs usages</title><desc id="desc">Visualisation BlueWave V2.</desc>
+<defs>
+  <linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#06223A"/><stop offset="0.55" stop-color="#0B5D7A"/><stop offset="1" stop-color="#21B6C8"/></linearGradient>
+  <linearGradient id="sand" x1="0" x2="1"><stop offset="0" stop-color="#E8D7B5"/><stop offset="1" stop-color="#F7F2E8"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#02101d" flood-opacity="0.25"/></filter>
+  <pattern id="waves" width="180" height="70" patternUnits="userSpaceOnUse"><path d="M0 35 C 45 5, 90 65, 135 35 S 225 35, 270 35" fill="none" stroke="#6ED6D1" stroke-opacity="0.12" stroke-width="2"/></pattern>
+</defs>
+<rect width="1600" height="900" fill="url(#g)"/><rect width="1600" height="900" fill="url(#waves)"/>
+
+<text x="70" y="90" fill="#F7F2E8" font-family="Arial" font-size="44" font-weight="700">Matrice acteurs / usages</text>
+<rect x="90" y="150" width="1420" height="650" rx="34" fill="#F7F2E8" opacity="0.96"/>
+<line x1="90" y1="360" x2="1510" y2="360" stroke="#D7E5E8" stroke-width="3"/><line x1="90" y1="470" x2="1510" y2="470" stroke="#D7E5E8" stroke-width="3"/><line x1="90" y1="580" x2="1510" y2="580" stroke="#D7E5E8" stroke-width="3"/><line x1="90" y1="690" x2="1510" y2="690" stroke="#D7E5E8" stroke-width="3"/>
+<line x1="445" y1="150" x2="445" y2="800" stroke="#D7E5E8" stroke-width="3"/><line x1="800" y1="150" x2="800" y2="800" stroke="#D7E5E8" stroke-width="3"/><line x1="1155" y1="150" x2="1155" y2="800" stroke="#D7E5E8" stroke-width="3"/>
+<text x="130" y="220" fill="#06223A" font-size="26" font-family="Arial" font-weight="700">Acteur</text><text x="485" y="220" fill="#06223A" font-size="26" font-family="Arial" font-weight="700">Usage / intérêt</text><text x="840" y="220" fill="#06223A" font-size="26" font-family="Arial" font-weight="700">Sensibilité</text><text x="1195" y="220" fill="#06223A" font-size="26" font-family="Arial" font-weight="700">Action</text>
+<text x="130" y="330" fill="#355267" font-size="24" font-family="Arial">Services littoraux</text><text x="485" y="330" fill="#355267" font-size="24" font-family="Arial">gestion / entretien</text><text x="840" y="330" fill="#355267" font-size="24" font-family="Arial">délai, coût</text><text x="1195" y="330" fill="#355267" font-size="24" font-family="Arial">cadrer</text>
+<text x="130" y="440" fill="#355267" font-size="24" font-family="Arial">Usagers</text><text x="485" y="440" fill="#355267" font-size="24" font-family="Arial">plage / nautisme</text><text x="840" y="440" fill="#355267" font-size="24" font-family="Arial">accès, perception</text><text x="1195" y="440" fill="#355267" font-size="24" font-family="Arial">dialoguer</text>
+<text x="130" y="550" fill="#355267" font-size="24" font-family="Arial">Experts</text><text x="485" y="550" fill="#355267" font-size="24" font-family="Arial">données / méthode</text><text x="840" y="550" fill="#355267" font-size="24" font-family="Arial">incertitudes</text><text x="1195" y="550" fill="#355267" font-size="24" font-family="Arial">qualifier</text>
+<text x="130" y="660" fill="#355267" font-size="24" font-family="Arial">Élus</text><text x="485" y="660" fill="#355267" font-size="24" font-family="Arial">arbitrage public</text><text x="840" y="660" fill="#355267" font-size="24" font-family="Arial">acceptabilité</text><text x="1195" y="660" fill="#355267" font-size="24" font-family="Arial">décider</text>
+<text x="130" y="760" fill="#0B5D7A" font-size="20" font-family="Arial">Exemple de format — simulation illustrative</text>
+
+</svg>
