@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Aperçu support formation</title><desc id="desc">Visualisation BlueWave V2.</desc>
+<defs>
+  <linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#06223A"/><stop offset="0.55" stop-color="#0B5D7A"/><stop offset="1" stop-color="#21B6C8"/></linearGradient>
+  <linearGradient id="sand" x1="0" x2="1"><stop offset="0" stop-color="#E8D7B5"/><stop offset="1" stop-color="#F7F2E8"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#02101d" flood-opacity="0.25"/></filter>
+  <pattern id="waves" width="180" height="70" patternUnits="userSpaceOnUse"><path d="M0 35 C 45 5, 90 65, 135 35 S 225 35, 270 35" fill="none" stroke="#6ED6D1" stroke-opacity="0.12" stroke-width="2"/></pattern>
+</defs>
+<rect width="1600" height="900" fill="url(#g)"/><rect width="1600" height="900" fill="url(#waves)"/>
+
+<rect x="150" y="150" width="1300" height="600" rx="40" fill="#F7F2E8" filter="url(#shadow)"/><rect x="210" y="215" width="1180" height="130" rx="26" fill="#06223A"/><text x="260" y="295" fill="#F7F2E8" font-size="36" font-family="Arial" font-weight="700">Module court — Gouvernance maritime et littoral</text>
+<rect x="240" y="405" width="300" height="230" rx="24" fill="#E8F2F3"/><rect x="650" y="405" width="300" height="230" rx="24" fill="#E8F2F3"/><rect x="1060" y="405" width="300" height="230" rx="24" fill="#E8F2F3"/>
+<text x="390" y="500" text-anchor="middle" fill="#06223A" font-size="28" font-family="Arial" font-weight="700">Concepts</text><text x="800" y="500" text-anchor="middle" fill="#06223A" font-size="28" font-family="Arial" font-weight="700">Cas pratique</text><text x="1210" y="500" text-anchor="middle" fill="#06223A" font-size="28" font-family="Arial" font-weight="700">Outil d’action</text>
+
+</svg>
