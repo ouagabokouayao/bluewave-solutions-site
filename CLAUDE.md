@@ -238,10 +238,17 @@ L'audit `CC-BW-00` a identifié dans `assets/css/style.css` :
 
 ## 10. Navigation — point de bascule mesuré
 
-Corrigé par `CC-BW-02`. Le menu mobile s'active à **900 px**, valeur dérivée d'une mesure : la barre
-desktop exige 846 px de conteneur (logo 204 px + gap 16 px + liens 626 px), soit 878 px de viewport.
-Le repli du pied de page est aligné sur le même seuil, sa grille en trois colonnes exigeant environ
-878 px elle aussi.
+Corrigé par `CC-BW-02`, remesuré par `CC-BW-03` après remplacement de l'entrée « Méthode » par
+« Démonstrateurs ». Le menu mobile s'active à **980 px**, valeur dérivée d'une mesure : juste sous
+980 px le logo est plafonné à 204 px par son clamp, d'où un besoin de 914 px de conteneur
+(204 + gap 16 + liens 694), soit 946 px de viewport. Un seuil à 960 px ne laisserait que 15 px de
+marge — insuffisant pour un site en polices système, dont les métriques varient selon la plateforme.
+À 980 px le seuil coïncide avec la borne du clamp du logo : au-delà, la marge mesurée est de 61 px.
+Le repli du pied de page est aligné sur le même seuil.
+
+La navigation principale compte six entrées : Accueil · Offres · Démonstrateurs · Domaines ·
+À propos · Contact. La **Méthode reste accessible** depuis l'accueil (`index.html#methode`),
+`services.html` et le pied de page de chaque page — ne pas la retirer de ces emplacements.
 
 - Le bloc `@media (max-width: 900px)` en fin de `style.css` est la **seule** définition du menu mobile.
   Ne pas réintroduire de règles de navigation dans les couches antérieures.

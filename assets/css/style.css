@@ -2821,6 +2821,40 @@ body {
   margin-bottom: 0;
 }
 
+/* Cartes d'offres cliquables de l'accueil : l'élément <a> porte lui-même la
+   carte, ce qui évite tout lien imbriqué et rend l'accès clavier natif.
+   L'ancre cible étant sous un en-tête collant, scroll-margin-top évite que
+   le titre de l'offre soit masqué à l'arrivée. */
+.v2-offer-card[id] {
+  scroll-margin-top: 6.5rem;
+}
+
+.v2-offer-link {
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    border-color var(--transition);
+}
+
+.v2-offer-link:hover,
+.v2-offer-link:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(11, 93, 122, 0.35);
+  box-shadow: var(--shadow-premium);
+}
+
+.v2-offer-more {
+  margin-top: auto;
+  padding-top: 0.35rem;
+  color: var(--color-primary);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.v2-offer-more::after {
+  content: " →";
+}
+
 .v2-offer-meta {
   display: grid;
   width: 100%;
@@ -2921,19 +2955,26 @@ body {
 }
 
 /* ------------------------------------------------------------------------
-   Navigation principale — point de bascule unique (CC-BW-02).
+   Navigation principale — point de bascule unique (CC-BW-02, remesuré CC-BW-03).
 
-   Mesure : la barre desktop exige 846 px de conteneur
-   (logo 204 px + gap 16 px + liens 626 px), soit 878 px de viewport.
-   En dessous, les liens se compressent puis débordent : le lien Contact
-   devenait inatteignable entre 761 px et 871 px.
+   L'entrée « Méthode » a été remplacée par « Démonstrateurs », plus longue :
+   la barre de liens passe de 626 px à 694 px.
 
-   La bascule vers le menu mobile est donc fixée à 900 px, ce qui laisse
-   22 px de marge sur la largeur strictement nécessaire et évite toute
-   compression des liens. Ce bloc est la seule définition du menu mobile :
-   il remplace les quatre couches successives héritées de la V1.
+   Mesure : juste sous 980 px le logo est plafonné à 204 px par son clamp,
+   d'où un besoin de 914 px de conteneur (204 + gap 16 + liens 694), soit
+   946 px de viewport minimum. Au-dessus de 980 px le logo retombe à 178 px
+   et le besoin chute à 920 px de viewport.
+
+   Un seuil à 960 px ne laisserait que 15 px de marge à 961 px. Comme le site
+   s'affiche en polices système, dont les métriques varient d'une plateforme
+   à l'autre, cette marge est insuffisante. Le seuil est donc fixé à 980 px,
+   où il coïncide avec la borne du clamp du logo : au-delà, la marge est de
+   61 px et ne dépend plus du plafonnement.
+
+   Ce bloc est la seule définition du menu mobile : il remplace les quatre
+   couches successives héritées de la V1.
    ------------------------------------------------------------------------ */
-@media (max-width: 900px) {
+@media (max-width: 980px) {
   .site-header {
     z-index: 1000;
     overflow: visible;
