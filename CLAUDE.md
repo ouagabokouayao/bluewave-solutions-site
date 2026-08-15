@@ -116,10 +116,12 @@ Comprendre → Cadrer → Cartographier → Structurer → Décider → Transmet
 Qualifier → Cadrer → Analyser → Cartographier → Structurer → Contrôler → Restituer → Capitaliser
 ```
 
-- Le premier est publié sur le site. Le second **ne l'est pas actuellement** ; ne pas le publier sans
-  instruction de 02.
+- Les deux sont publiés depuis `CC-BW-04`, sur instruction de 02 : le parcours en six étapes est la
+  lecture principale (`index.html#methode`, `services.html`) ; le processus en huit étapes apparaît
+  **en second rang**, présenté comme la manière dont le premier est exécuté.
 - Ce ne sont **pas deux versions concurrentes**. Claude ne doit ni les fusionner, ni en aligner un sur
-  l'autre, ni « corriger » l'un au motif qu'il diffère de l'autre.
+  l'autre, ni « corriger » l'un au motif qu'il diffère de l'autre, ni promouvoir le second au rang de
+  procédure imposée.
 
 ---
 
