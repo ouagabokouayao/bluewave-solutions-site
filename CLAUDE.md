@@ -236,22 +236,18 @@ L'audit `CC-BW-00` a identifié dans `assets/css/style.css` :
 
 ---
 
-## 10. TEMPORARY KNOWN ISSUE — incident responsive 761–880 px
+## 10. Navigation — point de bascule mesuré
 
-> **TEMPORARY KNOWN ISSUE — à retirer de `CLAUDE.md` une fois la correction validée.**
-> Cette section est une entrée temporaire, pas une rubrique permanente de la charte.
-> `CLAUDE.md` n'a pas vocation à devenir un backlog : le suivi des correctifs se fait ailleurs.
+Corrigé par `CC-BW-02`. Le menu mobile s'active à **900 px**, valeur dérivée d'une mesure : la barre
+desktop exige 846 px de conteneur (logo 204 px + gap 16 px + liens 626 px), soit 878 px de viewport.
+Le repli du pied de page est aligné sur le même seuil, sa grille en trois colonnes exigeant environ
+878 px elle aussi.
 
-Identifié par `CC-BW-00`, **non corrigé à ce jour** :
-
-- débordement horizontal approximativement **entre 761 px et 880 px**, sur l'ensemble des pages ;
-- perte d'une partie de la navigation, **dont le lien Contact** sur certains viewports ;
-- bascule vers le menu hamburger déclenchée trop tardivement ;
-- `overflow-x: hidden` **masque** le problème au lieu de le résoudre, rendant le contenu débordant
-  inatteignable plutôt que simplement décalé.
-
-Ce problème sera traité dans une mission fonctionnelle ultérieure. Ne pas l'aborder de façon
-opportuniste au détour d'une autre intervention.
+- Le bloc `@media (max-width: 900px)` en fin de `style.css` est la **seule** définition du menu mobile.
+  Ne pas réintroduire de règles de navigation dans les couches antérieures.
+- Le seuil JavaScript de `assets/js/main.js` doit **rester aligné** sur ce point de bascule.
+- Toute modification du logo, du nombre d'entrées de menu ou de leur libellé **change la largeur
+  requise** : remesurer et réajuster le seuil plutôt que de masquer un débordement.
 
 ---
 

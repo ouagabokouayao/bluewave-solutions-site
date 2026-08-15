@@ -1578,11 +1578,6 @@ img {
     width: 96px;
   }
 
-  .menu-toggle {
-    display: inline-block;
-    flex: 0 0 48px;
-  }
-
   .brand-guide-page .navbar {
     flex-wrap: wrap;
     row-gap: 0.5rem;
@@ -1594,26 +1589,6 @@ img {
     justify-content: flex-start;
     gap: 0.75rem 1rem;
     padding-bottom: 0.25rem;
-  }
-
-  .nav-links {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    left: 1rem;
-    right: 1rem;
-    display: grid;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(18, 32, 51, 0.08);
-    box-shadow: var(--shadow-soft);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-8px);
-    transition:
-      opacity var(--transition),
-      transform var(--transition);
   }
 
   .hero,
@@ -1648,12 +1623,6 @@ img {
   .page-lead {
     font-size: 1rem;
     overflow-wrap: anywhere;
-  }
-
-  .nav-links.is-open {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
   }
 
   .hero,
@@ -2444,36 +2413,6 @@ body {
     max-height: 54px;
   }
 
-  .menu-toggle {
-    display: inline-grid;
-    place-items: center;
-    flex: 0 0 48px;
-    margin-left: auto;
-  }
-
-  .nav-links {
-    left: 0;
-    right: 0;
-    z-index: 60;
-    width: min(100% - 2rem, 26rem);
-    margin: 0 auto;
-    gap: 0.55rem;
-    padding: 0.85rem;
-    background: #ffffff;
-    border-color: rgba(10, 37, 64, 0.12);
-    box-shadow: 0 24px 54px rgba(10, 37, 64, 0.18);
-  }
-
-  .nav-links a {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    padding: 0.72rem 0.85rem;
-    border-radius: 999px;
-    background: rgba(233, 243, 248, 0.82);
-    text-align: center;
-  }
-
   .site-footer {
     overflow-x: hidden;
   }
@@ -2590,10 +2529,6 @@ body {
 }
 
 @media (max-width: 420px) {
-  .nav-links {
-    width: min(100% - 1.5rem, 24rem);
-  }
-
   .footer-content {
     padding: 1rem;
   }
@@ -2636,26 +2571,6 @@ body {
   .premium-offer-grid,
   .footer-content {
     grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .navbar {
-    position: relative;
-    z-index: 70;
-  }
-
-  .site-header {
-    z-index: 1000;
-    overflow: visible !important;
-  }
-
-  .nav-links {
-    position: fixed;
-    top: 5.35rem;
-    left: 1rem !important;
-    right: 1rem !important;
-    z-index: 1001;
-    width: auto !important;
-    max-width: none !important;
   }
 
   .hero-card,
@@ -3002,6 +2917,96 @@ body {
 
   .v2-offer-card:last-child:nth-child(odd) {
     grid-column: auto;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Navigation principale — point de bascule unique (CC-BW-02).
+
+   Mesure : la barre desktop exige 846 px de conteneur
+   (logo 204 px + gap 16 px + liens 626 px), soit 878 px de viewport.
+   En dessous, les liens se compressent puis débordent : le lien Contact
+   devenait inatteignable entre 761 px et 871 px.
+
+   La bascule vers le menu mobile est donc fixée à 900 px, ce qui laisse
+   22 px de marge sur la largeur strictement nécessaire et évite toute
+   compression des liens. Ce bloc est la seule définition du menu mobile :
+   il remplace les quatre couches successives héritées de la V1.
+   ------------------------------------------------------------------------ */
+@media (max-width: 900px) {
+  .site-header {
+    z-index: 1000;
+    overflow: visible;
+  }
+
+  .navbar {
+    position: relative;
+    z-index: 70;
+  }
+
+  .menu-toggle {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 48px;
+    margin-left: auto;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 5.35rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 1001;
+    width: auto;
+    max-width: none;
+    display: grid;
+    gap: 0.55rem;
+    padding: 0.85rem;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 1px solid rgba(10, 37, 64, 0.12);
+    box-shadow: 0 24px 54px rgba(10, 37, 64, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition:
+      opacity var(--transition),
+      transform var(--transition),
+      visibility 0s linear var(--transition);
+  }
+
+  /* visibility retire les liens de l'ordre de tabulation quand le menu est
+     fermé : sans elle, six liens invisibles restaient atteignables au clavier. */
+  .nav-links.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition:
+      opacity var(--transition),
+      transform var(--transition),
+      visibility 0s;
+  }
+
+  .nav-links a {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 0.72rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(233, 243, 248, 0.82);
+    text-align: center;
+  }
+
+  /* Même cause que la navigation : la grille du pied de page impose
+     minmax(260px) + minmax(220px) + une colonne contenant une adresse e-mail
+     insécable de 289 px, soit environ 878 px de largeur minimale. Elle ne se
+     repliait qu'à 760 px et débordait donc sur toute la bande intermédiaire.
+     Le repli en deux colonnes est déclenché au même seuil que la navigation ;
+     la mise en colonne unique en dessous de 760 px reste inchangée. */
+  .footer-content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

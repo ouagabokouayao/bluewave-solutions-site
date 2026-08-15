@@ -35,8 +35,9 @@ if (menuButton && navLinks) {
     }
   });
 
+  // Doit rester aligné sur le point de bascule CSS de la navigation (900 px).
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 980) {
+    if (window.innerWidth > 900) {
       setMenuState(false);
     }
   });
