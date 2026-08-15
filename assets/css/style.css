@@ -42,7 +42,7 @@ html {
 
 body {
   margin: 0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--color-ink);
   background:
     radial-gradient(circle at 12% 0%, rgba(0, 119, 182, 0.14), transparent 30%),
@@ -59,6 +59,7 @@ a {
 
 img {
   max-width: 100%;
+  height: auto;
 }
 
 :focus-visible {
@@ -261,7 +262,7 @@ img {
 .section h2,
 .hero-card h2 {
   margin: 0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.025em;
@@ -1254,7 +1255,6 @@ img {
 .deck-cover-copy h2,
 .deck-slide-head h2 {
   margin: 0;
-  font-family: "Montserrat", sans-serif;
   line-height: 1.08;
   text-wrap: balance;
 }
@@ -3163,9 +3163,17 @@ body {
 }
 
 .table-hint {
+  display: none;
   margin: 0.6rem 0 0;
   color: var(--color-ink-muted);
   font-size: 0.88rem;
+}
+
+/* L'aide n'apparaît que là où la matrice défile réellement. */
+@media (max-width: 800px) {
+  .table-hint {
+    display: block;
+  }
 }
 
 /* Options de suite. */
@@ -3356,6 +3364,13 @@ body {
    Aucun backend : la mise en forme accompagne une génération locale de
    courriel. Les libellés sont de vrais <label>, jamais des placeholders.
    ------------------------------------------------------------------------ */
+.founder-role {
+  margin: 0 0 0.35rem;
+  color: var(--color-primary);
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
 .form-notice {
   margin-bottom: 1.75rem;
 }
