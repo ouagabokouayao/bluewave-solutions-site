@@ -8,7 +8,7 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. La version
 - `services.html` : cinq offres cœur, formats d’entrée et méthode publique ;
 - `domaines.html` : domaines d’intervention et contextes géographiques ;
 - `a-propos.html` : positionnement, publics accompagnés et principes de travail ;
-- `contact.html` : trois parcours de prise de contact, sans formulaire actif ;
+- `contact.html` : trois entrées de contact et un formulaire local de qualification de projet ;
 - `notes-demonstrateurs.html` : notes, maquettes de livrables et deux simulations explicitement illustratives ;
 - `mentions-legales.html` : informations légales de la version locale ;
 - `politique-confidentialite.html` : traitement des prises de contact réalisées par courriel.
@@ -27,7 +27,7 @@ Les aperçus de livrables et les deux cas présentés sont des simulations illus
 
 ## Contact et indexation
 
-Le site ne comporte aucun formulaire actif : les prises de contact passent par des liens de courriel. Toutes les pages conservent la directive `noindex, nofollow` jusqu’à une décision explicite de publication.
+La page Contact comporte un formulaire **local**, sans backend : les champs saisis servent uniquement à composer un courriel prérempli, ouvert dans le logiciel de messagerie du visiteur, qui reste seul à décider de l’envoi. Le site n’enregistre ni ne transmet aucune donnée. Les liens de courriel direct restent disponibles en alternative. Toutes les pages conservent la directive `noindex, nofollow` jusqu’à une décision explicite de publication.
 
 ## Structure technique
 

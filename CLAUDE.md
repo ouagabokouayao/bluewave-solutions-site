@@ -90,11 +90,15 @@ Huit pages : `index.html`, `services.html`, `domaines.html`, `a-propos.html`, `c
 confidentialité. Une génération locale de courriel prérempli est autorisable **lorsqu'elle est
 explicitement demandée**.
 
-**État observé au 2026-08 — description, pas décision intangible.** Le contact passe aujourd'hui par
-des liens `mailto:` vers une adresse unique, sans formulaire actif ; cet état est affirmé à trois
-endroits (`contact.html`, `politique-confidentialite.html`, `README.md`). Si 02 fait évoluer le
-parcours, ces trois endroits devront être mis à jour ensemble — mais l'absence de formulaire **n'est
-pas une caractéristique permanente de l'architecture canonique**.
+**État observé au 2026-08 — description, pas décision intangible.** `contact.html` propose un
+**formulaire local de qualification** (`#projet-form`) : les champs sont lus par `assets/js/main.js`,
+qui compose un `mailto:` prérempli vers l'adresse unique. **Aucun backend, aucun stockage, aucun envoi
+automatique** — le visiteur relit et envoie lui-même depuis sa messagerie. Un repli `<noscript>` et les
+liens de courriel direct restent disponibles. Les liens « Présenter un projet » d'une offre passent le
+paramètre `?besoin=` pour présélectionner la liste correspondante.
+
+Ce fonctionnement est décrit à trois endroits — `contact.html`, `politique-confidentialite.html`,
+`README.md` — qui doivent être **mis à jour ensemble** à chaque évolution du parcours.
 
 ---
 
