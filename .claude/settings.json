@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings",
+  "permissions": {
+    "allow": [
+      "Bash(python quality/scripts/quality_check.py)",
+      "Bash(python3 quality/scripts/quality_check.py)",
+      "Bash(node --check assets/js/main.js)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ]
+  }
+}
