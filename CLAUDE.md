@@ -83,9 +83,18 @@ Aucune étape ne peut être sautée, y compris pour un changement jugé trivial.
 Huit pages : `index.html`, `services.html`, `domaines.html`, `a-propos.html`, `contact.html`,
 `notes-demonstrateurs.html`, `mentions-legales.html`, `politique-confidentialite.html`.
 
-Le contact se fait **exclusivement par liens `mailto:`** vers une **adresse unique**. Il n'existe
-volontairement aucun formulaire actif. Ce choix est affirmé à trois endroits (`contact.html`,
-`politique-confidentialite.html`, `README.md`) : toute évolution devra les mettre à jour ensemble.
+### Contact — principe, non figé
+
+**Principe permanent.** Le contact doit rester simple, transparent et **sans backend fictif**. Toute
+évolution du parcours de qualification doit respecter les décisions de 02 et les règles de
+confidentialité. Une génération locale de courriel prérempli est autorisable **lorsqu'elle est
+explicitement demandée**.
+
+**État observé au 2026-08 — description, pas décision intangible.** Le contact passe aujourd'hui par
+des liens `mailto:` vers une adresse unique, sans formulaire actif ; cet état est affirmé à trois
+endroits (`contact.html`, `politique-confidentialite.html`, `README.md`). Si 02 fait évoluer le
+parcours, ces trois endroits devront être mis à jour ensemble — mais l'absence de formulaire **n'est
+pas une caractéristique permanente de l'architecture canonique**.
 
 ---
 
@@ -147,8 +156,18 @@ publication :
 > **Une optimisation SEO technique n'autorise jamais l'indexation.** Améliorer des titres, des
 > descriptions ou des données structurées ne vaut pas décision de publication.
 
-**Déploiement.** Le site est servi par GitHub Pages depuis `main`, dossier racine, avec `.nojekyll`.
-Tout commit fusionné dans `main` part donc en production. Ne pas supprimer `.nojekyll`.
+### Déploiement — à revérifier, jamais à supposer
+
+L'historique de déploiement observé lors de `CC-BW-00` indique **actuellement** des déploiements
+GitHub Pages associés aux commits de `main`. **La configuration effective de GitHub Pages doit être
+revérifiée avant toute intervention touchant au déploiement.** Ne jamais supposer qu'un changement de
+branche, de dossier ou de workflow est impossible.
+
+> **Règle opérationnelle.** Aucun merge ou changement susceptible d'affecter le site servi ne doit
+> être effectué sans contrôle préalable.
+
+Le fichier `.nojekyll` est présent à la racine ; ne pas le supprimer sans avoir vérifié la
+configuration Pages en vigueur.
 
 ---
 
@@ -217,7 +236,11 @@ L'audit `CC-BW-00` a identifié dans `assets/css/style.css` :
 
 ---
 
-## 10. Incident responsive connu — problème ouvert prioritaire
+## 10. TEMPORARY KNOWN ISSUE — incident responsive 761–880 px
+
+> **TEMPORARY KNOWN ISSUE — à retirer de `CLAUDE.md` une fois la correction validée.**
+> Cette section est une entrée temporaire, pas une rubrique permanente de la charte.
+> `CLAUDE.md` n'a pas vocation à devenir un backlog : le suivi des correctifs se fait ailleurs.
 
 Identifié par `CC-BW-00`, **non corrigé à ce jour** :
 
