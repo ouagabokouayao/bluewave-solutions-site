@@ -21,6 +21,8 @@ En cas de divergence entre ce fichier et `CLAUDE.md`, **`CLAUDE.md` prévaut**.
 - **Simulations must stay explicitly labelled** as such. The quality gate enforces it.
 - **Preserve `noindex, nofollow`** on every page and `Disallow: /` in `robots.txt` until an
   explicit GO from the project owner. Technical SEO never authorises indexing.
+- **`noindex`/`nofollow` removal and public activation require a separate GO** including legal
+  notices and privacy readiness.
 - **No direct merge, deploy or publication** without instruction.
 - **Five canonical offers**, never a sixth:
   1. Diagnostic stratégique maritime, littoral ou portuaire

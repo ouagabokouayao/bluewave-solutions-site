@@ -162,6 +162,12 @@ publication :
 > **Une optimisation SEO technique n'autorise jamais l'indexation.** Améliorer des titres, des
 > descriptions ou des données structurées ne vaut pas décision de publication.
 
+> **Invariant d'activation.** Le retrait de `noindex`/`nofollow` et l'activation publique exigent un
+> **GO distinct**, incluant les mentions légales complètes et la politique de confidentialité
+> applicable aux données réellement reçues.
+> *(`noindex/nofollow removal and public activation require a separate GO including legal notices and
+> privacy readiness.`)*
+
 ### Déploiement — à revérifier, jamais à supposer
 
 L'historique de déploiement observé lors de `CC-BW-00` indique **actuellement** des déploiements
