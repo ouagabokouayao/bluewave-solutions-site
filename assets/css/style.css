@@ -42,7 +42,7 @@ html {
 
 body {
   margin: 0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--color-ink);
   background:
     radial-gradient(circle at 12% 0%, rgba(0, 119, 182, 0.14), transparent 30%),
@@ -59,6 +59,7 @@ a {
 
 img {
   max-width: 100%;
+  height: auto;
 }
 
 :focus-visible {
@@ -261,7 +262,7 @@ img {
 .section h2,
 .hero-card h2 {
   margin: 0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.025em;
@@ -1254,7 +1255,6 @@ img {
 .deck-cover-copy h2,
 .deck-slide-head h2 {
   margin: 0;
-  font-family: "Montserrat", sans-serif;
   line-height: 1.08;
   text-wrap: balance;
 }
@@ -1578,11 +1578,6 @@ img {
     width: 96px;
   }
 
-  .menu-toggle {
-    display: inline-block;
-    flex: 0 0 48px;
-  }
-
   .brand-guide-page .navbar {
     flex-wrap: wrap;
     row-gap: 0.5rem;
@@ -1594,26 +1589,6 @@ img {
     justify-content: flex-start;
     gap: 0.75rem 1rem;
     padding-bottom: 0.25rem;
-  }
-
-  .nav-links {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    left: 1rem;
-    right: 1rem;
-    display: grid;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(18, 32, 51, 0.08);
-    box-shadow: var(--shadow-soft);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-8px);
-    transition:
-      opacity var(--transition),
-      transform var(--transition);
   }
 
   .hero,
@@ -1648,12 +1623,6 @@ img {
   .page-lead {
     font-size: 1rem;
     overflow-wrap: anywhere;
-  }
-
-  .nav-links.is-open {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
   }
 
   .hero,
@@ -2444,36 +2413,6 @@ body {
     max-height: 54px;
   }
 
-  .menu-toggle {
-    display: inline-grid;
-    place-items: center;
-    flex: 0 0 48px;
-    margin-left: auto;
-  }
-
-  .nav-links {
-    left: 0;
-    right: 0;
-    z-index: 60;
-    width: min(100% - 2rem, 26rem);
-    margin: 0 auto;
-    gap: 0.55rem;
-    padding: 0.85rem;
-    background: #ffffff;
-    border-color: rgba(10, 37, 64, 0.12);
-    box-shadow: 0 24px 54px rgba(10, 37, 64, 0.18);
-  }
-
-  .nav-links a {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    padding: 0.72rem 0.85rem;
-    border-radius: 999px;
-    background: rgba(233, 243, 248, 0.82);
-    text-align: center;
-  }
-
   .site-footer {
     overflow-x: hidden;
   }
@@ -2590,10 +2529,6 @@ body {
 }
 
 @media (max-width: 420px) {
-  .nav-links {
-    width: min(100% - 1.5rem, 24rem);
-  }
-
   .footer-content {
     padding: 1rem;
   }
@@ -2636,26 +2571,6 @@ body {
   .premium-offer-grid,
   .footer-content {
     grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .navbar {
-    position: relative;
-    z-index: 70;
-  }
-
-  .site-header {
-    z-index: 1000;
-    overflow: visible !important;
-  }
-
-  .nav-links {
-    position: fixed;
-    top: 5.35rem;
-    left: 1rem !important;
-    right: 1rem !important;
-    z-index: 1001;
-    width: auto !important;
-    max-width: none !important;
   }
 
   .hero-card,
@@ -2906,6 +2821,47 @@ body {
   margin-bottom: 0;
 }
 
+/* Cartes d'offres cliquables de l'accueil : l'élément <a> porte lui-même la
+   carte, ce qui évite tout lien imbriqué et rend l'accès clavier natif.
+   L'ancre cible étant sous un en-tête collant, scroll-margin-top évite que
+   le titre de l'offre soit masqué à l'arrivée. */
+.v2-offer-card[id] {
+  scroll-margin-top: 6.5rem;
+}
+
+/* Même correctif pour toute cible d'ancre : sections et titres de section
+   arrivent sous l'en-tête collant sans être masqués. */
+.section[id],
+.v2-section-heading h2[id] {
+  scroll-margin-top: 6.5rem;
+}
+
+.v2-offer-link {
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    border-color var(--transition);
+}
+
+.v2-offer-link:hover,
+.v2-offer-link:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(11, 93, 122, 0.35);
+  box-shadow: var(--shadow-premium);
+}
+
+.v2-offer-more {
+  margin-top: auto;
+  padding-top: 0.35rem;
+  color: var(--color-primary);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.v2-offer-more::after {
+  content: " →";
+}
+
 .v2-offer-meta {
   display: grid;
   width: 100%;
@@ -3002,6 +2958,619 @@ body {
 
   .v2-offer-card:last-child:nth-child(odd) {
     grid-column: auto;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Démonstrateurs — composants de mini-livrable (CC-BW-04).
+   Aucun de ces composants ne doit servir à présenter des données réelles :
+   ils structurent un raisonnement explicitement simulé.
+   ------------------------------------------------------------------------ */
+
+/* Bandeau de simulation : la distinction ne repose pas sur la seule couleur
+   (liseré épais à gauche + libellé explicite en majuscules). */
+.sim-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.9rem;
+  margin: 0 0 1.5rem;
+  padding: 0.9rem 1.15rem;
+  border: 1px solid rgba(11, 93, 122, 0.28);
+  border-left: 6px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: rgba(232, 249, 248, 0.75);
+}
+
+.sim-banner strong {
+  color: var(--color-abyss);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sim-banner span {
+  color: var(--color-ink-soft);
+  font-size: 0.94rem;
+}
+
+.demo-section + .demo-section {
+  margin-top: 2.5rem;
+}
+
+.demo-heading {
+  margin: 0 0 1rem;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--color-abyss);
+}
+
+/* Marqueur d'élément fictif, répété au plus près du contenu concerné. */
+.hyp {
+  display: inline-block;
+  padding: 0.16rem 0.5rem;
+  border: 1px dashed rgba(11, 93, 122, 0.5);
+  border-radius: 999px;
+  background: rgba(247, 242, 232, 0.85);
+  color: var(--color-abyss);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.demo-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.demo-info-grid h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--color-abyss);
+}
+
+.demo-info-grid ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+}
+
+.demo-info-grid li + li {
+  margin-top: 0.3rem;
+}
+
+/* Étapes du raisonnement : ce que BlueWave cherche, et l'effet sur la décision. */
+.demo-steps {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: demo-step;
+}
+
+.demo-steps > li {
+  position: relative;
+  padding: 1.1rem 1.25rem 1.1rem 3.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.demo-steps > li::before {
+  counter-increment: demo-step;
+  content: counter(demo-step);
+  position: absolute;
+  top: 1.1rem;
+  left: 1.15rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--color-signal);
+  color: var(--color-abyss);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.demo-steps h4 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  color: var(--color-abyss);
+}
+
+.demo-steps p {
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
+.demo-steps p + p {
+  margin-top: 0.45rem;
+}
+
+.demo-effect {
+  font-size: 0.94rem;
+}
+
+.demo-effect strong {
+  color: var(--color-primary);
+}
+
+/* Matrice : le tableau reste un vrai <table> (th/scope conservés). Sur écran
+   étroit il défile horizontalement dans une région focalisable au clavier et
+   annoncée, plutôt que d'être compressé jusqu'à l'illisible. */
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid rgba(0, 119, 182, 0.42);
+  outline-offset: 2px;
+}
+
+.demo-matrix {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.demo-matrix caption {
+  padding: 0.9rem 1rem;
+  color: var(--color-ink-soft);
+  font-size: 0.92rem;
+  text-align: left;
+}
+
+.demo-matrix th,
+.demo-matrix td {
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.demo-matrix thead th {
+  background: rgba(232, 243, 248, 0.9);
+  color: var(--color-abyss);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.demo-matrix tbody th {
+  color: var(--color-abyss);
+  font-weight: 700;
+}
+
+.demo-matrix td {
+  color: var(--color-ink-soft);
+}
+
+.demo-matrix tbody tr:last-child th,
+.demo-matrix tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-hint {
+  display: none;
+  margin: 0.6rem 0 0;
+  color: var(--color-ink-muted);
+  font-size: 0.88rem;
+}
+
+/* L'aide n'apparaît que là où la matrice défile réellement. */
+@media (max-width: 800px) {
+  .table-hint {
+    display: block;
+  }
+}
+
+/* Options de suite. */
+.demo-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.demo-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-top: 4px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.demo-option h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-abyss);
+}
+
+.demo-option p {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+}
+
+.demo-option dt {
+  color: var(--color-abyss);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.demo-option dd {
+  margin: 0.15rem 0 0.6rem;
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+}
+
+.demo-option dd:last-child {
+  margin-bottom: 0;
+}
+
+.demo-option dl {
+  margin: 0;
+}
+
+/* Feuille de route par horizons. */
+.demo-roadmap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.demo-horizon {
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(240, 247, 250, 0.8));
+}
+
+.demo-horizon strong {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--color-primary);
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.demo-horizon ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+}
+
+.demo-horizon li + li {
+  margin-top: 0.3rem;
+}
+
+/* Limites : cadre sobre, distinct des options. */
+.demo-limits {
+  padding: 1.15rem 1.35rem;
+  border: 1px solid rgba(155, 44, 44, 0.28);
+  border-left: 6px solid rgba(155, 44, 44, 0.55);
+  border-radius: var(--radius-sm);
+  background: rgba(250, 246, 239, 0.9);
+}
+
+.demo-limits h4 {
+  margin: 0 0 0.5rem;
+  color: var(--color-abyss);
+  font-size: 1rem;
+}
+
+.demo-limits ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-ink-soft);
+}
+
+.demo-limits li + li {
+  margin-top: 0.25rem;
+}
+
+.demo-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+}
+
+/* Familles de livrables (accueil et services). */
+.deliverable-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.deliverable-card {
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.deliverable-card strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.deliverable-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+}
+
+.deliverable-card li + li {
+  margin-top: 0.28rem;
+}
+
+/* Processus d'exécution : présenté comme une bande secondaire, non comme une
+   procédure concurrente du parcours public en six étapes. */
+.process-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.process-strip li {
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(11, 93, 122, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--color-ink-soft);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+@media (max-width: 620px) {
+  .demo-steps > li {
+    padding: 1rem 1.05rem 1rem 3.1rem;
+  }
+
+  .demo-matrix {
+    min-width: 38rem;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Formulaire de qualification (contact.html) — CC-BW-03.
+   Aucun backend : la mise en forme accompagne une génération locale de
+   courriel. Les libellés sont de vrais <label>, jamais des placeholders.
+   ------------------------------------------------------------------------ */
+.founder-role {
+  margin: 0 0 0.35rem;
+  color: var(--color-primary);
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.form-notice {
+  margin-bottom: 1.75rem;
+}
+
+.form-notice ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.15rem;
+}
+
+.form-notice li + li {
+  margin-top: 0.4rem;
+}
+
+.project-form {
+  padding: clamp(1.35rem, 2.5vw, 2rem);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  min-width: 0;
+}
+
+.form-field-wide {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  color: var(--color-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.form-required {
+  color: var(--color-ink-muted);
+  font-weight: 400;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--color-ink);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.form-field input:focus-visible,
+.form-field select:focus-visible,
+.form-field textarea:focus-visible {
+  border-color: var(--color-primary);
+}
+
+/* Retour de validation natif : signalé par la couleur ET par un liseré,
+   afin de ne pas reposer sur la seule couleur. */
+.form-field input:user-invalid,
+.form-field textarea:user-invalid {
+  border-color: #9B2C2C;
+  box-shadow: inset 0 0 0 1px #9B2C2C;
+}
+
+.form-hint {
+  color: var(--color-ink-muted);
+  font-size: 0.88rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+.form-noscript {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 620px) {
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Navigation principale — point de bascule unique (CC-BW-02, remesuré CC-BW-03).
+
+   L'entrée « Méthode » a été remplacée par « Démonstrateurs », plus longue :
+   la barre de liens passe de 626 px à 694 px.
+
+   Mesure : juste sous 980 px le logo est plafonné à 204 px par son clamp,
+   d'où un besoin de 914 px de conteneur (204 + gap 16 + liens 694), soit
+   946 px de viewport minimum. Au-dessus de 980 px le logo retombe à 178 px
+   et le besoin chute à 920 px de viewport.
+
+   Un seuil à 960 px ne laisserait que 15 px de marge à 961 px. Comme le site
+   s'affiche en polices système, dont les métriques varient d'une plateforme
+   à l'autre, cette marge est insuffisante. Le seuil est donc fixé à 980 px,
+   où il coïncide avec la borne du clamp du logo : au-delà, la marge est de
+   61 px et ne dépend plus du plafonnement.
+
+   Ce bloc est la seule définition du menu mobile : il remplace les quatre
+   couches successives héritées de la V1.
+   ------------------------------------------------------------------------ */
+@media (max-width: 980px) {
+  .site-header {
+    z-index: 1000;
+    overflow: visible;
+  }
+
+  .navbar {
+    position: relative;
+    z-index: 70;
+  }
+
+  .menu-toggle {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 48px;
+    margin-left: auto;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 5.35rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 1001;
+    width: auto;
+    max-width: none;
+    display: grid;
+    gap: 0.55rem;
+    padding: 0.85rem;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 1px solid rgba(10, 37, 64, 0.12);
+    box-shadow: 0 24px 54px rgba(10, 37, 64, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition:
+      opacity var(--transition),
+      transform var(--transition),
+      visibility 0s linear var(--transition);
+  }
+
+  /* visibility retire les liens de l'ordre de tabulation quand le menu est
+     fermé : sans elle, six liens invisibles restaient atteignables au clavier. */
+  .nav-links.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition:
+      opacity var(--transition),
+      transform var(--transition),
+      visibility 0s;
+  }
+
+  .nav-links a {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 0.72rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(233, 243, 248, 0.82);
+    text-align: center;
+  }
+
+  /* Même cause que la navigation : la grille du pied de page impose
+     minmax(260px) + minmax(220px) + une colonne contenant une adresse e-mail
+     insécable de 289 px, soit environ 878 px de largeur minimale. Elle ne se
+     repliait qu'à 760 px et débordait donc sur toute la bande intermédiaire.
+     Le repli en deux colonnes est déclenché au même seuil que la navigation ;
+     la mise en colonne unique en dessous de 760 px reste inchangée. */
+  .footer-content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

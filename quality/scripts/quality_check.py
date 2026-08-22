@@ -15,14 +15,7 @@ from xml.etree import ElementTree
 
 
 ROOT = Path(__file__).resolve().parents[2]
-ROOT_PAGE_EXCLUSIONS = {
-    "signature-mail-bluewave-preview.html",
-    "signature-mail-bluewave-snippet.html",
-    "signature-mail-bluewave-ultra-compatible.html",
-}
-PUBLIC_HTML = [
-    path for path in sorted(ROOT.glob("*.html")) if path.name not in ROOT_PAGE_EXCLUSIONS
-] + sorted((ROOT / "documents" / "marche-penetration-bluewave" / "mini-projets-vitrines").glob("*.html"))
+PUBLIC_HTML = sorted(ROOT.glob("*.html"))
 EXTERNAL_SCHEMES = {"http", "https", "mailto", "tel", "data", "javascript"}
 PLACEHOLDERS = (
     re.compile(r"lorem\s+ipsum", re.I),
@@ -45,6 +38,10 @@ class SiteParser(HTMLParser):
         self.sources: list[str] = []
         self.images: list[dict[str, str | None]] = []
         self.robots = ""
+        self.canonical = ""
+        self.og: dict[str, str] = {}
+        self.labels: list[str] = []
+        self.fields: list[tuple[str, str]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         data = dict(attrs)
@@ -63,7 +60,23 @@ class SiteParser(HTMLParser):
         if tag == "link" and data.get("href") is not None:
             self.sources.append(data.get("href") or "")
         if tag == "img":
-            self.images.append({"src": data.get("src"), "alt": data.get("alt")})
+            self.images.append(
+                {
+                    "src": data.get("src"),
+                    "alt": data.get("alt"),
+                    "width": data.get("width"),
+                    "height": data.get("height"),
+                }
+            )
+        if tag == "link" and (data.get("rel") or "").lower() == "canonical":
+            self.canonical = (data.get("href") or "").strip()
+        if tag == "meta" and (data.get("property") or "").lower().startswith("og:"):
+            self.og[(data.get("property") or "").lower()] = (data.get("content") or "").strip()
+        if tag == "label" and data.get("for"):
+            self.labels.append(data["for"] or "")
+        if tag in {"input", "select", "textarea"}:
+            if (data.get("type") or "").lower() not in {"hidden", "submit", "button"}:
+                self.fields.append((tag, data.get("id") or ""))
         if tag == "meta" and (data.get("name") or "").lower() == "robots":
             self.robots = (data.get("content") or "").lower()
 
@@ -140,6 +153,22 @@ def main() -> int:
         for image in doc.images:
             if image["alt"] is None:
                 errors.append(f"{label}: image sans attribut alt ({image['src'] or 'src absent'})")
+            if not image["width"] or not image["height"]:
+                errors.append(
+                    f"{label}: image sans width/height ({image['src'] or 'src absent'})"
+                )
+
+        if not doc.canonical:
+            errors.append(f"{label}: lien canonical absent")
+        for prop in ("og:type", "og:title", "og:description", "og:url", "og:site_name"):
+            if not doc.og.get(prop):
+                errors.append(f"{label}: metadonnee {prop} absente")
+
+        for tag_name, field_id in doc.fields:
+            if not field_id:
+                errors.append(f"{label}: champ <{tag_name}> sans id, donc sans label associable")
+            elif field_id not in doc.labels:
+                errors.append(f"{label}: champ #{field_id} sans <label for> correspondant")
 
         for pattern in PLACEHOLDERS:
             if pattern.search(text):
