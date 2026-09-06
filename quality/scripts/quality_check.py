@@ -158,23 +158,41 @@ def main():
     try:
         auto_text=(ROOT/'data/automation-config.json').read_text(encoding='utf-8')
         automation=json.loads(auto_text)
-        if automation.get('provider')!='brevo':errors.append('automation: provider Brevo absent')
-        for section in ('lead_capture','newsletter','meeting','chat','analytics'):
-            if automation.get(section,{}).get('enabled') is not False:errors.append(f'automation: {section} doit rester désactivé')
-        if automation['lead_capture'].get('endpoint') is not None or automation['newsletter'].get('endpoint') is not None:errors.append('automation: endpoint public non nul')
+        expected_automation={'provider':'brevo','lead_endpoint':None,'chat_enabled':False,'newsletter_enabled':False,'meeting_url':None}
+        if automation!=expected_automation:errors.append('automation: configuration publique non canonique ou activation prématurée')
         if SECRET.search(auto_text):errors.append('automation: secret potentiel détecté')
     except (OSError,ValueError,KeyError,TypeError) as exc:
         errors.append(f'automation-config.json invalide: {exc}')
+    backend_files=[
+      'serverless/bluewave-leads/handler.mjs','serverless/bluewave-leads/brevo-client.mjs',
+      'serverless/bluewave-leads/validation.mjs','serverless/bluewave-leads/security.mjs',
+      'serverless/bluewave-leads/.env.example','serverless/bluewave-leads/README.md',
+      'serverless/bluewave-leads/tests/handler.test.mjs','quality/scripts/check_secrets.py',
+    ]
+    for relative in backend_files:
+        if not (ROOT/relative).is_file():errors.append(f'automation: fichier backend absent {relative}')
+    try:
+        backend='\n'.join((ROOT/relative).read_text(encoding='utf-8') for relative in backend_files if (ROOT/relative).is_file())
+        for attribute in ['BW_TYPE','BW_GEO','BW_THEME','BW_ORGANISATION','BW_BESOIN','BW_DELAI','BW_SOURCE','BW_STATUT','BW_CONSENT_VEILLE']:
+            if attribute not in backend:errors.append(f'automation: attribut Brevo absent {attribute}')
+        for variable in ['BREVO_API_KEY','BREVO_LEADS_LIST_ID','BREVO_NEWSLETTER_LIST_ID','BREVO_ACK_TEMPLATE_ID','BREVO_INTERNAL_TEMPLATE_ID','BLUEWAVE_INTERNAL_EMAIL','ALLOWED_ORIGIN']:
+            if variable not in backend:errors.append(f'automation: variable serveur absente {variable}')
+        if 'updateEnabled: true' not in backend:errors.append('automation: mise à jour contact Brevo non activée')
+    except OSError as exc:
+        errors.append(f'automation: backend illisible {exc}')
     # Méthode canonique 8 étapes
     met=(ROOT/'methode.html').read_text(encoding='utf-8').lower()
     for step in ['qualifier','cadrer','analyser','cartographier','structurer','contrôler','restituer','capitaliser']:
         if step not in met:errors.append(f'methode.html: étape absente {step}')
     # Qualifier 7 fieldsets + wording
     q=(ROOT/'qualifier-un-besoin.html').read_text(encoding='utf-8')
+    qualifier_js=(ROOT/'assets/js/qualifier.js').read_text(encoding='utf-8')
     if q.count('fieldset data-step=')!=7:errors.append('qualifier: nombre étapes != 7')
     if 'diagnostic automatique définitif' in q.lower():warnings.append('qualifier: mention explicite interdiction présente')
-    for field in ['lead-name','lead-organisation','lead-email','lead-request-type','lead-description','lead-contact-preference','lead-consent']:
+    for field in ['lead-name','lead-organisation','lead-email','lead-request-type','lead-description','lead-contact-preference','lead-newsletter','lead-consent','lead-website']:
         if f'id="{field}"' not in q:errors.append(f'qualifier: champ contact absent {field}')
+    for field in ['firstname','lastname','email','organisation','type','geography','themes','need','deadline','contact_preference','source','newsletter_consent','privacy_acknowledged']:
+        if re.search(rf'\b{field}\s*:',qualifier_js) is None:errors.append(f'qualifier: champ payload canonique absent {field}')
     if re.search(r'<input[^>]+(?:newsletter|marketing)[^>]+checked',q,re.I):errors.append('qualifier: consentement marketing précoché')
     if 'href="domaines.html"' in ''.join(text for _,text in parsed.values()):warnings.append('navigation publique: lien Domaines résiduel')
     about=(ROOT/'a-propos.html').read_text(encoding='utf-8')

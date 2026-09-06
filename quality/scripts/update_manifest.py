@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "MANIFEST_SHA256.json"
 
 CRITICAL_FILES = [
+    ".gitignore",
     ".nojekyll",
     "404.html",
     "README.md",
@@ -45,6 +46,7 @@ CRITICAL_FILES = [
     ".github/workflows/site-quality.yml",
     ".github/workflows/update-actualites.yml",
     "quality/scripts/check_external_links.py",
+    "quality/scripts/check_secrets.py",
     "quality/scripts/quality_check.py",
     "quality/scripts/update_actualites.py",
     "quality/scripts/update_manifest.py",
@@ -54,7 +56,8 @@ CRITICAL_FILES = [
 
 def canonical_paths() -> list[str]:
     images = [path.relative_to(ROOT).as_posix() for path in (ROOT / "assets" / "img").rglob("*") if path.is_file() and path.name != ".DS_Store"]
-    return sorted(set(CRITICAL_FILES + images))
+    serverless = [path.relative_to(ROOT).as_posix() for path in (ROOT / "serverless").rglob("*") if path.is_file() and path.name != ".DS_Store"]
+    return sorted(set(CRITICAL_FILES + images + serverless))
 
 
 def build_manifest() -> list[dict]:

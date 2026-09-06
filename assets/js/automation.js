@@ -19,32 +19,35 @@
   };
 
   const submit = async (kind, payload) => {
+    if (kind !== 'lead') throw new Error('Type de transmission non pris en charge');
     const config = await loadConfig();
-    const section = kind === 'newsletter' ? config.newsletter : config.lead_capture;
-    if (!section?.enabled || !section.endpoint) return { configured: false };
-    const tags = kind === 'lead' ? [
-      config.crm_tags?.request_types?.[payload.request_type],
-      config.crm_tags?.geographies?.[payload.territory],
-      config.crm_tags?.themes?.[payload.theme]
-    ].filter(Boolean) : [];
-    const response = await fetch(section.endpoint, {
+    if (!config.lead_endpoint) return { configured: false };
+    const endpoint = new URL(config.lead_endpoint);
+    if (endpoint.protocol !== 'https:') throw new Error('Endpoint non sécurisé');
+    const response = await fetch(endpoint.href, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...payload, tags })
+      credentials: 'omit',
+      referrerPolicy: 'strict-origin',
+      body: JSON.stringify(payload)
     });
-    if (!response.ok) throw new Error(`Transmission HTTP ${response.status}`);
-    return { configured: true, ok: true };
+    let result = {};
+    try { result = await response.json(); } catch (error) { result = {}; }
+    if (!response.ok || result.success !== true) throw new Error('Transmission indisponible');
+    return { configured: true, ok: true, message: result.message };
   };
 
-  const wireMeeting = async () => {
+  const showMeeting = async () => {
     const target = document.querySelector('[data-meeting-placeholder]');
-    if (!target) return;
+    if (!target || target.querySelector('[data-meeting-link]')) return;
     try {
       const config = await loadConfig();
-      if (!config.meeting?.enabled || !config.meeting.url) return;
+      if (!config.meeting_url) return;
+      const meeting = new URL(config.meeting_url);
+      if (meeting.protocol !== 'https:') return;
       const link = document.createElement('a');
       link.className = 'button secondary';
-      link.href = config.meeting.url;
+      link.href = meeting.href;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       link.dataset.meetingLink = '';
@@ -55,58 +58,21 @@
     }
   };
 
-  const wireChat = async () => {
-    try {
-      const config = await loadConfig();
-      if (!config.chat?.enabled || !config.chat.endpoint) return;
-      const wrapper = document.createElement('aside');
-      wrapper.className = 'welcome-chat';
-      wrapper.setAttribute('aria-label', 'Accueil BlueWave');
-      wrapper.innerHTML = '<button type="button" class="welcome-chat-toggle" aria-expanded="false">Accueil BlueWave</button><div class="welcome-chat-panel" hidden><p><strong>Accueil BlueWave</strong></p><p>Bonjour. Vous avez un projet ou une question liée à la mer, au littoral ou à la gouvernance maritime ? Je peux vous orienter vers le bon point d’entrée BlueWave.</p><div class="welcome-chat-actions"><a href="qualifier-un-besoin.html">Présenter un projet</a><a href="solutions.html">Découvrir les solutions</a><a href="qualifier-un-besoin.html?problematique=formation">Demander une formation</a><a href="qualifier-un-besoin.html">Proposer une collaboration</a><a href="mailto:bluewavesolutions3399@gmail.com">Contacter BlueWave</a></div></div>';
-      document.body.append(wrapper);
-      const toggle = wrapper.querySelector('button');
-      const panel = wrapper.querySelector('.welcome-chat-panel');
-      toggle.addEventListener('click', () => {
-        const open = toggle.getAttribute('aria-expanded') === 'true';
-        toggle.setAttribute('aria-expanded', String(!open));
-        panel.hidden = open;
-        if (!open) track('chat_open');
-      });
-    } catch (error) {
-      // Aucun widget n'est affiché sans configuration valide.
-    }
-  };
-
   const wireNewsletter = async () => {
-    const form = document.querySelector('[data-newsletter-form]');
-    if (!form) return;
-    const message = form.querySelector('[data-newsletter-message]');
     try {
       const config = await loadConfig();
-      if (!config.newsletter?.enabled || !config.newsletter.endpoint) {
+      document.querySelectorAll('[data-newsletter-consent]').forEach(control => {
+        control.disabled = !config.newsletter_enabled;
+      });
+      document.querySelectorAll('[data-newsletter-form]').forEach(form => {
+        const message = form.querySelector('[data-newsletter-message]');
         form.querySelectorAll('input, button').forEach(control => { control.disabled = true; });
-        message.textContent = 'Inscription bientôt disponible.';
-        return;
-      }
-      form.addEventListener('submit', async event => {
-        event.preventDefault();
-        if (!form.reportValidity()) return;
-        const button = form.querySelector('button[type="submit"]');
-        button.disabled = true;
-        try {
-          const data = new FormData(form);
-          await submit('newsletter', { email: data.get('email'), consent: data.get('consent') === 'yes' });
-          form.reset();
-          message.textContent = 'Merci. Vérifiez votre messagerie pour confirmer votre inscription.';
-          track('news_signup', { status: 'submitted' });
-        } catch (error) {
-          message.textContent = 'Inscription indisponible pour le moment.';
-        } finally {
-          button.disabled = false;
-        }
+        if (message) message.textContent = config.newsletter_enabled
+          ? 'L’inscription est proposée lors de la transmission d’une demande.'
+          : 'Inscription bientôt disponible.';
       });
     } catch (error) {
-      message.textContent = 'Inscription bientôt disponible.';
+      document.querySelectorAll('[data-newsletter-consent]').forEach(control => { control.disabled = true; });
     }
   };
 
@@ -119,8 +85,6 @@
     if (link.matches('[data-meeting-link]')) track('meeting_click');
   });
 
-  window.BlueWaveAutomation = { loadConfig, submit, track };
+  window.BlueWaveAutomation = { loadConfig, showMeeting, submit, track };
   wireNewsletter();
-  wireMeeting();
-  wireChat();
 })();

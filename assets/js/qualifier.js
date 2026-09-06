@@ -116,39 +116,42 @@
     if (submitting || !lastOrientation || !leadForm.reportValidity()) return;
     submitting = true;
     leadSubmit.disabled = true;
-    leadMessage.textContent = 'Préparation en cours…';
+    leadMessage.textContent = 'Transmission en cours…';
     const data = new FormData(leadForm);
+    const nameParts = String(data.get('name') || '').trim().split(/\s+/).filter(Boolean);
     const payload = {
-      name: data.get('name'),
-      organisation_name: data.get('organisation_name'),
+      firstname: nameParts.shift() || '',
+      lastname: nameParts.join(' '),
       email: data.get('email'),
-      organisation_type: lastOrientation.organisation,
-      request_type: data.get('request_type'),
-      theme: problemToTheme[lastOrientation.problematique],
-      territory: geographyTag[lastOrientation.territoire],
-      description: data.get('description'),
-      expected_result: lastOrientation.resultat,
-      horizon: lastOrientation.delai,
+      organisation: data.get('organisation_name'),
+      type: data.get('request_type'),
+      geography: geographyTag[lastOrientation.territoire],
+      themes: [problemToTheme[lastOrientation.problematique]],
+      need: data.get('description'),
+      deadline: lastOrientation.delai,
       contact_preference: data.get('contact_preference'),
-      consent: data.get('consent') === 'yes',
-      orientation: lastOrientation.offer
+      source: 'SITE_QUALIFIER',
+      newsletter_consent: data.get('newsletter_consent') === 'yes',
+      privacy_acknowledged: data.get('consent') === 'yes',
+      website: data.get('website') || ''
     };
     try {
       const response = await window.BlueWaveAutomation.submit('lead', payload);
       if (response.configured && response.ok) {
         leadForm.reset();
-        leadMessage.textContent = 'Merci. Votre demande a bien été transmise à BlueWave. Elle sera examinée avant toute réponse ou proposition.';
-        window.BlueWaveAutomation.track('qualifier_submit', { status: 'transmitted', request_type: payload.request_type, theme: payload.theme, territory: payload.territory });
+        leadMessage.textContent = 'Votre demande a bien été transmise à BlueWave Solutions. Un message de confirmation va vous être adressé par email.';
+        window.BlueWaveAutomation.track('qualifier_submit', { status: 'transmitted', request_type: payload.type, theme: payload.themes[0], territory: payload.geography });
+        await window.BlueWaveAutomation.showMeeting();
       } else {
-        const subject = encodeURIComponent(`BlueWave — ${payload.request_type} — ${lastOrientation.offer}`);
-        const body = encodeURIComponent(`Bonjour,\n\nNom : ${payload.name}\nOrganisation : ${payload.organisation_name}\nE-mail : ${payload.email}\nType de demande : ${payload.request_type}\nPréférence de contact : ${payload.contact_preference}\n\n${lastOrientation.summary}\n\nDescription :\n${payload.description}\n\nOrientation indicative : ${lastOrientation.offer}.\n\nJe comprends que cette prise de contact ne constitue ni une acceptation de mission ni une proposition commerciale.\n\nCordialement,`);
+        const subject = encodeURIComponent(`BlueWave — ${payload.type} — ${lastOrientation.offer}`);
+        const body = encodeURIComponent(`Bonjour,\n\nNom : ${payload.firstname} ${payload.lastname}\nOrganisation : ${payload.organisation}\nE-mail : ${payload.email}\nType de demande : ${payload.type}\nPréférence de contact : ${payload.contact_preference}\n\n${lastOrientation.summary}\n\nDescription :\n${payload.need}\n\nOrientation indicative : ${lastOrientation.offer}.\n\nJe comprends que cette prise de contact ne constitue ni une acceptation de mission ni une proposition commerciale.\n\nCordialement,`);
         const mail = document.getElementById('result-mail');
         mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
         leadMessage.textContent = 'La transmission automatisée n’est pas encore active. Votre message est prêt : utilisez le bouton de messagerie, relisez-le puis envoyez-le vous-même.';
         mail.focus();
       }
     } catch (error) {
-      leadMessage.textContent = 'La transmission est momentanément indisponible. Utilisez le bouton de messagerie pour présenter votre besoin.';
+      leadMessage.textContent = 'La transmission n’a pas pu aboutir. Vous pouvez réessayer ou écrire directement à BlueWave Solutions.';
     } finally {
       submitting = false;
       leadSubmit.disabled = false;

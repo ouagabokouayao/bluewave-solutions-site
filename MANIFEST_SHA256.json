@@ -11,13 +11,18 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "5a2f09ea57ad908f2711fe79fc22bb970a52307b285bcf3f84cfc20acee27175",
-    "bytes": 1192
+    "sha256": "a468d8810e4968e5c9f99893e48ebed6814e55d5ce4bf42e996735ec24b354a5",
+    "bytes": 1397
   },
   {
     "path": ".github/workflows/update-actualites.yml",
     "sha256": "601ed209949d012f60fcd6dd3ab63aa02394d98032cc58530c31d2e2c1c9109e",
     "bytes": 1713
+  },
+  {
+    "path": ".gitignore",
+    "sha256": "9bc102d1aa152d347192f051119183711ca0c5f51f3337db1764402faefdb315",
+    "bytes": 751
   },
   {
     "path": ".nojekyll",
@@ -31,8 +36,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "7645da703cdb62b184e55271e233e886134132439dc08c5158801ff65f01c155",
-    "bytes": 3348
+    "sha256": "557242062167b9ec5fa5d68057e8eb70dd099c7875009a1580f67be3e32bb32b",
+    "bytes": 4432
   },
   {
     "path": "a-propos.html",
@@ -166,8 +171,8 @@
   },
   {
     "path": "assets/js/automation.js",
-    "sha256": "7129ca81155b3595a5c1a9be8e6fec999774d079013ac0cd24202ae58fa9c9b2",
-    "bytes": 5623
+    "sha256": "f76e95641c9514793235986e90c74ea3249024c4301bb05fe53f0f4fb6bad307",
+    "bytes": 3691
   },
   {
     "path": "assets/js/main.js",
@@ -181,8 +186,8 @@
   },
   {
     "path": "assets/js/qualifier.js",
-    "sha256": "6c0efa17af18404e81bc5409f32dd77746a703e51c32162755149c4c4ed9c69b",
-    "bytes": 11289
+    "sha256": "1e7d8cbbbeb173679b47e0d2effe4057c8ace08a1fc0c1c9860fc6f60f6e6828",
+    "bytes": 11471
   },
   {
     "path": "contact.html",
@@ -211,8 +216,8 @@
   },
   {
     "path": "data/automation-config.json",
-    "sha256": "80d8f1d465c0ee407683e27da42fd827a428e4a5bb02ee8e65dfb987e3165ed5",
-    "bytes": 2555
+    "sha256": "3312a79e70704dcf78f9101700b849f93e0810c484b120aa41476d49c17be388",
+    "bytes": 130
   },
   {
     "path": "domaines.html",
@@ -256,8 +261,8 @@
   },
   {
     "path": "qualifier-un-besoin.html",
-    "sha256": "dc6b5207a1c20ac58454bcc04722cf12aae58a52c0a8d7b55704011e2d237b35",
-    "bytes": 12801
+    "sha256": "f783d142383559063a9ce63fb934e944c382ad96b5766277461c8daf2c5d64cb",
+    "bytes": 13300
   },
   {
     "path": "quality/scripts/check_external_links.py",
@@ -265,9 +270,14 @@
     "bytes": 3057
   },
   {
+    "path": "quality/scripts/check_secrets.py",
+    "sha256": "d4cff2a06ad514cbe9d1b47d3aa42867f9eeb892ae10705414bfc3a28f3bcb44",
+    "bytes": 1539
+  },
+  {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "ec2a08e1ebb66edaf9edbdc4bbeb4eca18f835974f42e2ebb34789481ecfd7e0",
-    "bytes": 14428
+    "sha256": "725f61dcdb1d60a33c8b4a57dffe4c8bebf132fa2e8a1a72135137d85062922e",
+    "bytes": 16049
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -276,8 +286,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "52992bcac75069572761fe205ba2414b2dc98f9be4c70527ed060640063830ff",
-    "bytes": 3010
+    "sha256": "14f9bdce77ebebe689d17c1ec527554db12fdc67381bc793a19143619fbb646b",
+    "bytes": 3226
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -288,6 +298,41 @@
     "path": "robots.txt",
     "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1",
     "bytes": 26
+  },
+  {
+    "path": "serverless/bluewave-leads/.env.example",
+    "sha256": "4f85efd79b21ae9d6cc52d5f406cd5f7fc76d8886e51288d02e67de8f4ab10c0",
+    "bytes": 294
+  },
+  {
+    "path": "serverless/bluewave-leads/README.md",
+    "sha256": "3c5f46ebc2f12f13e41d14e1a0cc8d7459f878b8ee4220bebe5db021826f09e3",
+    "bytes": 5373
+  },
+  {
+    "path": "serverless/bluewave-leads/brevo-client.mjs",
+    "sha256": "ca32a50097997c9d125a7812f3004b2339ea02f2d1fbaf8520d53fd7489b8e23",
+    "bytes": 4961
+  },
+  {
+    "path": "serverless/bluewave-leads/handler.mjs",
+    "sha256": "69d1c719febb7fbbabca1d44fc034bcfbf0e09a37bac54550e2e83006c55cd21",
+    "bytes": 3925
+  },
+  {
+    "path": "serverless/bluewave-leads/security.mjs",
+    "sha256": "556e1250718a3f1008ff47b25c8d03fa9819473910a8dcce80505d715424f126",
+    "bytes": 1420
+  },
+  {
+    "path": "serverless/bluewave-leads/tests/handler.test.mjs",
+    "sha256": "3f71c982a5b3e09c2153734aab95c4250a961791f21dfecbdb12f4c49a62ba42",
+    "bytes": 6037
+  },
+  {
+    "path": "serverless/bluewave-leads/validation.mjs",
+    "sha256": "83774b05ef0cb628d2aee1e4ea662b14cdc1d24c90634f24ca137578eb714ff5",
+    "bytes": 3748
   },
   {
     "path": "services.html",

@@ -1,6 +1,6 @@
 # BlueWave Solutions — site V3 P1.2
 
-Site vitrine statique, multipage et responsive de BlueWave Solutions. Il reste sans backend et sans dépendance front-end.
+Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-end reste sans dépendance ; un endpoint serverless portable est préparé séparément, sans être déployé ni activé.
 
 ## Architecture publique
 
@@ -23,18 +23,21 @@ Le workflow `update-actualites.yml` est préparé pour deux passages quotidiens 
 
 ## Automatisation visiteurs
 
-`assets/js/automation.js` centralise les événements et les points d’intégration du qualifier, de la newsletter, du rendez-vous et de l’accueil conversationnel. `data/automation-config.json` ne contient aucun secret. Toutes les intégrations distantes sont désactivées dans cette candidate.
+`assets/js/automation.js` centralise les événements et le point d’intégration HTTPS du qualifier. `data/automation-config.json` ne contient que cinq options publiques : fournisseur, endpoint lead, chat, newsletter et rendez-vous. L’endpoint reste `null` et toutes les intégrations distantes restent désactivées dans cette candidate.
 
-Pour activer ultérieurement Brevo en sécurité, il reste à fournir côté serveur :
+`serverless/bluewave-leads/` contient le handler portable, la validation serveur, la gestion CORS et anti-abus, le client Brevo minimal, un exemple d’environnement sans secret et des tests mockés. Le navigateur n’appelle jamais directement Brevo.
 
-- un endpoint HTTPS de capture des demandes ;
-- un endpoint HTTPS distinct pour la newsletter avec double opt-in ;
-- les identifiants de liste et de modèles transactionnels dans l’environnement privé ;
-- le destinataire de notification interne ;
-- éventuellement une URL réelle de rendez-vous ;
-- éventuellement un endpoint réel pour l’accueil conversationnel.
+Pour activer ultérieurement le pipeline en sécurité, il reste à :
 
-Aucune clé API ne doit être placée dans le dépôt ou dans le JavaScript public.
+- choisir et configurer un hébergeur serverless ;
+- renseigner dans son environnement privé la clé Brevo, les identifiants réels des listes et modèles, l’adresse interne et l’origine autorisée ;
+- créer dans Brevo les neuf attributs `BW_*`, la liste Leads, la liste newsletter et les deux modèles transactionnels ;
+- configurer les automatisations Leads, relance mesurée et newsletter décrites dans le README du backend ;
+- activer un stockage distribué pour le rate limiting et la déduplication ;
+- renseigner ensuite l’URL HTTPS validée dans `lead_endpoint` ;
+- éventuellement ajouter le snippet de chat Brevo réel et une URL réelle de rendez-vous après validation distincte.
+
+Aucune clé API, aucun identifiant réel de liste ou de modèle ne doit être placé dans le dépôt ou dans le JavaScript public. Le consentement newsletter reste indépendant de la demande commerciale et désactivé dans l’interface tant que sa configuration réelle n’est pas validée.
 
 ## Qualité et intégrité
 
@@ -46,6 +49,8 @@ node --check assets/js/qualifier.js
 node --check assets/js/mediatheque.js
 node --check assets/js/actualites.js
 node --check assets/js/automation.js
+node --test serverless/bluewave-leads/tests/handler.test.mjs
+python quality/scripts/check_secrets.py
 python quality/scripts/verify_manifest.py
 ```
 
@@ -53,4 +58,4 @@ python quality/scripts/verify_manifest.py
 
 ## Préactivation
 
-Toutes les pages conservent `noindex, nofollow` et `robots.txt` conserve `Disallow: /`. Aucun formulaire distant, abonnement, assistant, traceur ou rendez-vous automatisé n’est actif avant configuration et validation explicites.
+Toutes les pages conservent `noindex, nofollow` et `robots.txt` conserve `Disallow: /`. Le qualifier continue de préparer un courriel local tant que `lead_endpoint` vaut `null`. Aucun envoi distant, abonnement, assistant, traceur ou rendez-vous automatisé n’est actif avant configuration et validation explicites.

@@ -34,5 +34,9 @@ jobs:
           node --check assets/js/mediatheque.js
           node --check assets/js/actualites.js
           node --check assets/js/automation.js
+      - name: Serverless lead pipeline tests
+        run: node --test serverless/bluewave-leads/tests/handler.test.mjs
+      - name: Secret values scan
+        run: python quality/scripts/check_secrets.py
       - name: Integrity manifest
         run: python quality/scripts/verify_manifest.py
