@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "generated_at": "2026-09-06T13:16:09Z",
+  "state": "ok",
+  "configured_sources": 3,
+  "reachable_sources": 3,
+  "collected": 40,
+  "after_deduplication": 40,
+  "duplicates_removed": 0,
+  "kept": 40,
+  "featured": 3,
+  "categories": {
+    "droit-securite": 3,
+    "economie-bleue": 26,
+    "environnement-marin": 5,
+    "littoral-adaptation": 1,
+    "ports-maritime": 5
+  },
+  "source_reports": [
+    {
+      "source_id": "cerema",
+      "status": "ok",
+      "fetched": 10,
+      "accepted": 1
+    },
+    {
+      "source_id": "eu-oceans-fisheries",
+      "status": "ok",
+      "fetched": 30,
+      "accepted": 30
+    },
+    {
+      "source_id": "emsa",
+      "status": "ok",
+      "fetched": 10,
+      "accepted": 9
+    }
+  ],
+  "errors": [],
+  "last_successful_at": "2026-09-06T13:16:09Z",
+  "message": "Veille actualisée."
+}

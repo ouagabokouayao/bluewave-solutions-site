@@ -1,41 +1,56 @@
-# BlueWave Solutions — site V2
+# BlueWave Solutions — site V3 P1.2
 
-Site vitrine statique, multipage et responsive de BlueWave Solutions. La version publique est organisée autour de huit pages cohérentes.
+Site vitrine statique, multipage et responsive de BlueWave Solutions. Il reste sans backend et sans dépendance front-end.
 
-## Architecture V2
+## Architecture publique
 
-- `index.html` : accueil, positionnement et synthèse de la proposition de valeur ;
-- `services.html` : cinq offres cœur, formats d’entrée et méthode publique ;
-- `domaines.html` : domaines d’intervention et contextes géographiques ;
-- `a-propos.html` : positionnement, publics accompagnés et principes de travail ;
-- `contact.html` : trois entrées de contact et un formulaire local de qualification de projet ;
-- `notes-demonstrateurs.html` : notes, maquettes de livrables et deux simulations explicitement illustratives ;
-- `mentions-legales.html` : informations légales de la version locale ;
-- `politique-confidentialite.html` : traitement des prises de contact réalisées par courriel.
+- `index.html` : accueil, situations, méthode, preuves et sélection « À la une » ;
+- `solutions.html` : cinq offres cœur et deux formats d’entrée ;
+- `methode.html` : méthode BlueWave en huit étapes ;
+- `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
+- `mediatheque.html` : dix visuels BlueWave avec visionneuse locale ;
+- `actualites.html` : veille maritime et littorale issue de sources externes identifiées ;
+- `a-propos.html` : positionnement et présentation du fondateur ;
+- `qualifier-un-besoin.html` : orientation locale puis prise de contact préparée.
 
-## Cinq offres cœur
+Les anciennes routes `services.html`, `domaines.html` et `contact.html` restent de légères pages de transition afin d’éviter les liens cassés. Les pages légales, la page 404 et les notes de démonstration complètent cette surface.
 
-1. Diagnostic stratégique maritime, littoral ou portuaire ;
-2. Vulnérabilité côtière, adaptation et options de décision ;
-3. Gouvernance, acteurs, usages et acceptabilité ;
-4. Structuration de projets maritimes, littoraux ou d’économie bleue ;
-5. Formation et renforcement des capacités.
+## Veille autonome
 
-## Notes et démonstrateurs
+Le collecteur `quality/scripts/update_actualites.py` lit les flux RSS configurés dans `data/actualites-sources.json`, classe et dédoublonne les éléments, calcule un score transparent et conserve au maximum 80 publications sur 90 jours. `data/actualites-curation.json` permet les exceptions manuelles. Les données et l’état de collecte sont écrits dans `data/actualites.json` et `data/actualites-status.json`.
 
-Les aperçus de livrables et les deux cas présentés sont des simulations illustratives. Ils montrent une méthode et des formats possibles sans revendiquer de client, de mandat ni de résultat réel.
+Le workflow `update-actualites.yml` est préparé pour deux passages quotidiens après intégration à la branche par défaut. Une panne de source reste isolée ; une panne totale conserve le dernier jeu valide.
 
-## Contact et indexation
+## Automatisation visiteurs
 
-La page Contact comporte un formulaire **local**, sans backend : les champs saisis servent uniquement à composer un courriel prérempli, ouvert dans le logiciel de messagerie du visiteur, qui reste seul à décider de l’envoi. Le site n’enregistre ni ne transmet aucune donnée. Les liens de courriel direct restent disponibles en alternative. Toutes les pages conservent la directive `noindex, nofollow` jusqu’à une décision explicite de publication.
+`assets/js/automation.js` centralise les événements et les points d’intégration du qualifier, de la newsletter, du rendez-vous et de l’accueil conversationnel. `data/automation-config.json` ne contient aucun secret. Toutes les intégrations distantes sont désactivées dans cette candidate.
 
-## Structure technique
+Pour activer ultérieurement Brevo en sécurité, il reste à fournir côté serveur :
 
-- `assets/css/style.css` : design system et mise en page responsive ;
-- `assets/js/main.js` : navigation mobile et interactions ;
-- `quality/scripts/quality_check.py` : contrôle local de la surface publique ;
-- `.github/workflows/bluewave-quality.yml` : exécution automatisée des contrôles autorisés.
+- un endpoint HTTPS de capture des demandes ;
+- un endpoint HTTPS distinct pour la newsletter avec double opt-in ;
+- les identifiants de liste et de modèles transactionnels dans l’environnement privé ;
+- le destinataire de notification interne ;
+- éventuellement une URL réelle de rendez-vous ;
+- éventuellement un endpoint réel pour l’accueil conversationnel.
 
-## Utilisation locale
+Aucune clé API ne doit être placée dans le dépôt ou dans le JavaScript public.
 
-Ouvrir `index.html` dans un navigateur ou lancer un serveur local pour visualiser le site.
+## Qualité et intégrité
+
+```bash
+git diff --check
+python quality/scripts/quality_check.py
+node --check assets/js/main.js
+node --check assets/js/qualifier.js
+node --check assets/js/mediatheque.js
+node --check assets/js/actualites.js
+node --check assets/js/automation.js
+python quality/scripts/verify_manifest.py
+```
+
+`MANIFEST_SHA256.json` inclut les données de veille dynamiques. Le workflow de collecte le régénère dans le même commit que les données afin de conserver une doctrine d’intégrité unique.
+
+## Préactivation
+
+Toutes les pages conservent `noindex, nofollow` et `robots.txt` conserve `Disallow: /`. Aucun formulaire distant, abonnement, assistant, traceur ou rendez-vous automatisé n’est actif avant configuration et validation explicites.

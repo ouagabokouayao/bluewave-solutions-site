@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "provider": "brevo",
+  "lead_capture": {
+    "enabled": false,
+    "endpoint": null,
+    "double_submit_guard": true,
+    "internal_notification": {
+      "enabled": false,
+      "subject_template": "Nouveau lead BlueWave — [type] — [organisation] — [géographie] — [thématique]",
+      "fields": ["name", "organisation_name", "email", "description", "territory", "horizon", "crm_contact_url"]
+    },
+    "follow_up": {
+      "enabled": false,
+      "initial_delay": "J0",
+      "reminder_delay": "J+3 à J+5"
+    }
+  },
+  "auto_response": {
+    "enabled": false,
+    "default_subject": "Votre demande a bien été reçue — BlueWave Solutions",
+    "promise": "Confirmation, rappel court du besoin, prochaine étape, liens Solutions / Méthode / Preuves et possibilité de répondre.",
+    "templates": {
+      "projet-mission": "Qualification humaine du besoin avant toute proposition.",
+      "formation": "Vérification du public, des acquis attendus et du format.",
+      "collaboration": "Examen de l’objet et des complémentarités possibles.",
+      "partenariat": "Examen du périmètre et des conditions de coopération.",
+      "recherche-expertise": "Examen du sujet, du cadre et des contributions attendues.",
+      "presse-intervention": "Vérification du sujet, du format et du calendrier.",
+      "autre": "Qualification humaine de la demande avant toute suite."
+    }
+  },
+  "newsletter": {
+    "enabled": false,
+    "endpoint": null,
+    "double_opt_in": true
+  },
+  "meeting": {
+    "enabled": false,
+    "url": null
+  },
+  "chat": {
+    "enabled": false,
+    "endpoint": null,
+    "identity": "Accueil BlueWave"
+  },
+  "analytics": {
+    "enabled": false,
+    "provider": null
+  },
+  "crm_tags": {
+    "request_types": {
+      "projet-mission": "LEAD-PROJET",
+      "formation": "LEAD-FORMATION",
+      "collaboration": "LEAD-COLLABORATION",
+      "partenariat": "LEAD-PARTENARIAT",
+      "recherche-expertise": "LEAD-RECHERCHE",
+      "presse-intervention": "LEAD-PRESSE",
+      "autre": "LEAD-AUTRE"
+    },
+    "geographies": {
+      "france-mediterranee": "GEO-FR-MEDITERRANEE",
+      "cote-divoire": "GEO-CI",
+      "afrique-ouest": "GEO-AFRIQUE-OUEST",
+      "autre": "GEO-AUTRE"
+    },
+    "themes": {
+      "littoral-adaptation": "THEME-LITTORAL",
+      "gouvernance-maritime": "THEME-GOUVERNANCE",
+      "environnement-marin": "THEME-ENVIRONNEMENT",
+      "economie-bleue": "THEME-ECONOMIE-BLEUE",
+      "ports-maritime": "THEME-PORT",
+      "droit-securite": "THEME-DROIT-SECURITE"
+    }
+  }
+}

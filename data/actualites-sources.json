@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "window_days": 90,
+  "max_items": 80,
+  "sources": [
+    {
+      "id": "cerema",
+      "name": "Cerema",
+      "url": "https://www.cerema.fr/",
+      "feed_url": "https://www.cerema.fr/rss/news/feed",
+      "type": "rss",
+      "country": "France",
+      "geography": ["france-mediterranee"],
+      "themes": ["littoral-adaptation", "gouvernance-maritime"],
+      "weight": 20,
+      "enabled": true,
+      "require_keyword_match": true,
+      "required_keywords": ["littoral", "côte", "côtier", "coastal", "maritime", "érosion", "submersion", "portuaire"]
+    },
+    {
+      "id": "eu-oceans-fisheries",
+      "name": "Commission européenne — Océans et pêche",
+      "url": "https://oceans-and-fisheries.ec.europa.eu/news_en",
+      "feed_url": "https://oceans-and-fisheries.ec.europa.eu/node/2/rss_en",
+      "type": "rss",
+      "country": "Union européenne",
+      "geography": ["europe-mediterranee"],
+      "themes": ["gouvernance-maritime", "economie-bleue", "environnement-marin"],
+      "weight": 20,
+      "enabled": true,
+      "require_keyword_match": false
+    },
+    {
+      "id": "emsa",
+      "name": "Agence européenne pour la sécurité maritime",
+      "url": "https://www.emsa.europa.eu/newsroom/latest-news.html",
+      "feed_url": "https://www.emsa.europa.eu/newsroom/latest-news.feed?type=rss",
+      "type": "rss",
+      "country": "Union européenne",
+      "geography": ["europe-mediterranee"],
+      "themes": ["droit-securite", "ports-maritime", "environnement-marin"],
+      "weight": 20,
+      "enabled": true,
+      "require_keyword_match": false
+    }
+  ]
+}

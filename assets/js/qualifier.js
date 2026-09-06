@@ -9,7 +9,13 @@
   const progressText = document.getElementById('progress-text');
   const result = document.getElementById('qualifier-result');
   const restart = document.getElementById('restart');
+  const leadForm = document.getElementById('lead-form');
+  const leadSubmit = document.getElementById('lead-submit');
+  const leadMessage = document.getElementById('lead-message');
   let current = 0;
+  let started = false;
+  let submitting = false;
+  let lastOrientation = null;
 
   const labels = {
     territoire:{med:'France / Méditerranée',ci:"Côte d’Ivoire",ao:"Afrique de l’Ouest",autre:'un autre territoire',multi:'plusieurs territoires',preciser:'un territoire à préciser'},
@@ -30,6 +36,12 @@
   }
   next.addEventListener('click', () => show(current+1));
   prev.addEventListener('click', () => show(current-1));
+  form.addEventListener('change', () => {
+    if (!started) {
+      started = true;
+      window.BlueWaveAutomation?.track('qualifier_start');
+    }
+  });
 
   const canonicalMethod = 'Qualifier → cadrer → analyser → cartographier → structurer → contrôler → restituer → capitaliser.';
   function orient(v){
@@ -67,6 +79,7 @@
     };
     const [offer,why,confirm] = orient(v);
     const summary = `Vous cherchez à ${labels.resultat[v.resultat]} sur ${labels.territoire[v.territoire]}, à un stade de ${labels.stade[v.stade]}, dans un contexte de ${labels.probleme[v.problematique]}.`;
+    lastOrientation = { ...v, offer, summary };
     document.getElementById('result-title').textContent = 'Une première orientation pour cadrer la suite.';
     document.getElementById('result-summary').textContent = summary;
     document.getElementById('result-offer').textContent = `${offer}. ${why}`;
@@ -75,10 +88,72 @@
     const subject = encodeURIComponent(`BlueWave — qualification d’un besoin — ${offer}`);
     const body = encodeURIComponent(`Bonjour,\n\nJe souhaite présenter le besoin suivant à BlueWave Solutions.\n\n${summary}\n\nOrientation indicative affichée : ${offer}.\n\nJe comprends que cette orientation ne constitue ni un diagnostic ni une proposition commerciale.\n\nCordialement,`);
     document.getElementById('result-mail').href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
+    window.BlueWaveAutomation?.track('qualifier_submit', { status: 'orientation-complete', offer });
     result.hidden = false;
     result.scrollIntoView({behavior:'smooth',block:'start'});
   });
-  restart.addEventListener('click', () => { result.hidden = true; show(0); form.scrollIntoView({behavior:'smooth',block:'start'}); });
+  restart.addEventListener('click', () => {
+    result.hidden = true;
+    leadForm?.reset();
+    leadMessage.textContent = '';
+    show(0);
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  const problemToTheme = {
+    vulnerabilite: 'littoral-adaptation', sfn: 'environnement-marin',
+    strategie: 'gouvernance-maritime', gouvernance: 'gouvernance-maritime',
+    projet: 'economie-bleue', planification: 'littoral-adaptation', formation: 'gouvernance-maritime',
+    multiple: 'gouvernance-maritime', indetermine: 'gouvernance-maritime'
+  };
+  const geographyTag = {
+    med: 'france-mediterranee', ci: 'cote-divoire', ao: 'afrique-ouest',
+    autre: 'autre', multi: 'autre', preciser: 'autre'
+  };
+
+  leadForm?.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (submitting || !lastOrientation || !leadForm.reportValidity()) return;
+    submitting = true;
+    leadSubmit.disabled = true;
+    leadMessage.textContent = 'Préparation en cours…';
+    const data = new FormData(leadForm);
+    const payload = {
+      name: data.get('name'),
+      organisation_name: data.get('organisation_name'),
+      email: data.get('email'),
+      organisation_type: lastOrientation.organisation,
+      request_type: data.get('request_type'),
+      theme: problemToTheme[lastOrientation.problematique],
+      territory: geographyTag[lastOrientation.territoire],
+      description: data.get('description'),
+      expected_result: lastOrientation.resultat,
+      horizon: lastOrientation.delai,
+      contact_preference: data.get('contact_preference'),
+      consent: data.get('consent') === 'yes',
+      orientation: lastOrientation.offer
+    };
+    try {
+      const response = await window.BlueWaveAutomation.submit('lead', payload);
+      if (response.configured && response.ok) {
+        leadForm.reset();
+        leadMessage.textContent = 'Merci. Votre demande a bien été transmise à BlueWave. Elle sera examinée avant toute réponse ou proposition.';
+        window.BlueWaveAutomation.track('qualifier_submit', { status: 'transmitted', request_type: payload.request_type, theme: payload.theme, territory: payload.territory });
+      } else {
+        const subject = encodeURIComponent(`BlueWave — ${payload.request_type} — ${lastOrientation.offer}`);
+        const body = encodeURIComponent(`Bonjour,\n\nNom : ${payload.name}\nOrganisation : ${payload.organisation_name}\nE-mail : ${payload.email}\nType de demande : ${payload.request_type}\nPréférence de contact : ${payload.contact_preference}\n\n${lastOrientation.summary}\n\nDescription :\n${payload.description}\n\nOrientation indicative : ${lastOrientation.offer}.\n\nJe comprends que cette prise de contact ne constitue ni une acceptation de mission ni une proposition commerciale.\n\nCordialement,`);
+        const mail = document.getElementById('result-mail');
+        mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
+        leadMessage.textContent = 'La transmission automatisée n’est pas encore active. Votre message est prêt : utilisez le bouton de messagerie, relisez-le puis envoyez-le vous-même.';
+        mail.focus();
+      }
+    } catch (error) {
+      leadMessage.textContent = 'La transmission est momentanément indisponible. Utilisez le bouton de messagerie pour présenter votre besoin.';
+    } finally {
+      submitting = false;
+      leadSubmit.disabled = false;
+    }
+  });
 
   const params = new URLSearchParams(location.search);
   const p = params.get('problematique');
