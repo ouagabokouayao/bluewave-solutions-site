@@ -9,6 +9,18 @@ HTML=sorted(ROOT.glob('*.html'))
 HELD={'assets/img/site/hero-lagoon.jpg','assets/img/site/about-mangrove-optimized.jpg','assets/img/site/about-mangrove.jpg','assets/img/site/domaines-research-vessel.jpg','assets/img/site/domaines-research-vessel.png'}
 PRICE=re.compile(r'\b\d[\d\s.,]*(?:€|EUR|FCFA|XOF)\b',re.I)
 FORBIDDEN=[re.compile(r'7\s+offres\s+c[oœ]ur',re.I),re.compile(r'implantation\s+(?:locale\s+)?(?:en\s+)?c[oô]te d[’\']ivoire',re.I)]
+MEDIA_ASSETS=[
+    'assets/img/visuals/visualisation-methode-bluewave.svg',
+    'assets/img/visuals/feuille-route-bluewave.svg',
+    'assets/img/visuals/visualisation-donnees-decision.svg',
+    'assets/img/visuals/apercu-diagnostic.svg',
+    'assets/img/visuals/matrice-risques-opportunites.svg',
+    'assets/img/visuals/matrice-acteurs-usages.svg',
+    'assets/img/visuals/apercu-note-strategique.svg',
+    'assets/img/visuals/apercu-fiche-projet.svg',
+    'assets/img/visuals/apercu-support-formation.svg',
+    'assets/img/visuals/visualisation-deux-marches.svg',
+]
 class P(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True);self.lang='';self.h1=0;self.links=[];self.src=[];self.img=[];self.robots='';self.title='';self._title=False;self.ids=[];self.fields=[];self.labels=[]
@@ -60,6 +72,7 @@ def main():
         for raw in p.links+p.src:
             target=local_target(f,raw)
             if target is not None and not target.exists():errors.append(f'{f.name}: lien/ressource locale absente {raw}')
+        if 'mediatheque.html' not in p.links:errors.append(f'{f.name}: lien Médiathèque absent')
     # Canon commercial
     sol=(ROOT/'solutions.html').read_text(encoding='utf-8')
     for name in [
@@ -69,6 +82,15 @@ def main():
       'Structuration de projets maritimes, littoraux ou d’économie bleue',
       'Formation et renforcement des capacités','Note stratégique BlueWave','Atelier de cadrage BlueWave']:
         if name not in sol:errors.append(f'solutions.html: canon absent {name}')
+    # Médiathèque : corpus, visionneuse et métadonnées
+    media=(ROOT/'mediatheque.html').read_text(encoding='utf-8')
+    if media.count('class="media-card"')!=len(MEDIA_ASSETS):errors.append('mediatheque.html: corpus incomplet')
+    for asset in MEDIA_ASSETS:
+        if asset not in media:errors.append(f'mediatheque.html: visuel absent {asset}')
+    if '<dialog ' not in media or 'id="media-dialog"' not in media:errors.append('mediatheque.html: visionneuse dialog absente')
+    canonical='https://ouagabokouayao.github.io/bluewave-solutions-site/mediatheque.html'
+    if f'<link rel="canonical" href="{canonical}">' not in media:errors.append('mediatheque.html: canonical incorrecte')
+    if f'<meta property="og:url" content="{canonical}">' not in media:errors.append('mediatheque.html: og:url incorrecte')
     # Méthode canonique 8 étapes
     met=(ROOT/'methode.html').read_text(encoding='utf-8').lower()
     for step in ['qualifier','cadrer','analyser','cartographier','structurer','contrôler','restituer','capitaliser']:
