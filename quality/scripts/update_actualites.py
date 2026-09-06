@@ -32,6 +32,25 @@ USER_AGENT = "BlueWaveSolutions-NewsWatch/1.0 (+https://ouagabokouayao.github.io
 TRACKING_KEYS = {"fbclid", "gclid", "mc_cid", "mc_eid"}
 SCORE_LIMITS = {"freshness": 40, "relevance": 25, "authority": 20, "geography": 10, "diversity": 5}
 
+BLUEWAVE_RELEVANCE_KEYWORDS = {
+    "very_strong": (
+        "coastal erosion", "coastal adaptation", "littoral", "érosion côtière",
+        "submersion", "coastal resilience", "maritime governance",
+        "gouvernance maritime", "marine pollution", "pollution marine",
+        "port governance", "blue economy", "économie bleue", "law of the sea",
+        "droit de la mer", "maritime safety", "maritime security",
+    ),
+    "strong": (
+        "coast", "coastal", "shoreline", "marine environment", "port",
+        "maritime", "ocean governance", "adaptation", "resilience",
+        "stakeholder", "coastal planning",
+    ),
+    "weak": ("fisheries", "aquaculture", "ocean", "shipping", "youth", "innovation"),
+}
+RELEVANCE_WEIGHTS = {"very_strong": 5, "strong": 3, "weak": 1}
+RELEVANCE_CAPS = {"very_strong": 20, "strong": 12, "weak": 3}
+FEATURED_RELEVANCE_MINIMUM = 15
+
 THEME_KEYWORDS = {
     "littoral-adaptation": (
         "littoral", "coast", "coastal", "shoreline", "erosion", "submersion",
@@ -112,6 +131,69 @@ def clean_text(value: str, limit: int = 230) -> str:
 def fold(value: str) -> str:
     decomposed = unicodedata.normalize("NFKD", value.casefold())
     return "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+
+
+def searchable(value: str) -> str:
+    """Normalise le texte pour éviter les faux positifs de sous-chaînes."""
+    return normalize_space(re.sub(r"[^a-z0-9]+", " ", fold(value)))
+
+
+def term_pattern(term: str) -> re.Pattern[str]:
+    words = [re.escape(word) for word in searchable(term).split()]
+    return re.compile(r"\b" + r"\s+".join(words) + r"\b")
+
+
+def relevance_analysis(title: str, excerpt: str) -> dict:
+    """Calcule la pertinence BlueWave sans double compter les expressions imbriquées."""
+    text = searchable(f"{title} {excerpt}")
+    occupied = [False] * len(text)
+    matches: dict[str, list[str]] = {tier: [] for tier in BLUEWAVE_RELEVANCE_KEYWORDS}
+    points = {tier: 0 for tier in BLUEWAVE_RELEVANCE_KEYWORDS}
+    terms = [
+        (tier, term, RELEVANCE_WEIGHTS[tier])
+        for tier, keywords in BLUEWAVE_RELEVANCE_KEYWORDS.items()
+        for term in keywords
+    ]
+    terms.sort(key=lambda entry: (-entry[2], -len(searchable(entry[1])), entry[1]))
+    for tier, term, weight in terms:
+        for match in term_pattern(term).finditer(text):
+            if any(occupied[match.start():match.end()]):
+                continue
+            if points[tier] + weight > RELEVANCE_CAPS[tier]:
+                break
+            occupied[match.start():match.end()] = [True] * (match.end() - match.start())
+            points[tier] += weight
+            matches[tier].append(term)
+
+    direct_core = bool(matches["very_strong"] or matches["strong"])
+    penalty = 0
+    penalties = []
+    if (
+        re.search(r"\b(?:state aid|financial aid|grant|funding|aide financiere|subvention)\b", text)
+        and re.search(r"\b(?:fisheries|fishery|aquaculture|peche)\b", text)
+        and not direct_core
+    ):
+        penalty += 10
+        penalties.append("sectoral-financial-aid")
+    if re.search(r"\b(?:youth|jeunesse)\b", text) and not direct_core:
+        penalty += 8
+        penalties.append("generic-youth")
+    if (
+        re.search(r"\b(?:product|commercial|company|market launch|produit)\b", text)
+        and re.search(r"\b(?:innovation|launch|vente|sales)\b", text)
+        and not direct_core
+    ):
+        penalty += 8
+        penalties.append("sectoral-commercial-or-product")
+
+    score = max(0, min(SCORE_LIMITS["relevance"], sum(points.values()) - penalty))
+    return {
+        "score": score,
+        "direct_core": direct_core,
+        "eligible": direct_core and score >= FEATURED_RELEVANCE_MINIMUM,
+        "matches": matches,
+        "penalties": penalties,
+    }
 
 
 def canonical_url(raw: str) -> str:
@@ -250,7 +332,7 @@ def prepare(raw: dict, source: dict, now: datetime, window_days: int) -> dict | 
     age_days = max(0, (now - published).total_seconds() / 86400)
     if age_days > window_days:
         return None
-    theme, geographies, hits, matched = classify(raw, source)
+    theme, geographies, _hits, matched = classify(raw, source)
     required_keywords = source.get("required_keywords", [])
     if required_keywords:
         normalized = fold(f"{raw['title']} {raw['excerpt']}")
@@ -258,8 +340,9 @@ def prepare(raw: dict, source: dict, now: datetime, window_days: int) -> dict | 
     if source.get("require_keyword_match") and not matched:
         return None
     freshness = max(0, min(SCORE_LIMITS["freshness"], round(SCORE_LIMITS["freshness"] * (1 - age_days / window_days))))
-    relevance = min(SCORE_LIMITS["relevance"], 8 + (hits * 3))
-    geography = SCORE_LIMITS["geography"] if set(geographies) & {"france-mediterranee", "cote-divoire", "afrique-ouest", "europe-mediterranee"} else 0
+    relevance = relevance_analysis(raw["title"], raw["excerpt"])
+    priority_geography = set(geographies) & {"france-mediterranee", "cote-divoire", "afrique-ouest"}
+    geography = SCORE_LIMITS["geography"] if priority_geography else 5 if "europe-mediterranee" in geographies else 0
     return {
         "id": item_id(raw["url"], raw["guid"], raw["title"]),
         "title": raw["title"],
@@ -273,15 +356,20 @@ def prepare(raw: dict, source: dict, now: datetime, window_days: int) -> dict | 
         "excerpt": raw["excerpt"],
         "score": {
             "freshness": freshness,
-            "relevance": relevance,
+            "relevance": relevance["score"],
             "authority": max(0, min(SCORE_LIMITS["authority"], int(source.get("weight", 0)))),
             "geography": geography,
             "diversity": 0,
             "total": 0,
         },
+        "score_global": 0,
+        "score_relevance_bluewave": relevance["score"],
+        "eligible_featured": relevance["eligible"],
         "featured": False,
         "_guid": raw["guid"],
         "_fingerprint": title_fingerprint(raw["title"]),
+        "_relevance_matches": relevance["matches"],
+        "_relevance_penalties": relevance["penalties"],
     }
 
 
@@ -311,36 +399,62 @@ def add_diversity_scores(items: list[dict]) -> None:
         diversity = 5 if share <= 1 / 3 else 3 if share <= 1 / 2 else 1
         item["score"]["diversity"] = diversity
         item["score"]["total"] = sum(item["score"][key] for key in ("freshness", "relevance", "authority", "geography", "diversity"))
+        item["score_global"] = item["score"]["total"]
+
+
+def add_relevance_scores(items: list[dict]) -> None:
+    """Recalcule aussi les éléments conservés après une panne partielle de source."""
+    for item in items:
+        analysis = relevance_analysis(item.get("title", ""), item.get("excerpt", ""))
+        item.setdefault("score", {})["relevance"] = analysis["score"]
+        item["score_relevance_bluewave"] = analysis["score"]
+        item["eligible_featured"] = analysis["eligible"]
+        item["featured"] = False
+        item["_relevance_matches"] = analysis["matches"]
+        item["_relevance_penalties"] = analysis["penalties"]
 
 
 def select_featured(items: list[dict], curation: dict) -> None:
     overrides = [canonical_url(url) for url in curation.get("featured_override", [])]
     pinned = {canonical_url(url) for url in curation.get("pinned_urls", [])}
-    by_url = {item["url"]: item for item in items}
+    eligible = [item for item in items if item.get("eligible_featured")]
+    by_url = {item["url"]: item for item in eligible}
     ordered = []
     for url in overrides:
         if url in by_url and by_url[url] not in ordered:
             ordered.append(by_url[url])
-    ranked = sorted(items, key=lambda item: (item["url"] not in pinned, -item["score"]["total"], item["published_at"], item["id"]), reverse=False)
+    ranked = sorted(
+        eligible,
+        key=lambda item: (
+            item["url"] in pinned,
+            item["published_at"],
+            item["score_relevance_bluewave"],
+            item["score_global"],
+            item["id"],
+        ),
+        reverse=True,
+    )
     ordered.extend(item for item in ranked if item not in ordered)
     selected = []
     source_counts = Counter()
-    for item in ordered:
-        if len(selected) >= 3:
-            break
-        if source_counts[item["source_id"]] >= 2:
-            continue
-        if len(selected) == 1 and item["theme"] == selected[0]["theme"]:
-            continue
-        selected.append(item)
-        source_counts[item["source_id"]] += 1
-    for item in ordered:
-        if len(selected) >= 3:
-            break
+
+    def append_if_allowed(item: dict) -> bool:
         if item in selected or source_counts[item["source_id"]] >= 2:
-            continue
+            return False
         selected.append(item)
         source_counts[item["source_id"]] += 1
+        return True
+
+    if ordered:
+        append_if_allowed(ordered[0])
+    if len({item["theme"] for item in ordered}) >= 2:
+        for item in ordered[1:]:
+            if item["theme"] != selected[0]["theme"] and append_if_allowed(item):
+                break
+    for item in ordered:
+        if len(selected) >= 3:
+            break
+        append_if_allowed(item)
     for item in selected:
         item["featured"] = True
 
@@ -413,7 +527,9 @@ def main() -> int:
             "version": 1, "generated_at": iso_z(now), "state": "error",
             "configured_sources": len(sources), "reachable_sources": 0,
             "collected": 0, "after_deduplication": 0,
-            "duplicates_removed": 0, "kept": len(old_items), "featured": 0, "categories": {},
+            "duplicates_removed": 0, "kept": len(old_items),
+            "featured_eligible": sum(1 for item in old_items if item.get("eligible_featured")),
+            "featured": sum(1 for item in old_items if item.get("featured")), "categories": {},
             "source_reports": source_reports, "errors": errors,
             "last_successful_at": previous_generated_at,
             "message": "Toutes les sources sont momentanément indisponibles ; le dernier jeu valide est conservé.",
@@ -429,6 +545,7 @@ def main() -> int:
     retained_old = [item for item in old_items if item.get("source_id") in active_ids - successful_ids]
     merged = [item for item in new_deduped + retained_old if item.get("url") not in excluded]
     deduped = deduplicate(merged)
+    add_relevance_scores(deduped)
     add_diversity_scores(deduped)
     deduped.sort(key=lambda item: (item["published_at"], item["score"]["total"], item["id"]), reverse=True)
     kept = deduped[:max_items]
@@ -440,6 +557,7 @@ def main() -> int:
         "items": [public_item(item) for item in kept],
     }
     featured_count = sum(1 for item in kept if item["featured"])
+    eligible_count = sum(1 for item in kept if item["eligible_featured"])
     status = {
         "version": 1,
         "generated_at": iso_z(now),
@@ -450,6 +568,7 @@ def main() -> int:
         "after_deduplication": len(deduped),
         "duplicates_removed": max(0, len(collected) - len(new_deduped)),
         "kept": len(kept),
+        "featured_eligible": eligible_count,
         "featured": featured_count,
         "categories": dict(sorted(Counter(item["theme"] for item in kept).items())),
         "source_reports": source_reports,

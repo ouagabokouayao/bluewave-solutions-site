@@ -201,13 +201,13 @@
   },
   {
     "path": "data/actualites-status.json",
-    "sha256": "7d0e4ccb8474cc24cdc199536b39c4339a3da0c750e39906ae4902a1c5aa3221",
-    "bytes": 848
+    "sha256": "7fc7c84041498d54b96656a0031d791053acb901be8c08fbd4fcd19909a06fdd",
+    "bytes": 874
   },
   {
     "path": "data/actualites.json",
-    "sha256": "539e0e82173713ae2fa2ae98d562a9ffaca8c8a76f141bc8cdc97e4b1e51eeea",
-    "bytes": 40615
+    "sha256": "35bc4ef26d17438f2499df6caf2502a6c0c8c47324749a8fc96e7d0a8d6e7b22",
+    "bytes": 41352
   },
   {
     "path": "data/automation-config.json",
@@ -266,13 +266,13 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "2591b46a66f092d0e52374e8c476d70ba62931c4caf77b032fe5867ec48fac8c",
-    "bytes": 13534
+    "sha256": "ec2a08e1ebb66edaf9edbdc4bbeb4eca18f835974f42e2ebb34789481ecfd7e0",
+    "bytes": 14428
   },
   {
     "path": "quality/scripts/update_actualites.py",
-    "sha256": "da34d4bcdf03bbd54e58c17716cf887fe4b67509451990b8839f2f0045fa9eb5",
-    "bytes": 19058
+    "sha256": "20b34dc585128cb10948b300c85aa5e10e27e3fd8dce279c5dba602a8c357f76",
+    "bytes": 23972
   },
   {
     "path": "quality/scripts/update_manifest.py",

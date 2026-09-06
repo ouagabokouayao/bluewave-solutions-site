@@ -127,7 +127,7 @@ def main():
         items=news['items']
         if len(items)>80:errors.append('actualites.json: plus de 80 éléments')
         urls=set();ids=set();featured=[]
-        required_keys={'id','title','url','source_id','source_name','published_at','fetched_at','theme','geographies','excerpt','score','featured'}
+        required_keys={'id','title','url','source_id','source_name','published_at','fetched_at','theme','geographies','excerpt','score','score_global','score_relevance_bluewave','eligible_featured','featured'}
         valid_themes={'littoral-adaptation','gouvernance-maritime','environnement-marin','economie-bleue','ports-maritime','droit-securite'}
         for item in items:
             missing=required_keys-set(item)
@@ -142,11 +142,16 @@ def main():
             datetime.fromisoformat(item['published_at'].replace('Z','+00:00'))
             score=item.get('score',{})
             if score.get('total') != sum(score.get(key,0) for key in ('freshness','relevance','authority','geography','diversity')):errors.append(f"actualites.json: score incohérent {item.get('id')}")
+            if item.get('score_global') != score.get('total'):errors.append(f"actualites.json: score global incohérent {item.get('id')}")
+            if item.get('score_relevance_bluewave') != score.get('relevance'):errors.append(f"actualites.json: pertinence BlueWave incohérente {item.get('id')}")
+            if not isinstance(item.get('eligible_featured'),bool):errors.append(f"actualites.json: éligibilité featured invalide {item.get('id')}")
+            if item.get('featured') and (not item.get('eligible_featured') or item.get('score_relevance_bluewave',0)<15):errors.append(f"actualites.json: featured non éligible {item.get('id')}")
         if len(featured)>3:errors.append('actualites.json: plus de 3 éléments à la une')
         for source_id in source_ids:
             if sum(1 for item in featured if item.get('source_id')==source_id)>2:errors.append(f'actualites.json: plus de 2 éléments à la une pour {source_id}')
         if len(featured)>=2 and len({item.get('theme') for item in featured})<2:errors.append('actualites.json: diversité thématique à la une insuffisante')
         if status.get('kept') != len(items):errors.append('actualites-status.json: compteur kept incohérent')
+        if status.get('featured_eligible') != sum(1 for item in items if item.get('eligible_featured')):errors.append('actualites-status.json: compteur featured_eligible incohérent')
     except (OSError,ValueError,KeyError,TypeError) as exc:
         errors.append(f'données actualités invalides: {exc}')
     # Automatisation préparée, sans secret ni activation prématurée
