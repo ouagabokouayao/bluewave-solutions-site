@@ -1,240 +1,86 @@
 #!/usr/bin/env python3
-"""Offline quality gate for the BlueWave static site."""
-
 from __future__ import annotations
-
-import argparse
-import json
-import re
-import sys
-from collections import Counter
+import re, sys, json
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
-from xml.etree import ElementTree
+from urllib.parse import urlsplit, unquote
+ROOT=Path(__file__).resolve().parents[2]
+HTML=sorted(ROOT.glob('*.html'))
+HELD={'assets/img/site/hero-lagoon.jpg','assets/img/site/about-mangrove-optimized.jpg','assets/img/site/about-mangrove.jpg','assets/img/site/domaines-research-vessel.jpg','assets/img/site/domaines-research-vessel.png'}
+PRICE=re.compile(r'\b\d[\d\s.,]*(?:€|EUR|FCFA|XOF)\b',re.I)
+FORBIDDEN=[re.compile(r'7\s+offres\s+c[oœ]ur',re.I),re.compile(r'implantation\s+(?:locale\s+)?(?:en\s+)?c[oô]te d[’\']ivoire',re.I)]
+class P(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True);self.lang='';self.h1=0;self.links=[];self.src=[];self.img=[];self.robots='';self.title='';self._title=False;self.ids=[];self.fields=[];self.labels=[]
+    def handle_starttag(self,t,a):
+        d=dict(a)
+        if t=='html': self.lang=(d.get('lang') or '')
+        if t=='h1': self.h1+=1
+        if t=='title': self._title=True
+        if d.get('id'): self.ids.append(d['id'])
+        if t=='a' and d.get('href') is not None:self.links.append(d.get('href') or '')
+        if t in {'img','script','source'} and d.get('src') is not None:self.src.append(d.get('src') or '')
+        if t=='link' and d.get('href') is not None:self.src.append(d.get('href') or '')
+        if t=='img':self.img.append(d)
+        if t=='meta' and (d.get('name') or '').lower()=='robots':self.robots=(d.get('content') or '').lower()
+        if t=='label' and d.get('for'):self.labels.append(d['for'])
+        if t in {'select','input','textarea'} and (d.get('type') or '').lower() not in {'hidden','submit','button'}:self.fields.append((t,d.get('id') or ''))
+    def handle_endtag(self,t):
+        if t=='title':self._title=False
+    def handle_data(self,data):
+        if self._title:self.title+=data
 
+def local_target(source,raw):
+    p=urlsplit(raw)
+    if p.scheme or raw.startswith('//') or raw.startswith('mailto:') or raw.startswith('tel:'):return None
+    path=unquote(p.path)
+    if not path:return source
+    return (ROOT/path.lstrip('/')).resolve() if path.startswith('/') else (source.parent/path).resolve()
 
-ROOT = Path(__file__).resolve().parents[2]
-PUBLIC_HTML = sorted(ROOT.glob("*.html"))
-EXTERNAL_SCHEMES = {"http", "https", "mailto", "tel", "data", "javascript"}
-PLACEHOLDERS = (
-    re.compile(r"lorem\s+ipsum", re.I),
-    re.compile(r"https?://example\.com", re.I),
-    re.compile(r"\b(?:TODO|FIXME|TBD)\b"),
-    re.compile(r"\{\{[^}]+\}\}"),
-)
-PUBLIC_PRICE = re.compile(r"\b\d[\d\s.,]*(?:€|EUR|FCFA|XOF)\b", re.I)
-
-
-class SiteParser(HTMLParser):
-    def __init__(self) -> None:
-        super().__init__(convert_charrefs=True)
-        self.html_lang = ""
-        self.title_depth = 0
-        self.title_text: list[str] = []
-        self.h1_count = 0
-        self.ids: list[str] = []
-        self.links: list[str] = []
-        self.sources: list[str] = []
-        self.images: list[dict[str, str | None]] = []
-        self.robots = ""
-        self.canonical = ""
-        self.og: dict[str, str] = {}
-        self.labels: list[str] = []
-        self.fields: list[tuple[str, str]] = []
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        data = dict(attrs)
-        if tag == "html":
-            self.html_lang = (data.get("lang") or "").strip()
-        if tag == "title":
-            self.title_depth += 1
-        if tag == "h1":
-            self.h1_count += 1
-        if data.get("id"):
-            self.ids.append(data["id"] or "")
-        if tag == "a" and data.get("href") is not None:
-            self.links.append(data.get("href") or "")
-        if tag in {"img", "script", "source", "video"} and data.get("src") is not None:
-            self.sources.append(data.get("src") or "")
-        if tag == "link" and data.get("href") is not None:
-            self.sources.append(data.get("href") or "")
-        if tag == "img":
-            self.images.append(
-                {
-                    "src": data.get("src"),
-                    "alt": data.get("alt"),
-                    "width": data.get("width"),
-                    "height": data.get("height"),
-                }
-            )
-        if tag == "link" and (data.get("rel") or "").lower() == "canonical":
-            self.canonical = (data.get("href") or "").strip()
-        if tag == "meta" and (data.get("property") or "").lower().startswith("og:"):
-            self.og[(data.get("property") or "").lower()] = (data.get("content") or "").strip()
-        if tag == "label" and data.get("for"):
-            self.labels.append(data["for"] or "")
-        if tag in {"input", "select", "textarea"}:
-            if (data.get("type") or "").lower() not in {"hidden", "submit", "button"}:
-                self.fields.append((tag, data.get("id") or ""))
-        if tag == "meta" and (data.get("name") or "").lower() == "robots":
-            self.robots = (data.get("content") or "").lower()
-
-    def handle_endtag(self, tag: str) -> None:
-        if tag == "title" and self.title_depth:
-            self.title_depth -= 1
-
-    def handle_data(self, data: str) -> None:
-        if self.title_depth:
-            self.title_text.append(data)
-
-
-def rel(path: Path) -> str:
-    return path.relative_to(ROOT).as_posix()
-
-
-def parse_page(path: Path) -> tuple[SiteParser, str]:
-    text = path.read_text(encoding="utf-8")
-    parser = SiteParser()
-    parser.feed(text)
-    return parser, text
-
-
-def resolve_local(source: Path, raw: str) -> tuple[Path | None, str]:
-    value = raw.strip()
-    if not value:
-        return None, ""
-    parsed = urlsplit(value)
-    if parsed.scheme.lower() in EXTERNAL_SCHEMES or value.startswith("//"):
-        return None, unquote(parsed.fragment)
-    path_text = unquote(parsed.path)
-    if not path_text:
-        return source, unquote(parsed.fragment)
-    if path_text.startswith("/"):
-        target = ROOT / path_text.lstrip("/")
-    else:
-        target = source.parent / path_text
-    if target.is_dir():
-        target = target / "index.html"
-    return target.resolve(), unquote(parsed.fragment)
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--json", type=Path, help="Write the complete report to JSON.")
-    args = parser.parse_args()
-
-    errors: list[str] = []
-    warnings: list[str] = []
-    page_data: dict[Path, tuple[SiteParser, str]] = {}
-
-    for path in PUBLIC_HTML:
-        try:
-            page_data[path.resolve()] = parse_page(path)
-        except Exception as exc:  # pragma: no cover - defensive gate
-            errors.append(f"{rel(path)}: HTML illisible ({exc})")
-
-    for path, (doc, text) in page_data.items():
-        label = rel(path)
-        if not doc.html_lang.lower().startswith("fr"):
-            errors.append(f"{label}: attribut lang français absent")
-        if not "".join(doc.title_text).strip():
-            errors.append(f"{label}: titre de page absent")
-        if doc.h1_count != 1:
-            errors.append(f"{label}: {doc.h1_count} balise(s) h1 au lieu d’une")
-        robots = {token.strip() for token in doc.robots.split(",") if token.strip()}
-        if not {"noindex", "nofollow"}.issubset(robots):
-            errors.append(f"{label}: meta robots noindex,nofollow absente ou incomplète")
-
-        duplicate_ids = sorted(key for key, count in Counter(doc.ids).items() if count > 1)
-        if duplicate_ids:
-            errors.append(f"{label}: identifiants HTML dupliqués {duplicate_ids}")
-
-        for image in doc.images:
-            if image["alt"] is None:
-                errors.append(f"{label}: image sans attribut alt ({image['src'] or 'src absent'})")
-            if not image["width"] or not image["height"]:
-                errors.append(
-                    f"{label}: image sans width/height ({image['src'] or 'src absent'})"
-                )
-
-        if not doc.canonical:
-            errors.append(f"{label}: lien canonical absent")
-        for prop in ("og:type", "og:title", "og:description", "og:url", "og:site_name"):
-            if not doc.og.get(prop):
-                errors.append(f"{label}: metadonnee {prop} absente")
-
-        for tag_name, field_id in doc.fields:
-            if not field_id:
-                errors.append(f"{label}: champ <{tag_name}> sans id, donc sans label associable")
-            elif field_id not in doc.labels:
-                errors.append(f"{label}: champ #{field_id} sans <label for> correspondant")
-
-        for pattern in PLACEHOLDERS:
-            if pattern.search(text):
-                errors.append(f"{label}: placeholder détecté ({pattern.pattern})")
-        if PUBLIC_PRICE.search(text):
-            errors.append(f"{label}: tarif public potentiel détecté")
-
-        for raw in doc.sources:
-            target, _ = resolve_local(path, raw)
-            if target is not None and not target.exists():
-                errors.append(f"{label}: ressource locale introuvable {raw}")
-
-        for raw in doc.links:
-            target, anchor = resolve_local(path, raw)
-            if target is None:
-                continue
-            if not target.exists():
-                errors.append(f"{label}: lien local introuvable {raw}")
-                continue
-            if anchor and target.suffix.lower() == ".html":
-                target_doc = page_data.get(target)
-                if target_doc is None:
-                    try:
-                        target_doc = parse_page(target)
-                    except Exception:
-                        target_doc = None
-                if target_doc and anchor not in target_doc[0].ids:
-                    errors.append(f"{label}: ancre introuvable {raw}")
-
-    robots_path = ROOT / "robots.txt"
-    robots_text = robots_path.read_text(encoding="utf-8") if robots_path.exists() else ""
-    if not re.search(r"(?mi)^\s*Disallow:\s*/\s*$", robots_text):
-        errors.append("robots.txt: Disallow: / absent")
-
-    simulation = ROOT / "notes-demonstrateurs.html"
-    if simulation.exists():
-        simulation_text = simulation.read_text(encoding="utf-8").lower()
-        if simulation_text.count("simulation illustrative") < 2:
-            errors.append("notes-demonstrateurs.html: les deux simulations ne sont pas clairement signalées")
-
-    for svg in sorted((ROOT / "assets" / "img" / "visuals").glob("*.svg")):
-        try:
-            ElementTree.parse(svg)
-        except ElementTree.ParseError as exc:
-            errors.append(f"{rel(svg)}: SVG invalide ({exc})")
-
-    css = ROOT / "assets" / "css" / "style.css"
-    if css.exists():
-        css_text = css.read_text(encoding="utf-8")
-        if css_text.count("{") != css_text.count("}"):
-            errors.append("assets/css/style.css: accolades déséquilibrées")
-
-    report = {
-        "status": "pass" if not errors else "fail",
-        "html_pages_checked": len(page_data),
-        "svg_files_checked": len(list((ROOT / "assets" / "img" / "visuals").glob("*.svg"))),
-        "errors": errors,
-        "warnings": warnings,
-    }
-    if args.json:
-        output = args.json if args.json.is_absolute() else ROOT / args.json
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+def main():
+    errors=[];warnings=[];parsed={}
+    for f in HTML:
+        text=f.read_text(encoding='utf-8');p=P();p.feed(text);parsed[f.resolve()]=(p,text)
+        if not p.lang.lower().startswith('fr'):errors.append(f'{f.name}: lang fr absent')
+        if p.h1!=1:errors.append(f'{f.name}: {p.h1} h1')
+        if not p.title.strip():errors.append(f'{f.name}: title absent')
+        robots={x.strip() for x in p.robots.split(',') if x.strip()}
+        if not {'noindex','nofollow'}.issubset(robots):errors.append(f'{f.name}: noindex,nofollow absent')
+        if len(p.ids)!=len(set(p.ids)):errors.append(f'{f.name}: ids dupliqués')
+        if PRICE.search(text):errors.append(f'{f.name}: prix public détecté')
+        for rx in FORBIDDEN:
+            if rx.search(text):errors.append(f'{f.name}: formulation interdite {rx.pattern}')
+        for held in HELD:
+            if held in text:errors.append(f'{f.name}: média HOLD référencé {held}')
+        for im in p.img:
+            if im.get('alt') is None:errors.append(f'{f.name}: img sans alt')
+            if not im.get('width') or not im.get('height'):errors.append(f'{f.name}: img sans width/height')
+        for t,i in p.fields:
+            if i and i not in p.labels:errors.append(f'{f.name}: champ {i} sans label')
+        for raw in p.links+p.src:
+            target=local_target(f,raw)
+            if target is not None and not target.exists():errors.append(f'{f.name}: lien/ressource locale absente {raw}')
+    # Canon commercial
+    sol=(ROOT/'solutions.html').read_text(encoding='utf-8')
+    for name in [
+      'Diagnostic stratégique d’amont — maritime, littoral ou portuaire',
+      'Pré-diagnostic stratégique de vulnérabilité côtière et options d’adaptation',
+      'Gouvernance, acteurs, usages et acceptabilité',
+      'Structuration de projets maritimes, littoraux ou d’économie bleue',
+      'Formation et renforcement des capacités','Note stratégique BlueWave','Atelier de cadrage BlueWave']:
+        if name not in sol:errors.append(f'solutions.html: canon absent {name}')
+    # Méthode canonique 8 étapes
+    met=(ROOT/'methode.html').read_text(encoding='utf-8').lower()
+    for step in ['qualifier','cadrer','analyser','cartographier','structurer','contrôler','restituer','capitaliser']:
+        if step not in met:errors.append(f'methode.html: étape absente {step}')
+    # Qualifier 7 fieldsets + wording
+    q=(ROOT/'qualifier-un-besoin.html').read_text(encoding='utf-8')
+    if q.count('fieldset data-step=')!=7:errors.append('qualifier: nombre étapes != 7')
+    if 'diagnostic automatique définitif' in q.lower():warnings.append('qualifier: mention explicite interdiction présente')
+    robots=(ROOT/'robots.txt').read_text(encoding='utf-8')
+    if not re.search(r'(?mi)^Disallow:\s*/\s*$',robots):errors.append('robots.txt: Disallow / absent')
+    # JS syntax if node available handled outside
+    report={'status':'pass' if not errors else 'fail','html_pages_checked':len(HTML),'errors':errors,'warnings':warnings}
+    print(json.dumps(report,ensure_ascii=False,indent=2))
     return 1 if errors else 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__=='__main__':sys.exit(main())

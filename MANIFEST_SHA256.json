@@ -1,0 +1,92 @@
+[
+  {
+    "path": "404.html",
+    "sha256": "42c914044280151b801e8aca919e30aa5a7de41baafaf51f34333b8b78cc41e4",
+    "bytes": 3340
+  },
+  {
+    "path": "a-propos.html",
+    "sha256": "668e2c36e3d1d70865c1f571a71b3a5483d46247b52da8052060e46a72a5111e",
+    "bytes": 6152
+  },
+  {
+    "path": "contact.html",
+    "sha256": "439699b1f7386575dbf34d15f5d678e0f76e42cca21c0fc66995126fcf394f39",
+    "bytes": 3491
+  },
+  {
+    "path": "domaines.html",
+    "sha256": "ea21d66c2492d94ef88d5ee11deb4b08340ac2fc10afbdcbb40612b08892d091",
+    "bytes": 3450
+  },
+  {
+    "path": "index.html",
+    "sha256": "44274aacce5bffc1dcce30181e5281644cab6352b38cf5b57042e48274ed9ee3",
+    "bytes": 10354
+  },
+  {
+    "path": "mentions-legales.html",
+    "sha256": "68dc9a41033da00234bc3e5b621f7635e0c7c7941db6aff43b407ad7080b96dd",
+    "bytes": 4153
+  },
+  {
+    "path": "methode.html",
+    "sha256": "cb958a14339484cdcc9b48ba63dfbfca06442a8954f469253bf1013f981adbe7",
+    "bytes": 6817
+  },
+  {
+    "path": "notes-demonstrateurs.html",
+    "sha256": "351e048e41ce022bb6a13ea076378047aa58020e063db678d12650073cc4c1fd",
+    "bytes": 3435
+  },
+  {
+    "path": "politique-confidentialite.html",
+    "sha256": "e9e2898a9709b622408a7c77329e99855a712c814e931bc84ad44012079937fb",
+    "bytes": 4284
+  },
+  {
+    "path": "preuves-demonstrateurs.html",
+    "sha256": "d230aedcf50007ea4966b6b1b516259b2e55890cc9073722c1d91642809b996d",
+    "bytes": 7745
+  },
+  {
+    "path": "qualifier-un-besoin.html",
+    "sha256": "2641a4c0608d6ae4b742c711e9f35b9de47b214448fc8702242a286fed155f78",
+    "bytes": 10162
+  },
+  {
+    "path": "services.html",
+    "sha256": "fe21f515aff311fe46b0a6eae246f20e804322f33a104df9ac9093cec6df8d1b",
+    "bytes": 3348
+  },
+  {
+    "path": "solutions.html",
+    "sha256": "702711392a07e8d51dce4dbcb6a24b302cabe4514df2510435c01b4ffe1c549d",
+    "bytes": 8560
+  },
+  {
+    "path": "robots.txt",
+    "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1",
+    "bytes": 26
+  },
+  {
+    "path": "assets/css/style.css",
+    "sha256": "36b46b93ac25f59df6f93c3a397ad02141b4f9726749e51e1bdcba8f6784c36f",
+    "bytes": 16035
+  },
+  {
+    "path": "assets/js/main.js",
+    "sha256": "c181bd7e6ae8f6fcc758d014780312315fe6336dd8d213762216d9b033d67607",
+    "bytes": 578
+  },
+  {
+    "path": "assets/js/qualifier.js",
+    "sha256": "b4095f0e546a7024bcaa71217c77a899347ed09caaa4c7c0cdaa1380ff859330",
+    "bytes": 7417
+  },
+  {
+    "path": "quality/scripts/quality_check.py",
+    "sha256": "637c6d8a5962f49c7cc6a403cbcdf85f56acd08e1e22a35f180b549780191c4e",
+    "bytes": 5423
+  }
+]
