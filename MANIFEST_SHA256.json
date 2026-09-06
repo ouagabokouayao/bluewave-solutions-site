@@ -1,8 +1,8 @@
 [
   {
     "path": "404.html",
-    "sha256": "e933476f196eed640851d2e33b1ca0a0bbd1c9faaf52c2e4a568cb724403c335",
-    "bytes": 3300
+    "sha256": "42c914044280151b801e8aca919e30aa5a7de41baafaf51f34333b8b78cc41e4",
+    "bytes": 3340
   },
   {
     "path": "a-propos.html",
@@ -88,10 +88,5 @@
     "path": "quality/scripts/quality_check.py",
     "sha256": "637c6d8a5962f49c7cc6a403cbcdf85f56acd08e1e22a35f180b549780191c4e",
     "bytes": 5423
-  },
-  {
-    "path": "EXECUTION_STATUS.md",
-    "sha256": "36f67edfadadd9a14dbbf07cbeaa4eb097c1f0dae76460f5dae51589ff66ecd3",
-    "bytes": 2210
   }
 ]
