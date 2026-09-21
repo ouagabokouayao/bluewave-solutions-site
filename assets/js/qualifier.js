@@ -23,6 +23,20 @@
     stade:{initial:'question initiale',flou:'besoin encore flou',cadrage:'cadrage en cours',etude:'étude ou diagnostic déjà engagé',structure:'projet structuré à approfondir',decision:'décision ou arbitrage proche',concertation:'concertation à préparer',formation:'formation à organiser'},
     resultat:{comprendre:'comprendre une situation',options:'comparer des options',acteurs:'identifier les acteurs, usages et tensions',structurer:'structurer un projet',route:'préparer une feuille de route',concertation:'préparer une concertation',former:'former ou aligner une équipe',note:"produire une note courte d’aide à la décision",perimetre:'définir le bon périmètre'}
   };
+  const offerPresets = {
+    'diagnostic-strategique': { problematique:'strategie', stade:'initial', resultat:'comprendre', requestType:'projet-mission', label:'Diagnostic stratégique maritime, littoral ou portuaire' },
+    'vulnerabilite-cotiere': { problematique:'vulnerabilite', stade:'cadrage', resultat:'options', requestType:'projet-mission', label:'Vulnérabilité côtière, adaptation et options de décision' },
+    'gouvernance-acteurs': { problematique:'gouvernance', stade:'concertation', resultat:'acteurs', requestType:'projet-mission', label:'Gouvernance, acteurs, usages et acceptabilité' },
+    'structuration-projet': { problematique:'projet', stade:'initial', resultat:'structurer', requestType:'projet-mission', label:'Structuration de projets maritimes, littoraux ou d’économie bleue' },
+    'formation-capacites': { problematique:'formation', stade:'formation', resultat:'former', requestType:'formation', label:'Formation et renforcement des capacités' },
+    'note-strategique': { problematique:'strategie', stade:'decision', resultat:'note', requestType:'projet-mission', label:'Note stratégique BlueWave' },
+    'atelier-cadrage': { problematique:'indetermine', stade:'flou', resultat:'perimetre', requestType:'projet-mission', label:'Atelier de cadrage BlueWave' }
+  };
+  const journeyPresets = {
+    projet: { requestType:'projet-mission', label:'Projet', message:'Le parcours Projet est présélectionné. Vous pouvez modifier chaque réponse.' },
+    collaboration: { organisation:'bureau', problematique:'multiple', stade:'cadrage', resultat:'perimetre', requestType:'collaboration', label:'Collaboration', message:'Le parcours Collaboration est présélectionné pour une compétence complémentaire. Vous pouvez modifier chaque réponse.' },
+    formation: { problematique:'formation', stade:'formation', resultat:'former', requestType:'formation', label:'Formation', message:'Le parcours Formation est présélectionné. Vous pouvez modifier chaque réponse.' }
+  };
 
   function show(i){
     current = Math.max(0, Math.min(i, steps.length-1));
@@ -43,7 +57,7 @@
     }
   });
 
-  const canonicalMethod = 'Qualifier → cadrer → analyser → cartographier → structurer → contrôler → restituer → capitaliser.';
+  const canonicalMethod = 'Qualifier → cadrer → analyser → cartographier → structurer → restituer.';
   function orient(v){
     if (v.stade === 'flou' || v.problematique === 'indetermine' || v.problematique === 'multiple' || v.resultat === 'perimetre') {
       return ['Atelier de cadrage BlueWave','Le besoin doit d’abord être stabilisé avant de choisir la profondeur d’étude.','cadrage du périmètre, documents disponibles et décision attendue'];
@@ -58,12 +72,12 @@
       return ['Gouvernance, acteurs, usages et acceptabilité','La décision dépend d’abord des acteurs, usages, compétences, relations ou conditions de dialogue.','acteurs concernés, mandat de concertation et documents disponibles'];
     }
     if (v.problematique === 'vulnerabilite' || v.problematique === 'sfn') {
-      return ["Pré-diagnostic stratégique de vulnérabilité côtière et options d’adaptation",'La situation appelle un cadrage des vulnérabilités, usages, données et options avant toute expertise technique complète.','données physiques disponibles, périmètre, niveau de terrain et expertises spécialisées nécessaires'];
+      return ["Vulnérabilité côtière, adaptation et options de décision",'La situation appelle un cadrage des vulnérabilités, usages, données et options avant toute expertise technique complète.','données physiques disponibles, périmètre, niveau de terrain et expertises spécialisées nécessaires'];
     }
     if (v.problematique === 'projet' || ['structurer','route'].includes(v.resultat) || v.stade === 'structure') {
       return ["Structuration de projets maritimes, littoraux ou d’économie bleue",'Le besoin dominant est de transformer une intention ou un projet existant en logique d’action lisible et présentable.','objectif, portage, acteurs, ressources, dépendances et prochaine décision'];
     }
-    return ["Diagnostic stratégique d’amont — maritime, littoral ou portuaire",'La situation exige une lecture transversale avant arbitrage ou approfondissement spécialisé.','question de décision, périmètre, sources disponibles et limites techniques à qualifier'];
+    return ["Diagnostic stratégique maritime, littoral ou portuaire",'La situation exige une lecture transversale avant arbitrage ou approfondissement spécialisé.','question de décision, périmètre, sources disponibles et limites techniques à qualifier'];
   }
 
   form.addEventListener('submit', e => {
@@ -158,8 +172,34 @@
     }
   });
 
+  const setSelect = (id, value) => {
+    const select = document.getElementById(id);
+    if (select && value && [...select.options].some(option => option.value === value)) select.value = value;
+  };
+  const applyPreset = preset => {
+    if (!preset) return;
+    setSelect('q-organisation', preset.organisation);
+    setSelect('q-problematique', preset.problematique);
+    setSelect('q-stade', preset.stade);
+    setSelect('q-resultat', preset.resultat);
+    setSelect('lead-request-type', preset.requestType);
+  };
   const params = new URLSearchParams(location.search);
-  const p = params.get('problematique');
-  if (p && [...document.getElementById('q-problematique').options].some(o => o.value === p)) document.getElementById('q-problematique').value = p;
+  const offerKey = params.get('offre');
+  const journeyKey = params.get('parcours');
+  const problemKey = params.get('problematique');
+  const offerPreset = offerPresets[offerKey];
+  const journeyPreset = journeyPresets[journeyKey];
+  applyPreset(journeyPreset);
+  applyPreset(offerPreset);
+  if (!offerPreset && problemKey) setSelect('q-problematique', problemKey);
+  if (!offerPreset && !journeyPreset && problemKey === 'formation') setSelect('lead-request-type', 'formation');
+  const prefillNotice = document.getElementById('qualifier-prefill');
+  if (prefillNotice && (offerPreset || journeyPreset)) {
+    prefillNotice.hidden = false;
+    prefillNotice.textContent = offerPreset
+      ? `Offre présélectionnée : ${offerPreset.label}. Vous pouvez modifier chaque réponse.`
+      : journeyPreset.message;
+  }
   show(0);
 })();

@@ -6,7 +6,7 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-e
 
 - `index.html` : accueil, situations, méthode, preuves et sélection « À la une » ;
 - `solutions.html` : cinq offres cœur et deux formats d’entrée ;
-- `methode.html` : méthode BlueWave en huit étapes ;
+- `methode.html` : méthode publique BlueWave en six étapes ;
 - `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
 - `mediatheque.html` : dix visuels BlueWave avec visionneuse locale ;
 - `actualites.html` : veille maritime et littorale issue de sources externes identifiées ;
@@ -15,15 +15,19 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-e
 
 Les anciennes routes `services.html`, `domaines.html` et `contact.html` restent de légères pages de transition afin d’éviter les liens cassés. Les pages légales, la page 404 et les notes de démonstration complètent cette surface.
 
-## Veille autonome
+## Veille structurée
 
 Le collecteur `quality/scripts/update_actualites.py` lit les flux RSS configurés dans `data/actualites-sources.json`, classe et dédoublonne les éléments, calcule un score transparent et conserve au maximum 80 publications sur 90 jours. `data/actualites-curation.json` permet les exceptions manuelles. Les données et l’état de collecte sont écrits dans `data/actualites.json` et `data/actualites-status.json`.
 
-Le workflow `update-actualites.yml` est préparé pour deux passages quotidiens après intégration à la branche par défaut. Une panne de source reste isolée ; une panne totale conserve le dernier jeu valide.
+Le workflow `update-actualites.yml` est volontairement manuel et en lecture seule. Il prépare une régénération, les contrôles et un patch inspectable sans commit ni push automatique. Une panne de source reste isolée ; une panne totale conserve le dernier jeu valide.
+
+## Méthode publique
+
+La méthode publique compte six étapes : `Qualifier → Cadrer → Analyser → Cartographier → Structurer → Restituer`.
 
 ## Automatisation visiteurs
 
-`assets/js/automation.js` centralise les événements et le point d’intégration HTTPS du qualifier. `data/automation-config.json` ne contient que cinq options publiques : fournisseur, endpoint lead, chat, newsletter et rendez-vous. L’endpoint reste `null` et toutes les intégrations distantes restent désactivées dans cette candidate.
+`assets/js/automation.js` centralise les événements et le point d’intégration HTTPS du qualifier. `data/automation-config.json` ne contient que cinq options publiques : fournisseur, endpoint lead, chat, newsletter et rendez-vous. L’endpoint reste `null` et toutes les intégrations distantes restent désactivées dans cette version.
 
 `serverless/bluewave-leads/` contient le handler portable, la validation serveur, la gestion CORS et anti-abus, le client Brevo minimal, un exemple d’environnement sans secret et des tests mockés. Le navigateur n’appelle jamais directement Brevo.
 

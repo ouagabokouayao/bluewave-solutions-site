@@ -29,7 +29,9 @@
     meta.className = 'news-meta';
     meta.append(text('span', THEME_LABELS[item.theme] || item.theme, 'news-theme'));
     const date = new Date(item.published_at);
-    meta.append(text('time', Number.isNaN(date.valueOf()) ? '' : formatter.format(date), 'news-date'));
+    const time = text('time', Number.isNaN(date.valueOf()) ? '' : formatter.format(date), 'news-date');
+    if (!Number.isNaN(date.valueOf())) time.dateTime = item.published_at;
+    meta.append(time);
     article.append(meta, text('h3', item.title));
     article.append(text('p', item.source_name, 'news-source'));
     if (item.excerpt) article.append(text('p', item.excerpt, 'news-excerpt'));
@@ -54,14 +56,19 @@
     const generated = new Date(status.generated_at);
     const hours = Number.isNaN(generated.valueOf()) ? Infinity : (Date.now() - generated.valueOf()) / 3600000;
     let message = status.message || 'Veille actualisée.';
-    if (hours > 36) {
+    if (status.state === 'cached' && !Number.isNaN(generated.valueOf())) {
+      message = `${message} Revalidation : ${formatter.format(generated)}.`;
+    } else if (hours > 36) {
       message = 'Actualisation en cours.';
     } else if (!Number.isNaN(generated.valueOf())) {
       message = `${message} Dernière mise à jour : ${formatter.format(generated)}.`;
     }
     targets.forEach(target => {
       target.textContent = message;
-      if (!Number.isNaN(generated.valueOf())) target.title = `Dernière collecte : ${formatter.format(generated)}`;
+      if (!Number.isNaN(generated.valueOf())) {
+        const action = status.state === 'cached' ? 'Dernière revalidation' : 'Dernière collecte';
+        target.title = `${action} : ${formatter.format(generated)}`;
+      }
     });
   };
 
@@ -69,7 +76,18 @@
     const home = document.querySelector('[data-news-home]');
     if (!home) return;
     const featured = items.filter(item => item.featured).slice(0, 3);
-    const chosen = featured.length ? featured : items.slice(0, 3);
+    const recentRelevant = items.filter(item => item.score_relevance_bluewave >= 6).slice(0, 3);
+    const chosen = featured.length ? featured : recentRelevant;
+    const label = document.querySelector('[data-news-home-label]');
+    const note = document.querySelector('[data-news-home-note]');
+    if (label) label.textContent = featured.length ? 'À la une' : 'Actualités récentes';
+    if (note) {
+      note.hidden = featured.length > 0;
+      note.textContent = chosen.length
+        ? 'Aucun signal récent n’est actuellement mis en avant. Voici les publications récentes les plus directement liées aux champs BlueWave.'
+        : 'Aucune publication récente n’est actuellement disponible.';
+    }
+    home.setAttribute('aria-label', featured.length ? 'Actualités à la une' : 'Actualités récentes');
     home.replaceChildren(...chosen.map((item, index) => card(item, index === 0)));
   };
 
@@ -78,6 +96,13 @@
     const listTarget = document.querySelector('[data-news-list]');
     if (!featuredTarget || !listTarget) return;
     const featured = items.filter(item => item.featured).slice(0, 3);
+    const featuredLabel = document.querySelector('[data-news-featured-label]');
+    const featuredTitle = document.querySelector('[data-news-featured-title]');
+    if (featuredLabel) featuredLabel.textContent = featured.length ? 'À la une' : 'Actualités récentes';
+    if (featuredTitle) {
+      const labels = ['Aucun signal récent qualifié à mettre en avant.', 'Un signal récent à mettre en perspective.', 'Deux signaux récents à mettre en perspective.', 'Trois signaux récents à mettre en perspective.'];
+      featuredTitle.textContent = labels[featured.length] || labels[0];
+    }
     featuredTarget.replaceChildren(...featured.map((item, index) => card(item, index === 0)));
     let active = 'all';
     const drawList = () => {

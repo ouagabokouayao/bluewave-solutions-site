@@ -1,31 +1,135 @@
 {
   "version": 1,
-  "generated_at": "2026-09-06T17:11:26Z",
+  "generated_at": "2026-09-20T16:22:11Z",
   "window_days": 90,
   "items": [
     {
-      "id": "196d40870cebe948a866",
-      "title": "Commission proposes extending the Bay of Biscay fishing closure to protect dolphins into winter 2027",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-proposes-extending-bay-biscay-fishing-closure-protect-dolphins-winter-2027-2026-09-04_en",
+      "id": "10c0d5baa8406361fe64",
+      "title": "Oyster Heaven: Rebuilding reefs and restoring seas",
+      "url": "https://oceans-and-fisheries.ec.europa.eu/news/oyster-heaven-rebuilding-reefs-and-restoring-seas-2026-09-18_en",
       "source_id": "eu-oceans-fisheries",
       "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-09-04T12:37:20Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "published_at": "2026-09-18T15:05:47Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "environnement-marin",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "Netherlands-based company Oyster Heaven is working to restore coastal ecosystems by developing scalable oyster reef restoration projects across Europe and beyond.",
+      "score": {
+        "freshness": 39,
+        "relevance": 3,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 68
+      },
+      "score_global": 68,
+      "score_relevance_bluewave": 3,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "28a7f357e075561bcd6e",
+      "title": "EU Missions drive systemic change, new assessment shows",
+      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1863",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-09-15T13:53:03Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "economie-bleue",
       "geographies": [
         "europe-mediterranee"
       ],
-      "excerpt": "Today, the Commission proposed extending the annual winter closure in the Bay of Biscay into winter 2027 for fishing vessels over eight metres to help prevent catches of common dolphins and other small cetaceans - which are…",
+      "excerpt": "The five EU Missions in Horizon Europe are delivering tangible positive results in addressing some of Europe's most pressing societal challenges through scientific and technological innovation, according to a mid-term assessment…",
       "score": {
-        "freshness": 39,
-        "relevance": 0,
+        "freshness": 38,
+        "relevance": 1,
         "authority": 20,
         "geography": 5,
         "diversity": 1,
         "total": 65
       },
       "score_global": 65,
-      "score_relevance_bluewave": 0,
+      "score_relevance_bluewave": 1,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "ac80793cc673e3b6b536",
+      "title": "ImproFish: advancing the science behind herring fisheries in the Gulf of Bothnia",
+      "url": "https://cinea.ec.europa.eu/featured-projects/improfish-advancing-science-behind-herring-fisheries-gulf-bothnia_en",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-09-15T10:40:29Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "economie-bleue",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "Over recent decades, herrings in the Gulf of Bothnia have grown more slowly. Several factors could be behind these changes, but a clearer understanding of the actual causes is needed. Closing this knowledge gap is the aim of…",
+      "score": {
+        "freshness": 38,
+        "relevance": 1,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 65
+      },
+      "score_global": 65,
+      "score_relevance_bluewave": 1,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "ad181955b3f9df87bbd0",
+      "title": "Réussir son projet territorial Energie Climat : une formation du Cerema en novembre 2026",
+      "url": "https://www.cerema.fr/fr/actualites/reussir-son-projet-territorial-energie-climat-formation-du",
+      "source_id": "cerema",
+      "source_name": "Cerema",
+      "published_at": "2026-09-15T00:00:00Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "littoral-adaptation",
+      "geographies": [
+        "france-mediterranee"
+      ],
+      "excerpt": "Publié le Mardi 15 septembre 2026 Stratégies, résilience et projets de transition, Energies renouvelables terrestres et maritimes Ville verte L’aménagement du territoire doit aujourd’hui être mis en perspective avec l’évolution du…",
+      "score": {
+        "freshness": 37,
+        "relevance": 3,
+        "authority": 20,
+        "geography": 10,
+        "diversity": 5,
+        "total": 75
+      },
+      "score_global": 75,
+      "score_relevance_bluewave": 3,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "c3602ececdef1c40546c",
+      "title": "SARex 2026 tests multinational maritime coordination in North Sea search and rescue exercise",
+      "url": "https://www.emsa.europa.eu/newsroom/latest-news/item/5821-sarex-2026-tests-multinational-maritime-coordination-in-north-sea-search-and-rescue-exercise.html",
+      "source_id": "emsa",
+      "source_name": "Agence européenne pour la sécurité maritime",
+      "published_at": "2026-09-11T09:26:22Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "droit-securite",
+      "geographies": [
+        "france-mediterranee"
+      ],
+      "excerpt": "SARex 2026 tests multinational maritime coordination in North Sea search and rescue exercise On 10 September 2026, coast guard authorities from Belgium, France and the Netherlands carried ...",
+      "score": {
+        "freshness": 36,
+        "relevance": 9,
+        "authority": 20,
+        "geography": 10,
+        "diversity": 5,
+        "total": 80
+      },
+      "score_global": 80,
+      "score_relevance_bluewave": 9,
       "eligible_featured": false,
       "featured": false
     },
@@ -36,204 +140,22 @@
       "source_id": "eu-oceans-fisheries",
       "source_name": "Commission européenne — Océans et pêche",
       "published_at": "2026-09-02T10:38:55Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "economie-bleue",
       "geographies": [
         "europe-mediterranee"
       ],
       "excerpt": "The European Commission has officially launched the new EU Industrial Maritime Value Chains Alliance, following up on its commitment in the recently adopted European Industrial Maritime Strategy.",
       "score": {
-        "freshness": 38,
+        "freshness": 32,
         "relevance": 12,
         "authority": 20,
         "geography": 5,
         "diversity": 1,
-        "total": 76
+        "total": 70
       },
-      "score_global": 76,
+      "score_global": 70,
       "score_relevance_bluewave": 12,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "7bd7eca9db06c12d83b4",
-      "title": "Commission approves €30 million Portuguese State aid for agricultural, fishery and aquaculture companies facing increased fuel and fertiliser prices",
-      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1779",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-09-02T09:56:53Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission has approved a €30 million State aid scheme for agricultural, fishery and aquaculture companies facing increased fuel and fertiliser prices due to the Middle East crisis.",
-      "score": {
-        "freshness": 38,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 64
-      },
-      "score_global": 64,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "2ae94af98136c26364d1",
-      "title": "Commissioners Kadis and Micallef participate in Arctic youth dialogue",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commissioners-kadis-and-micallef-participate-arctic-youth-dialogue-2026-08-31_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-31T12:12:16Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "Tomorrow in Brussels, Commissioner for Fisheries and Oceans, Costas Kadis, and Commissioner for Intergenerational Fairness, Youth, Culture and Sport, Glenn Micallef, will jointly host the Youth Policy Dialogue ‘How to make Arctic…",
-      "score": {
-        "freshness": 37,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 63
-      },
-      "score_global": 63,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "3697affc67085c0d78eb",
-      "title": "Commission approves €285 million Italian State aid for agricultural, fishing and aquaculture companies facing increased fuel and fertiliser prices",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-approves-eur285-million-italian-state-aid-agricultural-fishing-and-aquaculture-companies-2026-08-28_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-28T11:48:37Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission has approved a €285 million Italian State aid scheme to support agricultural, fishing and aquaculture companies facing increased fuel and fertiliser prices due to the Middle East crisis.",
-      "score": {
-        "freshness": 36,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 62
-      },
-      "score_global": 62,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "506feb52715087e92d3e",
-      "title": "NEAFC measures to curb unsustainable Russian mackerel fishing enter into force",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/neafc-measures-curb-unsustainable-russian-mackerel-fishing-enter-force-2026-08-28_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-28T09:51:16Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "Today, measures adopted by the North-East Atlantic Fisheries Commission (NEAFC) to address unsustainable Russian mackerel fishing in the North-East Atlantic officially enter into force.",
-      "score": {
-        "freshness": 36,
-        "relevance": 1,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 63
-      },
-      "score_global": 63,
-      "score_relevance_bluewave": 1,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "15e81745b17d2bcda5ef",
-      "title": "Un indicateur national de l’érosion côtière enrichi pour mieux connaître les dynamiques du littoral",
-      "url": "https://www.cerema.fr/fr/actualites/indicateur-national-erosion-cotiere-enrichi-mieux-connaitre",
-      "source_id": "cerema",
-      "source_name": "Cerema",
-      "published_at": "2026-08-26T00:00:00Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "littoral-adaptation",
-      "geographies": [
-        "france-mediterranee"
-      ],
-      "excerpt": "Publié le Mercredi 26 août 2026 Observation, planification et gestion du littoral et de la mer Falaise à Corsen Mis en place dans le cadre de la Stratégie nationale de gestion intégrée du trait de côte qui est désormais fixée…",
-      "score": {
-        "freshness": 35,
-        "relevance": 15,
-        "authority": 20,
-        "geography": 10,
-        "diversity": 5,
-        "total": 85
-      },
-      "score_global": 85,
-      "score_relevance_bluewave": 15,
-      "eligible_featured": true,
-      "featured": true
-    },
-    {
-      "id": "d11d3ad1c37864dfccd4",
-      "title": "Commission proposes fishing opportunities for 2027 in the Baltic Sea",
-      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1751",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-24T09:56:48Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "Today, the Commission adopted its proposal for the 2027 fishing opportunities for the Baltic Sea. The proposal sets the total allowable catches (TACs) and quotas for the ten EU-managed fish stocks in the Baltic Sea: Bothnian…",
-      "score": {
-        "freshness": 34,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 60
-      },
-      "score_global": 60,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "439a6a2d2a1155fb17a0",
-      "title": "Commission approves €4.5 million German State aid for fishing and aquaculture companies facing increased fuel prices",
-      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1740",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-21T09:53:09Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission has approved a €4.5 million German State aid scheme for fishing and aquaculture companies facing increased fuel prices due to the Middle East crisis.",
-      "score": {
-        "freshness": 33,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 59
-      },
-      "score_global": 59,
-      "score_relevance_bluewave": 0,
       "eligible_featured": false,
       "featured": false
     },
@@ -244,74 +166,22 @@
       "source_id": "emsa",
       "source_name": "Agence européenne pour la sécurité maritime",
       "published_at": "2026-08-19T10:57:26Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "ports-maritime",
       "geographies": [
         "europe-mediterranee"
       ],
       "excerpt": "EMSA took part in the Multipurpose Maritime Exercise (MME) TOMIS 2026, hosted by the Romanian Coast Guard off Constanța on 14 August 2026. The exercise formed part of the wider Multipurpose Maritime ...",
       "score": {
-        "freshness": 32,
+        "freshness": 26,
         "relevance": 12,
         "authority": 20,
         "geography": 5,
         "diversity": 5,
-        "total": 74
+        "total": 68
       },
-      "score_global": 74,
+      "score_global": 68,
       "score_relevance_bluewave": 12,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "c61ba80f602e9e90f87b",
-      "title": "Turning the tide: Algae Scope's bio-based answer to PFAS",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/turning-tide-algae-scopes-bio-based-answer-pfas-2026-08-18_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-18T11:26:37Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "PFAS, or 'forever chemicals', are commonly used to make textiles and other materials resistant to water and fire. However, because they persist in the environment and build up in living organisms, they pose growing risks to human…",
-      "score": {
-        "freshness": 31,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 57
-      },
-      "score_global": 57,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "ceca42764e16a4bf9c7b",
-      "title": "Commission approves Maltese State aid for fishing companies facing increased fuel prices",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-approves-maltese-state-aid-fishing-companies-facing-increased-fuel-prices-2026-08-13_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-18T08:47:13Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission has approved a €700,000 Maltese State aid scheme to support companies active in primary production of fishery products facing increased fuel prices due to the Middle East crisis.",
-      "score": {
-        "freshness": 31,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 57
-      },
-      "score_global": 57,
-      "score_relevance_bluewave": 0,
       "eligible_featured": false,
       "featured": false
     },
@@ -322,74 +192,22 @@
       "source_id": "eu-oceans-fisheries",
       "source_name": "Commission européenne — Océans et pêche",
       "published_at": "2026-08-17T09:52:40Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "environnement-marin",
       "geographies": [
         "europe-mediterranee"
       ],
       "excerpt": "Across Sweden’s west coast, debate about the future of fishing is growing more urgent. A Swedish government’s proposal to ban bottom trawling in marine protected areas have brought the issue into sharp focus for coastal…",
       "score": {
-        "freshness": 31,
+        "freshness": 25,
         "relevance": 6,
         "authority": 20,
         "geography": 5,
         "diversity": 1,
-        "total": 63
+        "total": 57
       },
-      "score_global": 63,
+      "score_global": 57,
       "score_relevance_bluewave": 6,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "197992e0b2131737ddd1",
-      "title": "Commission harmonises rules for weighing catches across the EU",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-harmonises-rules-weighing-catches-across-eu-2026-08-10_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-10T08:45:43Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "Today, the European Commission has adopted harmonised rules for weighing fishery products across the EU. The new framework streamlines and simplifies procedures and reduces the administrative burden for Member States and…",
-      "score": {
-        "freshness": 28,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 54
-      },
-      "score_global": 54,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "f3e4efefa03a8bcec3c5",
-      "title": "Commission approves €20 million State aid for agricultural, fishing and aquaculture companies in Friuli Venezia Giulia region facing increased fuel and fertiliser prices",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-approves-eur20-million-state-aid-agricultural-fishing-and-aquaculture-companies-friuli-2026-08-03_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-08-03T13:38:45Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission has approved a €20 million State aid scheme for agricultural and fishing companies in the Italian region of Friuli Venezia Giulia that are facing increased fuel and fertiliser prices due to the Middle East…",
-      "score": {
-        "freshness": 25,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 51
-      },
-      "score_global": 51,
-      "score_relevance_bluewave": 0,
       "eligible_featured": false,
       "featured": false
     },
@@ -400,126 +218,22 @@
       "source_id": "eu-oceans-fisheries",
       "source_name": "Commission européenne — Océans et pêche",
       "published_at": "2026-07-29T06:13:45Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "economie-bleue",
       "geographies": [
         "europe-mediterranee"
       ],
       "excerpt": "Through the OceanEye initiative, the EU aims to become a global leader in ocean observation technology and secure 35% of the global ocean technology market by 2035.",
       "score": {
-        "freshness": 22,
+        "freshness": 16,
         "relevance": 3,
         "authority": 20,
         "geography": 5,
         "diversity": 1,
-        "total": 51
+        "total": 45
       },
-      "score_global": 51,
+      "score_global": 45,
       "score_relevance_bluewave": 3,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "8dfe262483a3331e8e37",
-      "title": "Commission approves €149 million Swedish State aid for agricultural, fishing and aquaculture companies facing increased fuel and fertiliser prices",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-approves-eur149-million-swedish-state-aid-agricultural-fishing-and-aquaculture-companies-2026-07-28_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-07-28T12:17:48Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission has approved a €149 million (SEK 1.6 billion) State aid scheme for agricultural, fishing and aquaculture companies facing increased fuel and fertiliser prices due to the Middle East crisis.",
-      "score": {
-        "freshness": 22,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 48
-      },
-      "score_global": 48,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "1f208d716b44e0daebde",
-      "title": "LIFE Platform Meeting explores solutions to restore EU marine ecosystems",
-      "url": "https://cinea.ec.europa.eu/news-events/news/life-platform-meeting-explores-solutions-restore-eu-marine-ecosystems-2026-07-16_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-07-27T13:46:13Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "environnement-marin",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "Nearly 100 experts gathered in Valencia to share practical solutions to restore marine ecosystems and support the implementation of the EU Nature Restoration Regulation.",
-      "score": {
-        "freshness": 22,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 48
-      },
-      "score_global": 48,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "2946d4badc1b43fdab77",
-      "title": "Registrations are now open for BlueInvest Africa 2026!",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/registrations-are-now-open-blueinvest-africa-2026-2026-07-27_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-07-27T12:13:19Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "Registration is officially open for BlueInvest Africa 2026, taking place on 2–3 November 2026 in Cape Town, South Africa. Join entrepreneurs, investors, policymakers, incubators, development partners, and innovators from across…",
-      "score": {
-        "freshness": 22,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 48
-      },
-      "score_global": 48,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "f0bd02ba2b7a6775b959",
-      "title": "European Union and Seychelles renew agreement granting EU fishing vessels access to Seychelles’ waters",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/european-union-and-seychelles-renew-agreement-granting-eu-fishing-vessels-access-seychelles-waters-2026-07-27_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-07-27T09:57:57Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "Today, the EU and Seychelles signed a new protocol to the Sustainable Fisheries Partnership Agreement granting EU vessels access to Seychelles’ waters for a period of four years to fish 55,000 tonnes of tuna and other migratory…",
-      "score": {
-        "freshness": 22,
-        "relevance": 1,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 49
-      },
-      "score_global": 49,
-      "score_relevance_bluewave": 1,
       "eligible_featured": false,
       "featured": false
     },
@@ -530,126 +244,22 @@
       "source_id": "emsa",
       "source_name": "Agence européenne pour la sécurité maritime",
       "published_at": "2026-07-21T11:49:47Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "droit-securite",
       "geographies": [
         "europe-mediterranee"
       ],
       "excerpt": "On 17 July, in the vicinity of Burgas, Bulgaria, EMSA participated in the annual operational exercise Breeze 2026, organised by the Bulgarian Navy together with the Bulgarian Maritime ...",
       "score": {
-        "freshness": 19,
+        "freshness": 13,
         "relevance": 3,
         "authority": 20,
         "geography": 5,
         "diversity": 5,
-        "total": 52
+        "total": 46
       },
-      "score_global": 52,
+      "score_global": 46,
       "score_relevance_bluewave": 3,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "35e4dfa0630db490fef1",
-      "title": "From a remote island to shelves around the world: the story of Azorean canned fish",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/remote-island-shelves-around-world-story-azorean-canned-fish-2026-07-06_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-07-15T06:09:11Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The island of Terceira in the Azores sits 1,500 km west of mainland Portugal – remote enough to make running a business complicated, let alone one built around delivering fresh fish to distant markets. Tibério Barbeito started TZT…",
-      "score": {
-        "freshness": 16,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 42
-      },
-      "score_global": 42,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "c395d76fa66e3583cb73",
-      "title": "BuyCo and Searoutes: Decarbonising container shipping, one booking at a time",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/buyco-and-searoutes-decarbonising-container-shipping-one-booking-time-2026-07-14_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-07-14T13:04:44Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "ports-maritime",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "A container shipment from Shanghai to Paris can produce anywhere from 7.3 to 10 tonnes of CO₂, depending on the route and vessel chosen. Until recently, however, that difference was largely invisible to the companies making…",
-      "score": {
-        "freshness": 16,
-        "relevance": 1,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 43
-      },
-      "score_global": 43,
-      "score_relevance_bluewave": 1,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "60cea2dbc0420e20fce0",
-      "title": "Natura 2000 Network offers opportunities for sustainable tourism across Europe",
-      "url": "https://environment.ec.europa.eu/news/natura-2000-network-offers-sustainable-tourism-opportunities-2026-07-14_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-07-14T12:01:54Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The guidelines help sites integrate tourism and recreational activities while highlighting the growing importance of ecotourism.",
-      "score": {
-        "freshness": 16,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 42
-      },
-      "score_global": 42,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "53ffcecfba5c45741884",
-      "title": "Casting his own line: A young fisher’s path to independence in Réunion",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/casting-his-own-line-young-fishers-path-independence-reunion-2026-06-29_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-07-14T07:53:52Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "At just 27, Richard Delmas is charting his own course in the waters off Réunion Island. Born into a fishing family, he grew up at sea. With support from the EU, he launched a small one-person fishing business built on flexibility…",
-      "score": {
-        "freshness": 16,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 42
-      },
-      "score_global": 42,
-      "score_relevance_bluewave": 0,
       "eligible_featured": false,
       "featured": false
     },
@@ -660,21 +270,21 @@
       "source_id": "eu-oceans-fisheries",
       "source_name": "Commission européenne — Océans et pêche",
       "published_at": "2026-07-13T09:12:20Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "environnement-marin",
       "geographies": [
         "europe-mediterranee"
       ],
       "excerpt": "Today, Europe’s northern seas face growing pressure. The energy transition, climate change, biodiversity loss and increasing geopolitical tensions are reshaping how countries plan and manage their maritime space. Offshore wind…",
       "score": {
-        "freshness": 15,
+        "freshness": 9,
         "relevance": 6,
         "authority": 20,
         "geography": 5,
         "diversity": 1,
-        "total": 47
+        "total": 41
       },
-      "score_global": 47,
+      "score_global": 41,
       "score_relevance_bluewave": 6,
       "eligible_featured": false,
       "featured": false
@@ -686,21 +296,21 @@
       "source_id": "emsa",
       "source_name": "Agence européenne pour la sécurité maritime",
       "published_at": "2026-06-30T12:42:32Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "environnement-marin",
       "geographies": [
         "europe-mediterranee"
       ],
       "excerpt": "On 17 June, seven Belgian, Dutch and EMSA vessels carried out a major oil pollution response exercise off the coast of Zeebrugge, testing how partners would contain and recover a large oil slick ...",
       "score": {
-        "freshness": 10,
+        "freshness": 3,
         "relevance": 6,
         "authority": 20,
         "geography": 5,
         "diversity": 5,
-        "total": 46
+        "total": 39
       },
-      "score_global": 46,
+      "score_global": 39,
       "score_relevance_bluewave": 6,
       "eligible_featured": false,
       "featured": false
@@ -712,256 +322,22 @@
       "source_id": "eu-oceans-fisheries",
       "source_name": "Commission européenne — Océans et pêche",
       "published_at": "2026-06-30T11:57:00Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
       "theme": "economie-bleue",
       "geographies": [
         "europe-mediterranee"
       ],
       "excerpt": "Today, Costas Kadis, Commissioner for Fisheries and Oceans, is hosting an implementation dialogue on EU aquaculture policy. The event brings together stakeholders from across the sector – including aquaculture industry and…",
       "score": {
-        "freshness": 10,
+        "freshness": 3,
         "relevance": 3,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 39
-      },
-      "score_global": 39,
-      "score_relevance_bluewave": 3,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "3ef2db9c9b50b6d72229",
-      "title": "Commission publishes first annual social report on fisheries, aquaculture and fish processing",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-publishes-first-annual-social-report-fisheries-aquaculture-and-fish-processing-2026-06-22_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-06-25T12:52:17Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission has published the first annual social report on fisheries, aquaculture and processing sectors, providing an overview of the social aspects of all three sectors. The report, prepared by the Scientific…",
-      "score": {
-        "freshness": 7,
-        "relevance": 3,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 36
-      },
-      "score_global": 36,
-      "score_relevance_bluewave": 3,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "5acdb1bd762a9178481f",
-      "title": "Commission seeks feedback on potential simplification of the European Maritime, Fisheries and Aquaculture Fund",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-seeks-feedback-potential-simplification-european-maritime-fisheries-and-aquaculture-fund-2026-06-25_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-06-25T12:41:18Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission is seeking feedback in view of a possible targeted amendment of the European Maritime, Fisheries and Aquaculture Fund (EMFAF). The objective is to make the fund simpler, more flexible and easier to…",
-      "score": {
-        "freshness": 7,
-        "relevance": 9,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 42
-      },
-      "score_global": 42,
-      "score_relevance_bluewave": 9,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "363b10317485d7a45437",
-      "title": "The European Commission welcomes NEAFC measures on mackerel and deplores Russia’s further quota increase in 2026",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/european-commission-welcomes-neafc-measures-mackerel-and-deplores-russias-further-quota-increase-2026-06-23_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-06-23T12:42:43Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The mackerel stock in the North-East Atlantic is currently in a critical conservation status after years of overfishing, particularly by the Russian Federation. In 2026, Russia unilaterally raised its quota to 22.5% of the Total…",
-      "score": {
-        "freshness": 7,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 33
-      },
-      "score_global": 33,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "98a6c695fadd2180530d",
-      "title": "Commission approves €15 million Irish State aid for fishing and aquaculture companies facing increased fuel prices",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-approves-eu15-million-irish-state-aid-fishing-and-aquaculture-companies-facing-increased-2026-06-22_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-06-22T12:28:14Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Commission has approved a €15 million Irish State aid scheme to support fishing and aquaculture companies facing increased fuel prices due to the Middle East crisis. The scheme was approved under the Middle East…",
-      "score": {
-        "freshness": 6,
-        "relevance": 0,
         "authority": 20,
         "geography": 5,
         "diversity": 1,
         "total": 32
       },
       "score_global": 32,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "4a9c7bfe30bde25f06e3",
-      "title": "Commission approves €212 million French State aid for agricultural and aquaculture companies facing increased fuel prices",
-      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commission-approves-eu212-million-french-state-aid-agricultural-and-aquaculture-companies-facing-2026-06-22_en",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-06-22T12:18:50Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "france-mediterranee"
-      ],
-      "excerpt": "The European Commission has approved a €212 million French State aid scheme to support agricultural and aquaculture companies facing increased fuel prices due to the Middle East crisis. The scheme was approved under the Middle…",
-      "score": {
-        "freshness": 6,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 10,
-        "diversity": 1,
-        "total": 37
-      },
-      "score_global": 37,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "82cdd1796f063e4df5bf",
-      "title": "EU commits over €338 million for global ocean protection at Our Ocean Conference in Kenya",
-      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1378",
-      "source_id": "eu-oceans-fisheries",
-      "source_name": "Commission européenne — Océans et pêche",
-      "published_at": "2026-06-18T13:16:18Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "economie-bleue",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The European Union has today committed €338.35 million to support ocean conservation, sustainable fisheries and maritime security at the Our Ocean Conference 2026. Costas Kadis, Commissioner for Fisheries and Oceans, announced the…",
-      "score": {
-        "freshness": 4,
-        "relevance": 8,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 1,
-        "total": 38
-      },
-      "score_global": 38,
-      "score_relevance_bluewave": 8,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "15235faef3b009f6ab78",
-      "title": "EMSA Academy delivers first course on hydrogen",
-      "url": "https://www.emsa.europa.eu/newsroom/latest-news/item/5721-emsa-academy-delivers-first-course-on-hydrogen.html",
-      "source_id": "emsa",
-      "source_name": "Agence européenne pour la sécurité maritime",
-      "published_at": "2026-06-17T14:16:22Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "droit-securite",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "The EMSA Academy has delivered the first course on hydrogen, as part of its “Alternative Fuels” learning package. The course was designed in a blended-learning format, combining asynchronous ...",
-      "score": {
-        "freshness": 4,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 5,
-        "total": 34
-      },
-      "score_global": 34,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "9708d10f1328e54738e9",
-      "title": "RPAS on board oil spill recovery vessel infosheet",
-      "url": "https://www.emsa.europa.eu/we-do/surveillance/rpas/item/5699-rpas-on-board-oil-spill-recovery-vessel-infosheet.html",
-      "source_id": "emsa",
-      "source_name": "Agence européenne pour la sécurité maritime",
-      "published_at": "2026-06-12T11:57:14Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "ports-maritime",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "Lightweight Remotely Piloted Aircraft Systems (RPAS) are deployed aboard most EMSA Oil Spill Response Vessels (OSRVs), providing aerial support for emergency response, exercises, and drills. Each ...",
-      "score": {
-        "freshness": 2,
-        "relevance": 0,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 5,
-        "total": 32
-      },
-      "score_global": 32,
-      "score_relevance_bluewave": 0,
-      "eligible_featured": false,
-      "featured": false
-    },
-    {
-      "id": "aba3786b893d10bcc5d4",
-      "title": "Annual European Coast Guard Event takes place in Azores",
-      "url": "https://www.emsa.europa.eu/newsroom/latest-news/item/5694-annual-european-coast-guard-event-takes-place-in-azores.html",
-      "source_id": "emsa",
-      "source_name": "Agence européenne pour la sécurité maritime",
-      "published_at": "2026-06-11T09:41:40Z",
-      "fetched_at": "2026-09-06T17:11:26Z",
-      "theme": "ports-maritime",
-      "geographies": [
-        "europe-mediterranee"
-      ],
-      "excerpt": "On 9-10 June, representatives of coast guard authorities from around the EU and beyond gathered in Ponta Delgada, Azores, Portugal for the Annual European Coast Guard Event. The event, organised by ...",
-      "score": {
-        "freshness": 1,
-        "relevance": 9,
-        "authority": 20,
-        "geography": 5,
-        "diversity": 5,
-        "total": 40
-      },
-      "score_global": 40,
-      "score_relevance_bluewave": 9,
+      "score_relevance_bluewave": 3,
       "eligible_featured": false,
       "featured": false
     }

@@ -414,6 +414,31 @@ def add_relevance_scores(items: list[dict]) -> None:
         item["_relevance_penalties"] = analysis["penalties"]
 
 
+def select_balanced(items: list[dict], max_items_per_source: int, max_items: int) -> list[dict]:
+    """Conserve les contenus les plus utiles tout en plafonnant chaque source."""
+    ranked = sorted(
+        items,
+        key=lambda item: (
+            item.get("eligible_featured", False),
+            item.get("score_relevance_bluewave", 0),
+            item.get("score_global", 0),
+            item.get("published_at", ""),
+            item.get("id", ""),
+        ),
+        reverse=True,
+    )
+    counts = Counter()
+    selected = []
+    for item in ranked:
+        if counts[item["source_id"]] >= max_items_per_source:
+            continue
+        selected.append(item)
+        counts[item["source_id"]] += 1
+        if len(selected) >= max_items:
+            break
+    return selected
+
+
 def select_featured(items: list[dict], curation: dict) -> None:
     overrides = [canonical_url(url) for url in curation.get("featured_override", [])]
     pinned = {canonical_url(url) for url in curation.get("pinned_urls", [])}
@@ -486,6 +511,7 @@ def previous_items(path: Path, now: datetime, window_days: int) -> list[dict]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="Collecter et valider sans écrire")
+    parser.add_argument("--cache-only", action="store_true", help="Revalider le cache sans accès distant")
     parser.add_argument("--fixture-dir", type=Path, help="Lire <source_id>.xml localement")
     parser.add_argument("--output-dir", type=Path, default=DATA_DIR)
     args = parser.parse_args()
@@ -495,10 +521,80 @@ def main() -> int:
     now = datetime.now(timezone.utc)
     window_days = int(config.get("window_days", 90))
     max_items = int(config.get("max_items", 80))
+    max_items_per_source = int(config.get("max_items_per_source", max_items))
     disabled = set(curation.get("disabled_sources", []))
     sources = [source for source in config.get("sources", []) if source.get("enabled", True) and source.get("id") not in disabled]
     excluded = {canonical_url(url) for url in curation.get("excluded_urls", [])}
     collected, errors, source_reports = [], [], []
+
+    output_path = args.output_dir / "actualites.json"
+    status_path = args.output_dir / "actualites-status.json"
+    old_items = previous_items(OUTPUT_PATH, now, window_days)
+    previous_generated_at = None
+    previous_last_successful_at = None
+    if OUTPUT_PATH.exists():
+        try:
+            previous_generated_at = read_json(OUTPUT_PATH).get("generated_at")
+        except (OSError, ValueError, TypeError):
+            previous_generated_at = None
+    if STATUS_PATH.exists():
+        try:
+            previous_last_successful_at = read_json(STATUS_PATH).get("last_successful_at")
+        except (OSError, ValueError, TypeError):
+            previous_last_successful_at = None
+
+    if args.cache_only:
+        active_ids = {source["id"] for source in sources}
+        cached = [
+            item for item in old_items
+            if item.get("source_id") in active_ids and item.get("url") not in excluded
+        ]
+        deduped = deduplicate(cached)
+        add_relevance_scores(deduped)
+        kept = select_balanced(deduped, max_items_per_source, max_items)
+        add_diversity_scores(kept)
+        kept.sort(key=lambda item: (item["published_at"], item["score"]["total"], item["id"]), reverse=True)
+        select_featured(kept, curation)
+        payload = {
+            "version": 1,
+            "generated_at": iso_z(now),
+            "window_days": window_days,
+            "items": [public_item(item) for item in kept],
+        }
+        source_counts = Counter(item["source_id"] for item in kept)
+        source_reports = [
+            {
+                "source_id": source["id"],
+                "status": "cached",
+                "fetched": 0,
+                "accepted": source_counts[source["id"]],
+            }
+            for source in sources
+        ]
+        status = {
+            "version": 1,
+            "generated_at": iso_z(now),
+            "state": "cached",
+            "configured_sources": len(sources),
+            "reachable_sources": 0,
+            "collected": 0,
+            "after_deduplication": len(deduped),
+            "duplicates_removed": max(0, len(cached) - len(deduped)),
+            "kept": len(kept),
+            "source_limit": max_items_per_source,
+            "featured_eligible": sum(1 for item in kept if item["eligible_featured"]),
+            "featured": sum(1 for item in kept if item["featured"]),
+            "categories": dict(sorted(Counter(item["theme"] for item in kept).items())),
+            "source_reports": source_reports,
+            "errors": [],
+            "last_successful_at": previous_last_successful_at or previous_generated_at,
+            "message": "Corpus revalidé à partir du dernier jeu collecté ; aucune collecte distante n’a été exécutée.",
+        }
+        if not args.dry_run:
+            write_json(output_path, payload)
+            write_json(status_path, status)
+        print(json.dumps(status, ensure_ascii=False, indent=2))
+        return 0
 
     for source in sources:
         try:
@@ -512,16 +608,6 @@ def main() -> int:
             source_reports.append({"source_id": source.get("id", "unknown"), "status": "error", "error": message})
 
     successful = sum(1 for report in source_reports if report["status"] == "ok")
-    output_path = args.output_dir / "actualites.json"
-    status_path = args.output_dir / "actualites-status.json"
-    old_items = previous_items(OUTPUT_PATH, now, window_days)
-    previous_generated_at = None
-    if OUTPUT_PATH.exists():
-        try:
-            previous_generated_at = read_json(OUTPUT_PATH).get("generated_at")
-        except (OSError, ValueError, TypeError):
-            previous_generated_at = None
-
     if successful == 0:
         status = {
             "version": 1, "generated_at": iso_z(now), "state": "error",
@@ -546,9 +632,9 @@ def main() -> int:
     merged = [item for item in new_deduped + retained_old if item.get("url") not in excluded]
     deduped = deduplicate(merged)
     add_relevance_scores(deduped)
-    add_diversity_scores(deduped)
-    deduped.sort(key=lambda item: (item["published_at"], item["score"]["total"], item["id"]), reverse=True)
-    kept = deduped[:max_items]
+    kept = select_balanced(deduped, max_items_per_source, max_items)
+    add_diversity_scores(kept)
+    kept.sort(key=lambda item: (item["published_at"], item["score"]["total"], item["id"]), reverse=True)
     select_featured(kept, curation)
     payload = {
         "version": 1,
@@ -568,6 +654,7 @@ def main() -> int:
         "after_deduplication": len(deduped),
         "duplicates_removed": max(0, len(collected) - len(new_deduped)),
         "kept": len(kept),
+        "source_limit": max_items_per_source,
         "featured_eligible": eligible_count,
         "featured": featured_count,
         "categories": dict(sorted(Counter(item["theme"] for item in kept).items())),

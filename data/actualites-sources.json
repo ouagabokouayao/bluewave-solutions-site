@@ -2,6 +2,7 @@
   "version": 1,
   "window_days": 90,
   "max_items": 80,
+  "max_items_per_source": 8,
   "sources": [
     {
       "id": "cerema",
