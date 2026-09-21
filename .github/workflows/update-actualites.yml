@@ -1,0 +1,49 @@
+name: Review BlueWave maritime watch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bluewave-news-review
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Collect verified feeds in the workflow workspace
+        run: python quality/scripts/update_actualites.py
+      - name: Validate site and data
+        run: |
+          python -m json.tool data/actualites.json >/dev/null
+          python -m json.tool data/actualites-status.json >/dev/null
+          python quality/scripts/quality_check.py
+          node --check assets/js/main.js
+          node --check assets/js/qualifier.js
+          node --check assets/js/mediatheque.js
+          node --check assets/js/actualites.js
+          node --check assets/js/automation.js
+      - name: Refresh and verify integrity manifest
+        run: |
+          python quality/scripts/update_manifest.py
+          python quality/scripts/verify_manifest.py
+          git diff --check
+      - name: Prepare inspectable patch
+        run: git diff --binary > bluewave-actualites-review.patch
+      - name: Upload review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bluewave-actualites-review
+          path: |
+            bluewave-actualites-review.patch
+            data/actualites.json
+            data/actualites-status.json
+            MANIFEST_SHA256.json
+          if-no-files-found: error

@@ -4,6 +4,10 @@ exports/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.env
+.env.*
+!.env.example
+!**/.env.example
 
 # Livrables et controles internes : conserves hors du depot public.
 supports/
@@ -21,6 +25,8 @@ BlueWave_02_Lot_Revue_Avant_Commit_*.zip
 
 # Documents internes : conserves hors du depot public.
 documents/
+CLAUDE.md
+AGENTS.md
 
 # Fichiers de travail non necessaires a GitHub Pages.
 signature-mail-bluewave-*.html

@@ -1,41 +1,65 @@
-# BlueWave Solutions — site V2
+# BlueWave Solutions — site V3 P1.2
 
-Site vitrine statique, multipage et responsive de BlueWave Solutions. La version publique est organisée autour de huit pages cohérentes.
+Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-end reste sans dépendance ; un endpoint serverless portable est préparé séparément, sans être déployé ni activé.
 
-## Architecture V2
+## Architecture publique
 
-- `index.html` : accueil, positionnement et synthèse de la proposition de valeur ;
-- `services.html` : cinq offres cœur, formats d’entrée et méthode publique ;
-- `domaines.html` : domaines d’intervention et contextes géographiques ;
-- `a-propos.html` : positionnement, publics accompagnés et principes de travail ;
-- `contact.html` : trois entrées de contact et un formulaire local de qualification de projet ;
-- `notes-demonstrateurs.html` : notes, maquettes de livrables et deux simulations explicitement illustratives ;
-- `mentions-legales.html` : informations légales de la version locale ;
-- `politique-confidentialite.html` : traitement des prises de contact réalisées par courriel.
+- `index.html` : accueil, situations, méthode, preuves et sélection « À la une » ;
+- `solutions.html` : cinq offres cœur et deux formats d’entrée ;
+- `methode.html` : méthode publique BlueWave en six étapes ;
+- `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
+- `mediatheque.html` : dix visuels BlueWave avec visionneuse locale ;
+- `actualites.html` : veille maritime et littorale issue de sources externes identifiées ;
+- `a-propos.html` : positionnement et présentation du fondateur ;
+- `qualifier-un-besoin.html` : orientation locale puis prise de contact préparée.
 
-## Cinq offres cœur
+Les anciennes routes `services.html`, `domaines.html` et `contact.html` restent de légères pages de transition afin d’éviter les liens cassés. Les pages légales, la page 404 et les notes de démonstration complètent cette surface.
 
-1. Diagnostic stratégique maritime, littoral ou portuaire ;
-2. Vulnérabilité côtière, adaptation et options de décision ;
-3. Gouvernance, acteurs, usages et acceptabilité ;
-4. Structuration de projets maritimes, littoraux ou d’économie bleue ;
-5. Formation et renforcement des capacités.
+## Veille structurée
 
-## Notes et démonstrateurs
+Le collecteur `quality/scripts/update_actualites.py` lit les flux RSS configurés dans `data/actualites-sources.json`, classe et dédoublonne les éléments, calcule un score transparent et conserve au maximum 80 publications sur 90 jours. `data/actualites-curation.json` permet les exceptions manuelles. Les données et l’état de collecte sont écrits dans `data/actualites.json` et `data/actualites-status.json`.
 
-Les aperçus de livrables et les deux cas présentés sont des simulations illustratives. Ils montrent une méthode et des formats possibles sans revendiquer de client, de mandat ni de résultat réel.
+Le workflow `update-actualites.yml` est volontairement manuel et en lecture seule. Il prépare une régénération, les contrôles et un patch inspectable sans commit ni push automatique. Une panne de source reste isolée ; une panne totale conserve le dernier jeu valide.
 
-## Contact et indexation
+## Méthode publique
 
-La page Contact comporte un formulaire **local**, sans backend : les champs saisis servent uniquement à composer un courriel prérempli, ouvert dans le logiciel de messagerie du visiteur, qui reste seul à décider de l’envoi. Le site n’enregistre ni ne transmet aucune donnée. Les liens de courriel direct restent disponibles en alternative. Toutes les pages conservent la directive `noindex, nofollow` jusqu’à une décision explicite de publication.
+La méthode publique compte six étapes : `Qualifier → Cadrer → Analyser → Cartographier → Structurer → Restituer`.
 
-## Structure technique
+## Automatisation visiteurs
 
-- `assets/css/style.css` : design system et mise en page responsive ;
-- `assets/js/main.js` : navigation mobile et interactions ;
-- `quality/scripts/quality_check.py` : contrôle local de la surface publique ;
-- `.github/workflows/bluewave-quality.yml` : exécution automatisée des contrôles autorisés.
+`assets/js/automation.js` centralise les événements et le point d’intégration HTTPS du qualifier. `data/automation-config.json` ne contient que cinq options publiques : fournisseur, endpoint lead, chat, newsletter et rendez-vous. L’endpoint reste `null` et toutes les intégrations distantes restent désactivées dans cette version.
 
-## Utilisation locale
+`serverless/bluewave-leads/` contient le handler portable, la validation serveur, la gestion CORS et anti-abus, le client Brevo minimal, un exemple d’environnement sans secret et des tests mockés. Le navigateur n’appelle jamais directement Brevo.
 
-Ouvrir `index.html` dans un navigateur ou lancer un serveur local pour visualiser le site.
+Pour activer ultérieurement le pipeline en sécurité, il reste à :
+
+- choisir et configurer un hébergeur serverless ;
+- renseigner dans son environnement privé la clé Brevo, les identifiants réels des listes et modèles, l’adresse interne et l’origine autorisée ;
+- créer dans Brevo les neuf attributs `BW_*`, la liste Leads, la liste newsletter et les deux modèles transactionnels ;
+- configurer les automatisations Leads, relance mesurée et newsletter décrites dans le README du backend ;
+- activer un stockage distribué pour le rate limiting et la déduplication ;
+- renseigner ensuite l’URL HTTPS validée dans `lead_endpoint` ;
+- éventuellement ajouter le snippet de chat Brevo réel et une URL réelle de rendez-vous après validation distincte.
+
+Aucune clé API, aucun identifiant réel de liste ou de modèle ne doit être placé dans le dépôt ou dans le JavaScript public. Le consentement newsletter reste indépendant de la demande commerciale et désactivé dans l’interface tant que sa configuration réelle n’est pas validée.
+
+## Qualité et intégrité
+
+```bash
+git diff --check
+python quality/scripts/quality_check.py
+node --check assets/js/main.js
+node --check assets/js/qualifier.js
+node --check assets/js/mediatheque.js
+node --check assets/js/actualites.js
+node --check assets/js/automation.js
+node --test serverless/bluewave-leads/tests/handler.test.mjs
+python quality/scripts/check_secrets.py
+python quality/scripts/verify_manifest.py
+```
+
+`MANIFEST_SHA256.json` inclut les données de veille dynamiques. Le workflow de collecte le régénère dans le même commit que les données afin de conserver une doctrine d’intégrité unique.
+
+## Préactivation
+
+Toutes les pages conservent `noindex, nofollow` et `robots.txt` conserve `Disallow: /`. Le qualifier continue de préparer un courriel local tant que `lead_endpoint` vaut `null`. Aucun envoi distant, abonnement, assistant, traceur ou rendez-vous automatisé n’est actif avant configuration et validation explicites.

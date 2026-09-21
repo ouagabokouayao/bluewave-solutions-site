@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "excluded_urls": [
+    "https://www.cerema.fr/fr/actualites/cartofriches-pres-20-500-sites-friches-repertories",
+    "https://www.cerema.fr/fr/actualites/design-actif-amenager-villes-villages-peu-moyens-favoriser",
+    "https://www.cerema.fr/fr/actualites/ruissellements-phenomene-complexe-fort-impact-territoires"
+  ],
+  "pinned_urls": [],
+  "featured_override": [],
+  "disabled_sources": []
+}

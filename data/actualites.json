@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "generated_at": "2026-09-20T16:22:11Z",
+  "window_days": 90,
+  "items": [
+    {
+      "id": "10c0d5baa8406361fe64",
+      "title": "Oyster Heaven: Rebuilding reefs and restoring seas",
+      "url": "https://oceans-and-fisheries.ec.europa.eu/news/oyster-heaven-rebuilding-reefs-and-restoring-seas-2026-09-18_en",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-09-18T15:05:47Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "environnement-marin",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "Netherlands-based company Oyster Heaven is working to restore coastal ecosystems by developing scalable oyster reef restoration projects across Europe and beyond.",
+      "score": {
+        "freshness": 39,
+        "relevance": 3,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 68
+      },
+      "score_global": 68,
+      "score_relevance_bluewave": 3,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "28a7f357e075561bcd6e",
+      "title": "EU Missions drive systemic change, new assessment shows",
+      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1863",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-09-15T13:53:03Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "economie-bleue",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "The five EU Missions in Horizon Europe are delivering tangible positive results in addressing some of Europe's most pressing societal challenges through scientific and technological innovation, according to a mid-term assessment…",
+      "score": {
+        "freshness": 38,
+        "relevance": 1,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 65
+      },
+      "score_global": 65,
+      "score_relevance_bluewave": 1,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "ac80793cc673e3b6b536",
+      "title": "ImproFish: advancing the science behind herring fisheries in the Gulf of Bothnia",
+      "url": "https://cinea.ec.europa.eu/featured-projects/improfish-advancing-science-behind-herring-fisheries-gulf-bothnia_en",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-09-15T10:40:29Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "economie-bleue",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "Over recent decades, herrings in the Gulf of Bothnia have grown more slowly. Several factors could be behind these changes, but a clearer understanding of the actual causes is needed. Closing this knowledge gap is the aim of…",
+      "score": {
+        "freshness": 38,
+        "relevance": 1,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 65
+      },
+      "score_global": 65,
+      "score_relevance_bluewave": 1,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "ad181955b3f9df87bbd0",
+      "title": "Réussir son projet territorial Energie Climat : une formation du Cerema en novembre 2026",
+      "url": "https://www.cerema.fr/fr/actualites/reussir-son-projet-territorial-energie-climat-formation-du",
+      "source_id": "cerema",
+      "source_name": "Cerema",
+      "published_at": "2026-09-15T00:00:00Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "littoral-adaptation",
+      "geographies": [
+        "france-mediterranee"
+      ],
+      "excerpt": "Publié le Mardi 15 septembre 2026 Stratégies, résilience et projets de transition, Energies renouvelables terrestres et maritimes Ville verte L’aménagement du territoire doit aujourd’hui être mis en perspective avec l’évolution du…",
+      "score": {
+        "freshness": 37,
+        "relevance": 3,
+        "authority": 20,
+        "geography": 10,
+        "diversity": 5,
+        "total": 75
+      },
+      "score_global": 75,
+      "score_relevance_bluewave": 3,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "c3602ececdef1c40546c",
+      "title": "SARex 2026 tests multinational maritime coordination in North Sea search and rescue exercise",
+      "url": "https://www.emsa.europa.eu/newsroom/latest-news/item/5821-sarex-2026-tests-multinational-maritime-coordination-in-north-sea-search-and-rescue-exercise.html",
+      "source_id": "emsa",
+      "source_name": "Agence européenne pour la sécurité maritime",
+      "published_at": "2026-09-11T09:26:22Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "droit-securite",
+      "geographies": [
+        "france-mediterranee"
+      ],
+      "excerpt": "SARex 2026 tests multinational maritime coordination in North Sea search and rescue exercise On 10 September 2026, coast guard authorities from Belgium, France and the Netherlands carried ...",
+      "score": {
+        "freshness": 36,
+        "relevance": 9,
+        "authority": 20,
+        "geography": 10,
+        "diversity": 5,
+        "total": 80
+      },
+      "score_global": 80,
+      "score_relevance_bluewave": 9,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "fd802a977c78c38902cb",
+      "title": "Commission boosts maritime manufacturing with new EU Industrial Maritime Value Chains Alliance",
+      "url": "https://single-market-economy.ec.europa.eu/news/commission-boosts-maritime-manufacturing-new-eu-industrial-maritime-value-chains-alliance-2026-09-02_en",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-09-02T10:38:55Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "economie-bleue",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "The European Commission has officially launched the new EU Industrial Maritime Value Chains Alliance, following up on its commitment in the recently adopted European Industrial Maritime Strategy.",
+      "score": {
+        "freshness": 32,
+        "relevance": 12,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 70
+      },
+      "score_global": 70,
+      "score_relevance_bluewave": 12,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "4d6d53fcacf84c57f952",
+      "title": "EMSA Supports Multipurpose Maritime Exercise TOMIS 2026 in the Western Black Sea",
+      "url": "https://www.emsa.europa.eu/newsroom/latest-news/item/5811-emsa-supports-multipurpose-maritime-exercise-tomis-2026-in-the-western-black-sea.html",
+      "source_id": "emsa",
+      "source_name": "Agence européenne pour la sécurité maritime",
+      "published_at": "2026-08-19T10:57:26Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "ports-maritime",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "EMSA took part in the Multipurpose Maritime Exercise (MME) TOMIS 2026, hosted by the Romanian Coast Guard off Constanța on 14 August 2026. The exercise formed part of the wider Multipurpose Maritime ...",
+      "score": {
+        "freshness": 26,
+        "relevance": 12,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 5,
+        "total": 68
+      },
+      "score_global": 68,
+      "score_relevance_bluewave": 12,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "7190cdc5339ce7f5f4e2",
+      "title": "Sweden tests light-guided shrimp fishing",
+      "url": "https://oceans-and-fisheries.ec.europa.eu/news/sweden-tests-light-guided-shrimp-fishing-2026-07-29_en",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-08-17T09:52:40Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "environnement-marin",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "Across Sweden’s west coast, debate about the future of fishing is growing more urgent. A Swedish government’s proposal to ban bottom trawling in marine protected areas have brought the issue into sharp focus for coastal…",
+      "score": {
+        "freshness": 25,
+        "relevance": 6,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 57
+      },
+      "score_global": 57,
+      "score_relevance_bluewave": 6,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "ad73e35bfe050440c3c5",
+      "title": "EU ocean observation survey: share your insights by 15 September",
+      "url": "https://oceans-and-fisheries.ec.europa.eu/news/eu-ocean-observation-survey-share-your-insights-15-september-2026-07-29_en",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-07-29T06:13:45Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "economie-bleue",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "Through the OceanEye initiative, the EU aims to become a global leader in ocean observation technology and secure 35% of the global ocean technology market by 2035.",
+      "score": {
+        "freshness": 16,
+        "relevance": 3,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 45
+      },
+      "score_global": 45,
+      "score_relevance_bluewave": 3,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "7fd7d8fbb5fe21c090d3",
+      "title": "EMSA takes part in Operation BREEZE 2026 in Bulgaria",
+      "url": "https://www.emsa.europa.eu/newsroom/latest-news/item/5737-emsa-takes-part-in-operation-breeze-2026-in-bulgaria.html",
+      "source_id": "emsa",
+      "source_name": "Agence européenne pour la sécurité maritime",
+      "published_at": "2026-07-21T11:49:47Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "droit-securite",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "On 17 July, in the vicinity of Burgas, Bulgaria, EMSA participated in the annual operational exercise Breeze 2026, organised by the Bulgarian Navy together with the Bulgarian Maritime ...",
+      "score": {
+        "freshness": 13,
+        "relevance": 3,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 5,
+        "total": 46
+      },
+      "score_global": 46,
+      "score_relevance_bluewave": 3,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "32e02b6c2d1b51694ba8",
+      "title": "NESBp: strengthening maritime spatial planning across the North Sea and Baltic Sea",
+      "url": "https://cinea.ec.europa.eu/featured-projects/nesbp-strengthening-maritime-spatial-planning-across-north-sea-and-baltic-sea_en",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-07-13T09:12:20Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "environnement-marin",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "Today, Europe’s northern seas face growing pressure. The energy transition, climate change, biodiversity loss and increasing geopolitical tensions are reshaping how countries plan and manage their maritime space. Offshore wind…",
+      "score": {
+        "freshness": 9,
+        "relevance": 6,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 41
+      },
+      "score_global": 41,
+      "score_relevance_bluewave": 6,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "d4b2c57e7193a3e53646",
+      "title": "Major Oil Pollution Response Exercise Conducted off the Belgian Coast within MMO MSNS 2026",
+      "url": "https://www.emsa.europa.eu/newsroom/latest-news/item/5725-polex-2026-major-oil-pollution-response-exercise-conducted-off-the-belgian-coast-within-mmo-msns-2026.html",
+      "source_id": "emsa",
+      "source_name": "Agence européenne pour la sécurité maritime",
+      "published_at": "2026-06-30T12:42:32Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "environnement-marin",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "On 17 June, seven Belgian, Dutch and EMSA vessels carried out a major oil pollution response exercise off the coast of Zeebrugge, testing how partners would contain and recover a large oil slick ...",
+      "score": {
+        "freshness": 3,
+        "relevance": 6,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 5,
+        "total": 39
+      },
+      "score_global": 39,
+      "score_relevance_bluewave": 6,
+      "eligible_featured": false,
+      "featured": false
+    },
+    {
+      "id": "16bfd7901425a8d81312",
+      "title": "Commissioner Kadis hosts implementation dialogue on EU aquaculture policy",
+      "url": "https://oceans-and-fisheries.ec.europa.eu/news/commissioner-kadis-hosts-implementation-dialogue-eu-aquaculture-policy-2026-06-30_en",
+      "source_id": "eu-oceans-fisheries",
+      "source_name": "Commission européenne — Océans et pêche",
+      "published_at": "2026-06-30T11:57:00Z",
+      "fetched_at": "2026-09-20T16:22:11Z",
+      "theme": "economie-bleue",
+      "geographies": [
+        "europe-mediterranee"
+      ],
+      "excerpt": "Today, Costas Kadis, Commissioner for Fisheries and Oceans, is hosting an implementation dialogue on EU aquaculture policy. The event brings together stakeholders from across the sector – including aquaculture industry and…",
+      "score": {
+        "freshness": 3,
+        "relevance": 3,
+        "authority": 20,
+        "geography": 5,
+        "diversity": 1,
+        "total": 32
+      },
+      "score_global": 32,
+      "score_relevance_bluewave": 3,
+      "eligible_featured": false,
+      "featured": false
+    }
+  ]
+}

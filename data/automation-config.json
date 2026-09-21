@@ -1,0 +1,7 @@
+{
+  "provider": "brevo",
+  "lead_endpoint": null,
+  "chat_enabled": false,
+  "newsletter_enabled": false,
+  "meeting_url": null
+}

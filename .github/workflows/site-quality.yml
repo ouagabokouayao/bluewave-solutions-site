@@ -1,0 +1,44 @@
+name: BlueWave site quality
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Git whitespace
+        run: git diff --check HEAD^ HEAD
+      - name: JSON syntax
+        run: |
+          python -m json.tool data/actualites.json >/dev/null
+          python -m json.tool data/actualites-status.json >/dev/null
+          python -m json.tool data/actualites-sources.json >/dev/null
+          python -m json.tool data/actualites-curation.json >/dev/null
+          python -m json.tool data/automation-config.json >/dev/null
+      - name: HTML and content quality
+        run: python quality/scripts/quality_check.py
+      - name: JavaScript syntax
+        run: |
+          node --check assets/js/main.js
+          node --check assets/js/qualifier.js
+          node --check assets/js/mediatheque.js
+          node --check assets/js/actualites.js
+          node --check assets/js/automation.js
+      - name: Serverless lead pipeline tests
+        run: node --test serverless/bluewave-leads/tests/handler.test.mjs
+      - name: Secret values scan
+        run: python quality/scripts/check_secrets.py
+      - name: Integrity manifest
+        run: python quality/scripts/verify_manifest.py

@@ -1,78 +1,178 @@
 [
   {
+    "path": ".github/workflows/bluewave-quality.yml",
+    "sha256": "4273894d3b5e680367a244e62129b3bbd3e09229e5f1e7427249255fb54848ae",
+    "bytes": 535
+  },
+  {
+    "path": ".github/workflows/check-links.yml",
+    "sha256": "b7259da047823e60dbf48d8566a7450331ed0685cd2597c9a98f99462af83090",
+    "bytes": 414
+  },
+  {
+    "path": ".github/workflows/site-quality.yml",
+    "sha256": "caa54175ee290314bfdd2729b4f8a408d54ebdcb6db0a729bb3c2cde46967c4d",
+    "bytes": 1436
+  },
+  {
+    "path": ".github/workflows/update-actualites.yml",
+    "sha256": "e24d341da93ac07ee814643b286baff58c337fa3755eb8fdd5bdaa64f363acf5",
+    "bytes": 1565
+  },
+  {
+    "path": ".gitignore",
+    "sha256": "924451c40b0d623bb01c5157e588136690651825b1c4566cda28f4dadfc75700",
+    "bytes": 771
+  },
+  {
+    "path": ".nojekyll",
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "bytes": 1
+  },
+  {
     "path": "404.html",
-    "sha256": "42c914044280151b801e8aca919e30aa5a7de41baafaf51f34333b8b78cc41e4",
-    "bytes": 3340
+    "sha256": "8cc242edd5aa97c243f24a472d452b987115657f34d6f1ddbaeb4c499be3a606",
+    "bytes": 3684
+  },
+  {
+    "path": "README.md",
+    "sha256": "eb11f280b1f0c7b161af84f5c96f46af519cce2f3b947016eda224a6a669a8b6",
+    "bytes": 4651
   },
   {
     "path": "a-propos.html",
-    "sha256": "668e2c36e3d1d70865c1f571a71b3a5483d46247b52da8052060e46a72a5111e",
-    "bytes": 6152
+    "sha256": "e0ff8b60c786135d515b143af0b34a3a0ce5310f8e8629a7bd33fd05e327b3ae",
+    "bytes": 6667
   },
   {
-    "path": "contact.html",
-    "sha256": "439699b1f7386575dbf34d15f5d678e0f76e42cca21c0fc66995126fcf394f39",
-    "bytes": 3491
-  },
-  {
-    "path": "domaines.html",
-    "sha256": "ea21d66c2492d94ef88d5ee11deb4b08340ac2fc10afbdcbb40612b08892d091",
-    "bytes": 3450
-  },
-  {
-    "path": "index.html",
-    "sha256": "44274aacce5bffc1dcce30181e5281644cab6352b38cf5b57042e48274ed9ee3",
-    "bytes": 10354
-  },
-  {
-    "path": "mentions-legales.html",
-    "sha256": "68dc9a41033da00234bc3e5b621f7635e0c7c7941db6aff43b407ad7080b96dd",
-    "bytes": 4153
-  },
-  {
-    "path": "methode.html",
-    "sha256": "cb958a14339484cdcc9b48ba63dfbfca06442a8954f469253bf1013f981adbe7",
-    "bytes": 6817
-  },
-  {
-    "path": "notes-demonstrateurs.html",
-    "sha256": "351e048e41ce022bb6a13ea076378047aa58020e063db678d12650073cc4c1fd",
-    "bytes": 3435
-  },
-  {
-    "path": "politique-confidentialite.html",
-    "sha256": "e9e2898a9709b622408a7c77329e99855a712c814e931bc84ad44012079937fb",
-    "bytes": 4284
-  },
-  {
-    "path": "preuves-demonstrateurs.html",
-    "sha256": "d230aedcf50007ea4966b6b1b516259b2e55890cc9073722c1d91642809b996d",
-    "bytes": 7745
-  },
-  {
-    "path": "qualifier-un-besoin.html",
-    "sha256": "2641a4c0608d6ae4b742c711e9f35b9de47b214448fc8702242a286fed155f78",
-    "bytes": 10162
-  },
-  {
-    "path": "services.html",
-    "sha256": "fe21f515aff311fe46b0a6eae246f20e804322f33a104df9ac9093cec6df8d1b",
-    "bytes": 3348
-  },
-  {
-    "path": "solutions.html",
-    "sha256": "702711392a07e8d51dce4dbcb6a24b302cabe4514df2510435c01b4ffe1c549d",
-    "bytes": 8560
-  },
-  {
-    "path": "robots.txt",
-    "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1",
-    "bytes": 26
+    "path": "actualites.html",
+    "sha256": "aed133fee183bd30383b66b24513596ee0dacae1f7c44b82494a6a0f256df4cc",
+    "bytes": 7907
   },
   {
     "path": "assets/css/style.css",
-    "sha256": "36b46b93ac25f59df6f93c3a397ad02141b4f9726749e51e1bdcba8f6784c36f",
-    "bytes": 16035
+    "sha256": "0a5f6913418a9aa574fdfe7f689aa74ff565819ecb326bbb7321483e61acf998",
+    "bytes": 25233
+  },
+  {
+    "path": "assets/img/brand/logo/favicon-bluewave-board-192-preview.png",
+    "sha256": "459e5039ded7d29ffe2ad62f6e5e8637a5e0b40fccdba5a6d3fa57e56d1b99cb",
+    "bytes": 8755
+  },
+  {
+    "path": "assets/img/brand/logo/favicon-bluewave-board-512-preview.png",
+    "sha256": "a501e29dee429c158a6c682365f811475c445ee9c59447c5b9a77b851fedb20f",
+    "bytes": 9870
+  },
+  {
+    "path": "assets/img/brand/logo/logo-bluewave-horizontal-blanc-fond-bleu.png",
+    "sha256": "02b0c0396558ac5b0ce3139997ef446597c4e007ea4756028a73d21c54efdc28",
+    "bytes": 101625
+  },
+  {
+    "path": "assets/img/brand/logo/logo-bluewave-horizontal-fond-fonce.png",
+    "sha256": "10a3b3a1b0c57943b74643779fe64179880bce1ba94b41b1bcae4165efeea1c8",
+    "bytes": 124829
+  },
+  {
+    "path": "assets/img/brand/logo/logo-bluewave-horizontal-officiel.png",
+    "sha256": "cc9e5b157950d255db5339b63141f41daced3e891f9163c8cccee90df5bd4620",
+    "bytes": 99821
+  },
+  {
+    "path": "assets/img/brand/logo/logo-bluewave-reference.png",
+    "sha256": "5f2d54e428b4dd1ceb8afc8bf169e6eb523bafae69e6b0aada952f1bd2192a8d",
+    "bytes": 1017645
+  },
+  {
+    "path": "assets/img/brand/logo/logo-bluewave-vertical-officiel.png",
+    "sha256": "7dc47f8dc66d796764900a3a3417965389c7f3939b33409b1877f6594343a5e4",
+    "bytes": 67737
+  },
+  {
+    "path": "assets/img/site/about-mangrove-optimized.jpg",
+    "sha256": "db0e35a8d2bfb325baf057a0a32522c41816df0e00ea6226cd698acffcc62afd",
+    "bytes": 446947
+  },
+  {
+    "path": "assets/img/site/about-mangrove.jpg",
+    "sha256": "2895cfb795d8c84c909e92bcca82f90b3f8826a00c59aad4b060743195528b92",
+    "bytes": 458605
+  },
+  {
+    "path": "assets/img/site/domaines-research-vessel.jpg",
+    "sha256": "75b3213d9c786a636bffd5708c27049ae09a9b9280f2dacd5d98838e80335085",
+    "bytes": 244189
+  },
+  {
+    "path": "assets/img/site/domaines-research-vessel.png",
+    "sha256": "fa826cd0295d39af2daed6a1bbbf5acdba37ee3ac9e293dd0fc4cd90bfc72971",
+    "bytes": 2222262
+  },
+  {
+    "path": "assets/img/site/hero-lagoon.jpg",
+    "sha256": "2ef1489a4a013e8260adf398226e7c3f245764433832a813bf7dc78b12f95872",
+    "bytes": 159879
+  },
+  {
+    "path": "assets/img/visuals/apercu-diagnostic.svg",
+    "sha256": "4a95d9530bce0c68b71d3bca4ff2cb26fea5d78212f51649d85d9ff0513bf652",
+    "bytes": 3461
+  },
+  {
+    "path": "assets/img/visuals/apercu-fiche-projet.svg",
+    "sha256": "896444bf0adc6340d2ff97f02bc2ba4ba29809a43407b9d42ae4bf2cea6e7408",
+    "bytes": 2086
+  },
+  {
+    "path": "assets/img/visuals/apercu-note-strategique.svg",
+    "sha256": "9e74acb1778e856b40a99ae791f40979e655b93a9c27c1a97188174363770288",
+    "bytes": 3260
+  },
+  {
+    "path": "assets/img/visuals/apercu-support-formation.svg",
+    "sha256": "c174740b1d88df89dc17499cdd61b5c416853123636b79cfe03b3d3ba43cd2f5",
+    "bytes": 1984
+  },
+  {
+    "path": "assets/img/visuals/feuille-route-bluewave.svg",
+    "sha256": "5985436ea2757e0545887f2cca18972e128f52c3e587ef8e8ec5b2c8a6fb0f66",
+    "bytes": 3272
+  },
+  {
+    "path": "assets/img/visuals/matrice-acteurs-usages.svg",
+    "sha256": "2506c3935f1bc21868590b29075ab4e72557a45cca62f0437f8a0ecf63a6ebe8",
+    "bytes": 3835
+  },
+  {
+    "path": "assets/img/visuals/matrice-risques-opportunites.svg",
+    "sha256": "1d38076cbc07bed3a1aa7c8ce2620cf6d63f47e2bf8931cafe9d5e212623e6c2",
+    "bytes": 2584
+  },
+  {
+    "path": "assets/img/visuals/visualisation-deux-marches.svg",
+    "sha256": "fba3ece271583c647e36ba7c5f6b740738f7ac51589a2edf657dc83639a599c5",
+    "bytes": 4570
+  },
+  {
+    "path": "assets/img/visuals/visualisation-donnees-decision.svg",
+    "sha256": "69ef2f4c4b0539e59fb63a5eb197daf1a85361c2a1ced50c6ac91f1b6e2fa278",
+    "bytes": 4738
+  },
+  {
+    "path": "assets/img/visuals/visualisation-methode-bluewave.svg",
+    "sha256": "fbc3a9e193f1ce1e323d3789a50d5989bdf4d933f4f3f55bbd4f2439e570b540",
+    "bytes": 3724
+  },
+  {
+    "path": "assets/js/actualites.js",
+    "sha256": "1d7373158eb671a698b99bb40793f82b580ba74c51e9e5a7c797bcc469fd679b",
+    "bytes": 7254
+  },
+  {
+    "path": "assets/js/automation.js",
+    "sha256": "f76e95641c9514793235986e90c74ea3249024c4301bb05fe53f0f4fb6bad307",
+    "bytes": 3691
   },
   {
     "path": "assets/js/main.js",
@@ -80,13 +180,168 @@
     "bytes": 578
   },
   {
+    "path": "assets/js/mediatheque.js",
+    "sha256": "a15b96a37b06ce78f493b346439712e350c65f81c7e63d7436890bbe0c773ce6",
+    "bytes": 3193
+  },
+  {
     "path": "assets/js/qualifier.js",
-    "sha256": "b4095f0e546a7024bcaa71217c77a899347ed09caaa4c7c0cdaa1380ff859330",
-    "bytes": 7417
+    "sha256": "4bd80bc48cc7173daeacd0a49c816fb83170afee38cdd05bc4a213c79f046804",
+    "bytes": 14557
+  },
+  {
+    "path": "contact.html",
+    "sha256": "cbb4ddaa06d0ff78fc645d71579a3e47e2184ce4ce1f855520c0e86f774af0f6",
+    "bytes": 3920
+  },
+  {
+    "path": "data/actualites-curation.json",
+    "sha256": "78e45c66963e14eba78813c3a79be2b01d8a27668f7d1d5b4a9dcb9c86854810",
+    "bytes": 415
+  },
+  {
+    "path": "data/actualites-sources.json",
+    "sha256": "dde72258dfb5c921a92357d4e646746963e914c8c897d43fe98f69eea087b023",
+    "bytes": 1649
+  },
+  {
+    "path": "data/actualites-status.json",
+    "sha256": "51da290d7cbb1305f9173048e33d6834a66a786d32d35db75a23e087f4c78e72",
+    "bytes": 894
+  },
+  {
+    "path": "data/actualites.json",
+    "sha256": "4e1b3c41e230819471d78cfbf4d8ad5e3ab0fdd0269bd0aec20f45e062d1e4d1",
+    "bytes": 14222
+  },
+  {
+    "path": "data/automation-config.json",
+    "sha256": "3312a79e70704dcf78f9101700b849f93e0810c484b120aa41476d49c17be388",
+    "bytes": 130
+  },
+  {
+    "path": "domaines.html",
+    "sha256": "1c5247cbdb39ea10c5aae1fc9f5ba1bc5985479f8a07036a4a45c1566e8ada1b",
+    "bytes": 3839
+  },
+  {
+    "path": "index.html",
+    "sha256": "df27e622917cb5b8e163903e8fb9f01c7f2d193fdbe03c039f90778c50dcb705",
+    "bytes": 12777
+  },
+  {
+    "path": "mediatheque.html",
+    "sha256": "9bd15ef6f2b4b2e24e5bf8a38b738d71d02c9ce66a77a784aacbf1486f2db80a",
+    "bytes": 12577
+  },
+  {
+    "path": "mentions-legales.html",
+    "sha256": "1bca40efb151b7cd2e3a291ce5aad720598c05a53420e921e14930d8e2af828f",
+    "bytes": 4498
+  },
+  {
+    "path": "methode.html",
+    "sha256": "29cc4ef77182fec3f5a13aeb8ed284642e76748fdaeb07ccab454037cae93270",
+    "bytes": 6707
+  },
+  {
+    "path": "notes-demonstrateurs.html",
+    "sha256": "d839c377a39f40e72d58040568ac85baf927f5972349639e143375b8b4c07362",
+    "bytes": 3836
+  },
+  {
+    "path": "politique-confidentialite.html",
+    "sha256": "10fac32f3af8888b77af1616ae972a16f7d839c969ad23fad44fedabb372c57b",
+    "bytes": 5533
+  },
+  {
+    "path": "preuves-demonstrateurs.html",
+    "sha256": "ce9e17fcbe800802f32a87a0f461bb7adf8ead4eb956cf347defa3c99c69f3ac",
+    "bytes": 8420
+  },
+  {
+    "path": "qualifier-un-besoin.html",
+    "sha256": "bd7723ede05dbff5c97ee11a45f17c04394dfce7f4d3769e35c40985be15a88f",
+    "bytes": 13724
+  },
+  {
+    "path": "quality/scripts/check_external_links.py",
+    "sha256": "89ee226ff269882f21f9b7845821602858c58d0d0833da6a4595b913d9640746",
+    "bytes": 3057
+  },
+  {
+    "path": "quality/scripts/check_secrets.py",
+    "sha256": "d4cff2a06ad514cbe9d1b47d3aa42867f9eeb892ae10705414bfc3a28f3bcb44",
+    "bytes": 1539
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "637c6d8a5962f49c7cc6a403cbcdf85f56acd08e1e22a35f180b549780191c4e",
-    "bytes": 5423
+    "sha256": "68644c8fb0c353aecf77fcf2334a2f387a65042f190363fff7b6d9203226dc6d",
+    "bytes": 21170
+  },
+  {
+    "path": "quality/scripts/update_actualites.py",
+    "sha256": "e8bd16aeb0a53fc190ac3a3a20c99fd98ac452c7f7013a9697e61a543287defe",
+    "bytes": 27569
+  },
+  {
+    "path": "quality/scripts/update_manifest.py",
+    "sha256": "14f9bdce77ebebe689d17c1ec527554db12fdc67381bc793a19143619fbb646b",
+    "bytes": 3226
+  },
+  {
+    "path": "quality/scripts/verify_manifest.py",
+    "sha256": "62de54434386ea62497c4e78502e787a18b1e73eefde2ee6a12ccfab06585a9b",
+    "bytes": 1850
+  },
+  {
+    "path": "robots.txt",
+    "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1",
+    "bytes": 26
+  },
+  {
+    "path": "serverless/bluewave-leads/.env.example",
+    "sha256": "4f85efd79b21ae9d6cc52d5f406cd5f7fc76d8886e51288d02e67de8f4ab10c0",
+    "bytes": 294
+  },
+  {
+    "path": "serverless/bluewave-leads/README.md",
+    "sha256": "3c5f46ebc2f12f13e41d14e1a0cc8d7459f878b8ee4220bebe5db021826f09e3",
+    "bytes": 5373
+  },
+  {
+    "path": "serverless/bluewave-leads/brevo-client.mjs",
+    "sha256": "ca32a50097997c9d125a7812f3004b2339ea02f2d1fbaf8520d53fd7489b8e23",
+    "bytes": 4961
+  },
+  {
+    "path": "serverless/bluewave-leads/handler.mjs",
+    "sha256": "69d1c719febb7fbbabca1d44fc034bcfbf0e09a37bac54550e2e83006c55cd21",
+    "bytes": 3925
+  },
+  {
+    "path": "serverless/bluewave-leads/security.mjs",
+    "sha256": "556e1250718a3f1008ff47b25c8d03fa9819473910a8dcce80505d715424f126",
+    "bytes": 1420
+  },
+  {
+    "path": "serverless/bluewave-leads/tests/handler.test.mjs",
+    "sha256": "3f71c982a5b3e09c2153734aab95c4250a961791f21dfecbdb12f4c49a62ba42",
+    "bytes": 6037
+  },
+  {
+    "path": "serverless/bluewave-leads/validation.mjs",
+    "sha256": "83774b05ef0cb628d2aee1e4ea662b14cdc1d24c90634f24ca137578eb714ff5",
+    "bytes": 3748
+  },
+  {
+    "path": "services.html",
+    "sha256": "38f88a6cdd34bdd8f549f97b16b8e1fef52ce4563ac572251408cd33780ead44",
+    "bytes": 3737
+  },
+  {
+    "path": "solutions.html",
+    "sha256": "5300d62b9e1797507447a3a352f26ddca7d009005e34b3438179a0c97599f16f",
+    "bytes": 8869
   }
 ]
