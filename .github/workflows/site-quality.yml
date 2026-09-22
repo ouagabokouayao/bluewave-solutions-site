@@ -42,3 +42,9 @@ jobs:
         run: python quality/scripts/check_secrets.py
       - name: Integrity manifest
         run: python quality/scripts/verify_manifest.py
+      - name: Public build and manifest
+        run: |
+          python quality/scripts/build_dist.py
+          python quality/scripts/check_dist.py
+          python quality/scripts/dist_manifest.py
+          python quality/scripts/dist_manifest.py --check
