@@ -41,8 +41,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "c9f212572ec91dd9c746e3397858bd2fec81197637afe0310bf887836c687971",
-    "bytes": 7549
+    "sha256": "0c104f446f90ffc31505dfa0fdcc84ce54fed1bd893ea29a3ad0a171bae02aa2",
+    "bytes": 9948
   },
   {
     "path": "a-propos.html",
@@ -55,9 +55,19 @@
     "bytes": 7907
   },
   {
+    "path": "assets/css/evidence-fondateur.css",
+    "sha256": "8fb891618f189de63a23848e4ff1148321c67ad51155fbd26d4d3422c9db151d",
+    "bytes": 2989
+  },
+  {
     "path": "assets/css/style.css",
     "sha256": "0a5f6913418a9aa574fdfe7f689aa74ff565819ecb326bbb7321483e61acf998",
     "bytes": 25233
+  },
+  {
+    "path": "assets/data/oby-preuves-selectionnees.json",
+    "sha256": "3d35717c01504f2d2a5d5f32953e238ff1ec3b2c2c8f72a58283eb660c171c6c",
+    "bytes": 12921
   },
   {
     "path": "assets/img/brand/logo/favicon-bluewave-board-192-preview.png",
@@ -93,6 +103,61 @@
     "path": "assets/img/brand/logo/logo-bluewave-vertical-officiel.png",
     "sha256": "7dc47f8dc66d796764900a3a3417965389c7f3939b33409b1877f6594343a5e4",
     "bytes": 67737
+  },
+  {
+    "path": "assets/img/evidence-fondateur/academies-marine-ensm-2025.webp",
+    "sha256": "87dba17a5a52cea55fe30a7d221bde50892bb82240f619ab2c4acecfaf2b42bb",
+    "bytes": 117546
+  },
+  {
+    "path": "assets/img/evidence-fondateur/aem-cote-ivoire-2020.webp",
+    "sha256": "1dcc7e9ce8bf9baa4360b58237f54dbbe7364b5037d9bb099ab21574da7621dc",
+    "bytes": 123454
+  },
+  {
+    "path": "assets/img/evidence-fondateur/cop12-convention-abidjan-2017.webp",
+    "sha256": "2e3811455fb1489bf34b1735da95ef78d4491dcc8e8890881bcde8497846b6bd",
+    "bytes": 143404
+  },
+  {
+    "path": "assets/img/evidence-fondateur/dialogue-politiques-abidjan-2017.webp",
+    "sha256": "c0341958d2829266fe14ba4c2293854286caaad42b6cbfc3a8d3e0d4b9925509",
+    "bytes": 167296
+  },
+  {
+    "path": "assets/img/evidence-fondateur/ecole-ete-ocean-2026.webp",
+    "sha256": "c9e26c41e61e555a7d67ddd5a518b0518fdce6459429201c100fec227bb86419",
+    "bytes": 264276
+  },
+  {
+    "path": "assets/img/evidence-fondateur/euromaritime-2022.webp",
+    "sha256": "b50de9cd79745ac2d196761f593fd7ac918ec3597c0a4d68ce58554d9cdacda7",
+    "bytes": 288388
+  },
+  {
+    "path": "assets/img/evidence-fondateur/human-sea-nantes-2018.webp",
+    "sha256": "8fd51d0dee212170796c4b1390ca2004887bfe1741de3453e34c897b52d29aa8",
+    "bytes": 114650
+  },
+  {
+    "path": "assets/img/evidence-fondateur/indemer-monaco-2025.webp",
+    "sha256": "2264d026bbf4f407cf170a2236554989d0489925fead31234f49086a26b6ecd8",
+    "bytes": 177948
+  },
+  {
+    "path": "assets/img/evidence-fondateur/loi-littoral-marseille-2026.webp",
+    "sha256": "ad9f659b74ae23652bd47b98c936a08b3b0c89de2e38f42557a2f8ac57cfa18a",
+    "bytes": 161140
+  },
+  {
+    "path": "assets/img/evidence-fondateur/medpan-port-cros-2024.webp",
+    "sha256": "d1e951ea308112d0634aa3466e639c4a952828d2f83fcb1e81c4a8f622060ed5",
+    "bytes": 137952
+  },
+  {
+    "path": "assets/img/evidence-fondateur/sommet-lome-2016.webp",
+    "sha256": "cfcb4570e8c7829b7d9ec33ab04d74bdb94b529097969b9557315c4b07a73fd0",
+    "bytes": 98272
   },
   {
     "path": "assets/img/site/about-mangrove-optimized.jpg",
@@ -180,6 +245,11 @@
     "bytes": 3691
   },
   {
+    "path": "assets/js/evidence-fondateur.js",
+    "sha256": "15b499eeac189e3d8f04371e022c7fdc4f61ad626bb6ed033cf606eb092890e5",
+    "bytes": 4973
+  },
+  {
     "path": "assets/js/main.js",
     "sha256": "c181bd7e6ae8f6fcc758d014780312315fe6336dd8d213762216d9b033d67607",
     "bytes": 578
@@ -236,8 +306,8 @@
   },
   {
     "path": "mediatheque.html",
-    "sha256": "9bd15ef6f2b4b2e24e5bf8a38b738d71d02c9ce66a77a784aacbf1486f2db80a",
-    "bytes": 12577
+    "sha256": "13b68a572751ee8912e77797339fbc7ecdd0486c6b7d54c26be47c8e58b45bb8",
+    "bytes": 14252
   },
   {
     "path": "mentions-legales.html",
@@ -270,9 +340,19 @@
     "bytes": 13724
   },
   {
+    "path": "quality/media-provenance-oby-bluewave.json",
+    "sha256": "b39ec4d8456dfcf4c7656e62ef61ef7fa6db04fd92d861f6fcdcc888f8b4cefb",
+    "bytes": 9178
+  },
+  {
     "path": "quality/scripts/build_dist.py",
-    "sha256": "6f862ff2115abfa8420f54290a1c3a562563fb3ccc749be6a8f3842ccb3ac2be",
-    "bytes": 6705
+    "sha256": "6c248dc210c985ea30630a80fa7c6f0abcb42ce493aec002efcce54a6f809c44",
+    "bytes": 6996
+  },
+  {
+    "path": "quality/scripts/build_evidence_fondateur.py",
+    "sha256": "41e79bdc6eec3c3b4d96cb1bce7b5640bd102acb51c3046ffdfc5da98daa5abf",
+    "bytes": 8854
   },
   {
     "path": "quality/scripts/check_dist.py",
@@ -296,8 +376,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "68644c8fb0c353aecf77fcf2334a2f387a65042f190363fff7b6d9203226dc6d",
-    "bytes": 21170
+    "sha256": "7ae04cfc684e9cf2404fd03524e23e87d3fee582622e3706c62503abf524d34a",
+    "bytes": 27067
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -306,8 +386,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "d31a1f01c5322bed5eab5a3818ee9cecbe8412a19f727029db9b1a6df39474cc",
-    "bytes": 3440
+    "sha256": "179fbc95fb5aa5f59869cb00eb4d16dae092a71058175d58e20a0dae45688099",
+    "bytes": 3671
   },
   {
     "path": "quality/scripts/verify_manifest.py",

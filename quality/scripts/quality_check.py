@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import re, sys, json
+import re, sys, json, hashlib
 from collections import Counter
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
@@ -259,6 +259,74 @@ def main():
     if 'href="https://ouagabokouayao.github.io/oby-site-academique/" target="_blank" rel="noopener noreferrer"' not in about:errors.append('a-propos.html: lien OBY ou attributs incorrects')
     robots=(ROOT/'robots.txt').read_text(encoding='utf-8')
     if not re.search(r'(?mi)^Disallow:\s*/\s*$',robots):errors.append('robots.txt: Disallow / absent')
+    # Corpus « Parcours du fondateur » : données OBY projetées, jamais des références BlueWave.
+    # Les noms d'institutions listés dans FORBIDDEN restent interdits dans la copie des pages
+    # (garde ci-dessus, appliquee au HTML). Ils ne sont tolérés que comme contexte factuel d'un
+    # événement à l'intérieur du corpus fondateur, et uniquement si la page porte la mention
+    # publique de séparation vérifiée ci-dessous.
+    EVIDENCE_DATA=ROOT/'assets/data/oby-preuves-selectionnees.json'
+    EVIDENCE_PROV=ROOT/'quality/media-provenance-oby-bluewave.json'
+    EVIDENCE_DIR='assets/img/evidence-fondateur/'
+    EVIDENCE_ATTRIBUTION='Parcours de OUAGA Bokoua Yao'
+    EVIDENCE_NOTICE=('Cette sélection documente des terrains, événements, formations et environnements '
+        'professionnels ou scientifiques du parcours de OUAGA Bokoua Yao, fondateur de BlueWave Solutions. '
+        'Elle ne constitue pas un portefeuille de clients, de mandats, de partenariats ou de réalisations '
+        'commerciales de BlueWave Solutions.')
+    EVIDENCE_FORBIDDEN=[
+        'BlueWave a participé','partenaire de BlueWave','client de BlueWave','notre partenaire','notre client',
+        'mission BlueWave','référence BlueWave','mandat BlueWave','partenariat BlueWave','BlueWave a accompagné',
+    ]
+    if EVIDENCE_NOTICE not in media:errors.append('mediatheque.html: mention publique de séparation du parcours fondateur absente')
+    if 'Parcours et environnements du fondateur' not in media:errors.append('mediatheque.html: titre du corpus fondateur absent')
+    for asset in ('assets/css/evidence-fondateur.css','assets/js/evidence-fondateur.js'):
+        if asset not in media:errors.append(f'mediatheque.html: ressource du corpus fondateur absente {asset}')
+    try:
+        evidence=json.loads(EVIDENCE_DATA.read_text(encoding='utf-8'))
+        prov=json.loads(EVIDENCE_PROV.read_text(encoding='utf-8'))
+        raw=EVIDENCE_DATA.read_text(encoding='utf-8')
+        items=evidence['items']
+        if len(items)!=11:errors.append(f'corpus fondateur: {len(items)} éléments au lieu de 11')
+        slugs={f['slug'] for f in evidence['filtres']}
+        ids=set()
+        for item in items:
+            missing={'id','titre','date','lieu','zone','filtres','image','largeur','hauteur','alt','attribution','lien_oby'}-set(item)
+            if missing:errors.append(f"corpus fondateur: clés absentes {item.get('id')} {sorted(missing)}")
+            if item.get('id') in ids:errors.append(f"corpus fondateur: id dupliqué {item.get('id')}")
+            ids.add(item.get('id'))
+            if item.get('attribution')!=EVIDENCE_ATTRIBUTION:errors.append(f"corpus fondateur: attribution non canonique {item.get('id')}")
+            image=item.get('image','')
+            if not image.startswith(EVIDENCE_DIR):errors.append(f"corpus fondateur: image hors du répertoire dédié {item.get('id')}")
+            if image.startswith(('http://','https://')):errors.append(f"corpus fondateur: hotlink image {item.get('id')}")
+            if not (ROOT/image).is_file():errors.append(f"corpus fondateur: image absente {image}")
+            if not (item.get('alt') or '').strip():errors.append(f"corpus fondateur: alt vide {item.get('id')}")
+            if not str(item.get('lien_oby','')).startswith('https://ouagabokouayao.github.io/oby-site-academique/'):errors.append(f"corpus fondateur: lien OBY invalide {item.get('id')}")
+            if not item.get('filtres'):errors.append(f"corpus fondateur: aucun filtre {item.get('id')}")
+            for slug in item.get('filtres',[]):
+                if slug not in slugs:errors.append(f"corpus fondateur: filtre inconnu {slug}")
+            if not isinstance(item.get('largeur'),int) or not isinstance(item.get('hauteur'),int):errors.append(f"corpus fondateur: dimensions manquantes {item.get('id')}")
+        for slug in slugs-{'tout'}:
+            if not any(slug in item.get('filtres',[]) for item in items):errors.append(f'corpus fondateur: filtre sans élément {slug}')
+        for phrase in EVIDENCE_FORBIDDEN:
+            if phrase.casefold() in raw.casefold():errors.append(f'corpus fondateur: formulation commerciale interdite {phrase}')
+            if phrase.casefold() in media.casefold():errors.append(f'mediatheque.html: formulation commerciale interdite {phrase}')
+        if re.search(r'\bJoseph\b',raw,re.I):errors.append('corpus fondateur: forme de nom non publique')
+        entries=prov['entrees']
+        if len(entries)!=len(items):errors.append('provenance fondateur: nombre d’entrées incohérent')
+        for entry in entries:
+            if entry.get('statut_source')!='public-valide':errors.append(f"provenance fondateur: source non publiable {entry.get('id')}")
+            if not entry.get('identique'):errors.append(f"provenance fondateur: copie non conforme {entry.get('id')}")
+            destination=ROOT/entry.get('destination_path','')
+            if not destination.is_file():errors.append(f"provenance fondateur: destination absente {entry.get('destination_path')}")
+            else:
+                content=destination.read_bytes()
+                if entry.get('sha256_destination')!=hashlib.sha256(content).hexdigest():errors.append(f"provenance fondateur: SHA-256 destination incorrect {entry.get('id')}")
+                if entry.get('bytes_destination')!=len(content):errors.append(f"provenance fondateur: taille destination incorrecte {entry.get('id')}")
+        declared={entry.get('destination_path') for entry in entries}
+        on_disk={path.relative_to(ROOT).as_posix() for path in (ROOT/EVIDENCE_DIR).glob('*') if path.is_file()}
+        if declared!=on_disk:errors.append(f'provenance fondateur: écart répertoire/manifeste {sorted(on_disk^declared)}')
+    except (OSError,ValueError,KeyError,TypeError) as exc:
+        errors.append(f'corpus fondateur invalide: {exc}')
+
     # JS syntax if node available handled outside
     report={'status':'pass' if not errors else 'fail','html_pages_checked':len(HTML),'errors':errors,'warnings':warnings}
     print(json.dumps(report,ensure_ascii=False,indent=2))

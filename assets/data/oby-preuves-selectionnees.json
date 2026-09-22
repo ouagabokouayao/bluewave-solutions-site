@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "corpus": "parcours-fondateur",
+  "titre": "Parcours et environnements du fondateur",
+  "attribution": "Parcours de OUAGA Bokoua Yao",
+  "filtres": [
+    {
+      "slug": "tout",
+      "label": "Tout"
+    },
+    {
+      "slug": "afrique-ouest",
+      "label": "Afrique de l’Ouest"
+    },
+    {
+      "slug": "france-mediterranee",
+      "label": "France / Méditerranée"
+    },
+    {
+      "slug": "gouvernance-droit-mer",
+      "label": "Gouvernance & droit de la mer"
+    },
+    {
+      "slug": "littoral-environnement",
+      "label": "Littoral & environnement"
+    },
+    {
+      "slug": "economie-bleue-innovation",
+      "label": "Économie bleue & innovation"
+    },
+    {
+      "slug": "recherche-formation",
+      "label": "Recherche & formation"
+    }
+  ],
+  "items": [
+    {
+      "id": "sommet-lome-securite-maritime-2016",
+      "rang": 1,
+      "titre": "Sommet de Lomé sur la sécurité et la sûreté maritimes en Afrique",
+      "date": "octobre 2016",
+      "lieu": "Lomé",
+      "zone": "afrique-ouest",
+      "filtres": [
+        "afrique-ouest",
+        "gouvernance-droit-mer"
+      ],
+      "themes_affiches": [
+        "Gouvernance & droit de la mer"
+      ],
+      "image": "assets/img/evidence-fondateur/sommet-lome-2016.webp",
+      "largeur": 1600,
+      "hauteur": 1000,
+      "alt": "OUAGA Bokoua Yao devant la signalétique du Sommet de Lomé sur la sécurité et la sûreté maritimes en Afrique, en 2016.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=sommet-lome-securite-maritime-2016",
+      "note_prudence": "Présence documentée ; ne pas attribuer de fonction, délégation, partenariat ou mandat non établi."
+    },
+    {
+      "id": "convention-abidjan-cop12-2017",
+      "rang": 2,
+      "titre": "COP12 de la Convention d’Abidjan",
+      "date": "27–31 mars 2017",
+      "lieu": "Abidjan, Côte d’Ivoire",
+      "zone": "afrique-ouest",
+      "filtres": [
+        "afrique-ouest",
+        "gouvernance-droit-mer",
+        "littoral-environnement"
+      ],
+      "themes_affiches": [
+        "Gouvernance & droit de la mer",
+        "Littoral & environnement"
+      ],
+      "image": "assets/img/evidence-fondateur/cop12-convention-abidjan-2017.webp",
+      "largeur": 1600,
+      "hauteur": 1067,
+      "alt": "OUAGA Bokoua Yao et deux participants devant la signalétique officielle de la douzième Conférence des Parties à la Convention d'Abidjan, consacrée à la gestion intégrée des océans en Afrique, Abidjan, 27-31 mars 2017.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=convention-abidjan-cop12-2017",
+      "note_prudence": "Participation documentée ; aucune relation institutionnelle ou collaboration ne doit être inférée."
+    },
+    {
+      "id": "dialogue-politiques-abidjan-2017",
+      "rang": 3,
+      "titre": "Dialogue des politiques — gouvernance des ressources et activités maritimes",
+      "date": "21–23 juin 2017",
+      "lieu": "Abidjan, Côte d’Ivoire",
+      "zone": "afrique-ouest",
+      "filtres": [
+        "afrique-ouest",
+        "gouvernance-droit-mer",
+        "economie-bleue-innovation"
+      ],
+      "themes_affiches": [
+        "Gouvernance & droit de la mer",
+        "Économie bleue & innovation"
+      ],
+      "image": "assets/img/evidence-fondateur/dialogue-politiques-abidjan-2017.webp",
+      "largeur": 1600,
+      "hauteur": 1064,
+      "alt": "Quatre participants devant la signalétique officielle du Dialogue des politiques sur la gouvernance des ressources et des activités maritimes pour le développement durable en Afrique, Abidjan, 21-23 juin 2017 ; OUAGA Bokoua Yao à droite.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=dialogue-politiques-abidjan-2017",
+      "note_prudence": "Décrire le contexte de participation sans attribuer de fonction, collaboration ou relation non établie."
+    },
+    {
+      "id": "human-sea-nantes-2018",
+      "rang": 4,
+      "titre": "Human Sea — transformation du droit de l’océan et conservation du milieu marin",
+      "date": "15–17 octobre 2018",
+      "lieu": "Nantes",
+      "zone": "france-mediterranee",
+      "filtres": [
+        "france-mediterranee",
+        "gouvernance-droit-mer",
+        "littoral-environnement",
+        "recherche-formation"
+      ],
+      "themes_affiches": [
+        "Gouvernance & droit de la mer",
+        "Littoral & environnement"
+      ],
+      "image": "assets/img/evidence-fondateur/human-sea-nantes-2018.webp",
+      "largeur": 1800,
+      "hauteur": 1350,
+      "alt": "Vue de la scène du colloque Human Sea avec l’intitulé consacré à la transformation du droit de l’océan.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=human-sea-nantes-2018",
+      "note_prudence": "Présence documentée ; aucune communication orale, responsabilité scientifique ou affiliation au programme n’est revendiquée."
+    },
+    {
+      "id": "aem-cote-ivoire-2020",
+      "rang": 5,
+      "titre": "Action de l’État en Mer — stage de recherche en Côte d’Ivoire",
+      "date": "1er avril–31 juillet 2020",
+      "lieu": "Côte d’Ivoire",
+      "zone": "afrique-ouest",
+      "filtres": [
+        "afrique-ouest",
+        "gouvernance-droit-mer"
+      ],
+      "themes_affiches": [
+        "Gouvernance & droit de la mer"
+      ],
+      "image": "assets/img/evidence-fondateur/aem-cote-ivoire-2020.webp",
+      "largeur": 1800,
+      "hauteur": 1350,
+      "alt": "Participant photographié entre deux supports institutionnels consacrés à l’Action de l’État en Mer en Côte d’Ivoire.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=aem-cote-ivoire-2020",
+      "note_prudence": "Expérience passée du fondateur ; ne pas suggérer d’emploi, consultance, mandat ou affiliation actuelle."
+    },
+    {
+      "id": "euromaritime-blue-growth-2022",
+      "rang": 6,
+      "titre": "Euromaritime / Blue Growth Exhibition",
+      "date": "28–30 juin 2022",
+      "lieu": "Marseille",
+      "zone": "france-mediterranee",
+      "filtres": [
+        "france-mediterranee",
+        "economie-bleue-innovation"
+      ],
+      "themes_affiches": [
+        "Économie bleue & innovation"
+      ],
+      "image": "assets/img/evidence-fondateur/euromaritime-2022.webp",
+      "largeur": 1600,
+      "hauteur": 1196,
+      "alt": "OUAGA Bokoua Yao avec deux participants dans un espace d’exposition d’Euromaritime à Marseille en 2022.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=euromaritime-blue-growth-2022",
+      "note_prudence": "Présence documentée ; aucune relation commerciale ou partenariale ne doit être inférée."
+    },
+    {
+      "id": "medpan-port-cros-2024",
+      "rang": 7,
+      "titre": "Atelier régional MedPAN — tourisme dans les aires marines protégées",
+      "date": "15–16 avril 2024",
+      "lieu": "Port-Cros / La Londe-les-Maures",
+      "zone": "france-mediterranee",
+      "filtres": [
+        "france-mediterranee",
+        "littoral-environnement",
+        "economie-bleue-innovation"
+      ],
+      "themes_affiches": [
+        "Littoral & environnement",
+        "Économie bleue & innovation"
+      ],
+      "image": "assets/img/evidence-fondateur/medpan-port-cros-2024.webp",
+      "largeur": 1565,
+      "hauteur": 1333,
+      "alt": "OUAGA Bokoua Yao à bord de la navette maritime, badge de l’atelier au cou, devant le littoral boisé de Porquerolles et des voiliers au mouillage, avril 2024.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=medpan-port-cros-2024",
+      "note_prudence": "Échange professionnel et veille ; ni partenariat institutionnel, ni mandat, ni représentation officielle, ni affiliation permanente."
+    },
+    {
+      "id": "indemer-usages-mer-monaco-2025",
+      "rang": 8,
+      "titre": "Colloque INDEMER — usages contemporains de la mer",
+      "date": "2025",
+      "lieu": "Monaco",
+      "zone": "france-mediterranee",
+      "filtres": [
+        "france-mediterranee",
+        "gouvernance-droit-mer",
+        "recherche-formation"
+      ],
+      "themes_affiches": [
+        "Gouvernance & droit de la mer",
+        "Recherche & formation"
+      ],
+      "image": "assets/img/evidence-fondateur/indemer-monaco-2025.webp",
+      "largeur": 1350,
+      "hauteur": 1800,
+      "alt": "OUAGA Bokoua Yao avec deux participants au Colloque INDEMER sur les usages contemporains de la mer à Monaco en 2025.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=indemer-usages-mer-monaco-2025",
+      "note_prudence": "Présence documentée ; ne pas attribuer de rôle d’intervenant, de collaboration ou de relation institutionnelle non établie."
+    },
+    {
+      "id": "academies-marine-europeennes-ensm-2025",
+      "rang": 9,
+      "titre": "Colloque des Académies de marine européennes",
+      "date": "25–26 mars 2025",
+      "lieu": "ENSM, Marseille",
+      "zone": "france-mediterranee",
+      "filtres": [
+        "france-mediterranee",
+        "gouvernance-droit-mer",
+        "littoral-environnement",
+        "economie-bleue-innovation"
+      ],
+      "themes_affiches": [
+        "Gouvernance & droit de la mer",
+        "Littoral & environnement"
+      ],
+      "image": "assets/img/evidence-fondateur/academies-marine-ensm-2025.webp",
+      "largeur": 810,
+      "hauteur": 1080,
+      "alt": "OUAGA Bokoua Yao devant la signalétique du Colloque des Académies de marine européennes à Marseille en 2025.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=academies-marine-europeennes-ensm-2025",
+      "note_prudence": "Décrire le contexte du colloque sans attribuer de rôle d’intervenant ou de relation institutionnelle non établie."
+    },
+    {
+      "id": "colloque-loi-littoral-marseille-2026",
+      "rang": 10,
+      "titre": "40 ans après la loi Littoral — protection, accès et usages des espaces publics littoraux",
+      "date": "29 janvier 2026",
+      "lieu": "Cour administrative d’appel de Marseille",
+      "zone": "france-mediterranee",
+      "filtres": [
+        "france-mediterranee",
+        "gouvernance-droit-mer",
+        "littoral-environnement"
+      ],
+      "themes_affiches": [
+        "Gouvernance & droit de la mer",
+        "Littoral & environnement"
+      ],
+      "image": "assets/img/evidence-fondateur/loi-littoral-marseille-2026.webp",
+      "largeur": 1600,
+      "hauteur": 1200,
+      "alt": "Salle en configuration table ronde, assistance nombreuse et estrade, lors de la rencontre consacrée aux espaces publics littoraux quarante ans après la loi Littoral, Cour administrative d’appel de Marseille, 29 janvier 2026.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/interventions.html#participations-selectionnees",
+      "note_prudence": "Participation comme auditeur ; aucune intervention n’a eu lieu."
+    },
+    {
+      "id": "ecole-ete-institut-ocean-2026",
+      "rang": 11,
+      "titre": "École d’été Océan 2026 — pollutions plastiques dans l’environnement marin",
+      "date": "1er–5 juin 2026",
+      "lieu": "Institut des Sciences de l’Océan / Aix-Marseille Université",
+      "zone": "france-mediterranee",
+      "filtres": [
+        "france-mediterranee",
+        "littoral-environnement",
+        "recherche-formation"
+      ],
+      "themes_affiches": [
+        "Littoral & environnement",
+        "Recherche & formation"
+      ],
+      "image": "assets/img/evidence-fondateur/ecole-ete-ocean-2026.webp",
+      "largeur": 1600,
+      "hauteur": 1200,
+      "alt": "Photo de groupe des participants à l’École d’été Océan 2026 consacrée aux pollutions plastiques dans l’environnement marin, Institut des Sciences de l’Océan / Aix-Marseille Université.",
+      "attribution": "Parcours de OUAGA Bokoua Yao",
+      "lien_oby": "https://ouagabokouayao.github.io/oby-site-academique/participation.html?id=ecole-ete-institut-ocean-2026",
+      "note_prudence": "Ne pas attribuer de fonction supplémentaire aux personnes visibles ; conserver les légendes factuelles."
+    }
+  ]
+}

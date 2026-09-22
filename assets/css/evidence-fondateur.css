@@ -1,0 +1,162 @@
+/* Corpus « Parcours et environnements du fondateur ».
+   Feuille séparée : aucune règle de style.css n'est redéfinie, aucune classe
+   existante n'est réutilisée. Le corpus BlueWave (.media-*) reste intact. */
+
+.parcours-fondateur {
+  background: linear-gradient(180deg, #f7fbfd 0%, #fff 100%);
+  border-top: 1px solid var(--line);
+}
+
+.parcours-intro {
+  max-width: 820px;
+  margin-bottom: 30px;
+}
+
+.parcours-intro h2 {
+  margin-bottom: 14px;
+}
+
+.parcours-note {
+  color: #526b7c;
+  margin-bottom: 0;
+}
+
+.parcours-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.parcours-filter {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #b9cbd6;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--navy);
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+
+.parcours-filter:hover,
+.parcours-filter.is-active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.parcours-filter:focus-visible {
+  outline: 3px solid var(--turq);
+  outline-offset: 2px;
+}
+
+.parcours-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.parcours-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(10, 37, 64, .06);
+}
+
+.parcours-visual {
+  background: #e9f1f5;
+}
+
+.parcours-visual img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.parcours-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 22px 24px 24px;
+}
+
+.parcours-themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.parcours-themes li {
+  padding: 4px 10px;
+  border: 1px solid #cfe0e9;
+  border-radius: 999px;
+  color: #087474;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  font-size: .66rem;
+  font-weight: 850;
+}
+
+.parcours-card h3 {
+  font-size: 1.06rem;
+  margin-bottom: 8px;
+}
+
+.parcours-meta {
+  margin: 0 0 12px;
+  color: #526b7c;
+  font-size: .88rem;
+}
+
+.parcours-attribution {
+  margin: 0 0 16px;
+  color: var(--rock);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.parcours-body > a {
+  margin-top: auto;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.parcours-body > a:focus-visible {
+  outline: 3px solid var(--turq);
+  outline-offset: 3px;
+}
+
+.parcours-empty,
+.parcours-fallback {
+  margin: 24px 0 0;
+  padding: 18px 20px;
+  border: 1px dashed #b9cbd6;
+  border-radius: 16px;
+  color: #526b7c;
+}
+
+@media (max-width: 1040px) {
+  .parcours-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 680px) {
+  .parcours-grid { grid-template-columns: 1fr; }
+  .parcours-filter { font-size: .8rem; }
+  .parcours-body { padding: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parcours-filter { transition: none; }
+}

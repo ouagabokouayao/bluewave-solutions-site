@@ -8,7 +8,7 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-e
 - `solutions.html` : cinq offres cœur et deux formats d’entrée ;
 - `methode.html` : méthode publique BlueWave en six étapes ;
 - `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
-- `mediatheque.html` : dix visuels BlueWave avec visionneuse locale ;
+- `mediatheque.html` : dix visuels BlueWave avec visionneuse locale, puis le corpus « Parcours et environnements du fondateur » ;
 - `actualites.html` : veille maritime et littorale issue de sources externes identifiées ;
 - `a-propos.html` : positionnement et présentation du fondateur ;
 - `qualifier-un-besoin.html` : orientation locale puis prise de contact préparée.
@@ -26,6 +26,36 @@ Le workflow `update-actualites.yml` est volontairement manuel et en lecture seul
 ## Méthode publique
 
 La méthode publique compte six étapes : `Qualifier → Cadrer → Analyser → Cartographier → Structurer → Restituer`.
+
+## Corpus « Parcours et environnements du fondateur »
+
+La Médiathèque porte deux corpus distincts et non interchangeables.
+
+Le premier, inchangé, reste les dix visuels BlueWave (`.media-card`, filtres et visionneuse de `assets/js/mediatheque.js`).
+
+Le second projette une sélection de onze éléments du parcours du fondateur, issue du dépôt `ouagabokouayao/oby-site-academique`. Il a son propre balisage (`.parcours-*`), sa propre feuille `assets/css/evidence-fondateur.css` et son propre script `assets/js/evidence-fondateur.js` : aucune règle ni aucun comportement du corpus BlueWave n'est redéfini.
+
+### Doctrine de véracité
+
+Ce corpus documente des terrains, événements, formations et environnements du parcours de OUAGA Bokoua Yao. Il ne constitue pas un portefeuille de clients, de mandats, de partenariats ou de réalisations commerciales de BlueWave Solutions. Chaque carte porte l'attribution `Parcours de OUAGA Bokoua Yao`, et la mention publique de séparation figure en tête de section.
+
+Les institutions visibles sur les photographies sont le contexte de l'événement, jamais des partenaires BlueWave. Une présence, un stage, une formation ou un terrain n'est jamais reformulé en mission, mandat, référence ou affiliation actuelle de BlueWave.
+
+`quality/scripts/quality_check.py` applique cette doctrine au corpus : attribution canonique sur les onze éléments, mention publique présente, formulations commerciales interdites absentes des données comme de la page, images locales uniquement, aucun hotlink.
+
+### Chaîne de reprise
+
+```bash
+python quality/scripts/build_evidence_fondateur.py \
+  --selection <chemin>/01_SELECTION_OBY_BLUEWAVE_V1.json \
+  --oby-root <chemin>/oby-site-academique \
+  --copy-images
+```
+
+Le script relit la source de vérité `assets/data/mediatheque-oby.json` du dépôt OBY, refuse toute entrée dont le statut n'est plus `public-valide` sans jamais la remplacer, recopie les images dans `assets/img/evidence-fondateur/` et écrit deux fichiers :
+
+- `assets/data/oby-preuves-selectionnees.json` : données publiques servies au navigateur ;
+- `quality/media-provenance-oby-bluewave.json` : chemin source, chemin destination, SHA-256 source et destination, taille et statut de la source pour chaque copie. Ce fichier de traçabilité reste interne et n'est pas publié.
 
 ## Automatisation visiteurs
 
