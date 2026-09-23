@@ -79,8 +79,19 @@
 .activites-visual img {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
+}
+
+/* Une photographie est recadrée ; le cadrage haut garde les visages dans le champ. */
+.activites-visual[data-media="photo"] img {
   object-fit: cover;
+  object-position: center 22%;
+}
+
+/* Un visuel éditorial BlueWave est affiché entier, jamais rogné. */
+.activites-visual[data-media="editorial"] img {
+  object-fit: contain;
+  background: #06223A;
 }
 
 .activites-body {

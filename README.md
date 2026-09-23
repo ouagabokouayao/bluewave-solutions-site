@@ -8,7 +8,7 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-e
 - `solutions.html` : cinq offres cœur et deux formats d’entrée ;
 - `methode.html` : méthode publique BlueWave en six étapes ;
 - `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
-- `mediatheque.html` : dix visualisations BlueWave avec visionneuse locale, puis le corpus évolutif « Activités et productions BlueWave » ;
+- `mediatheque.html` : dix visualisations BlueWave avec visionneuse locale, puis cinq activités et productions BlueWave documentées ;
 - `actualites.html` : veille maritime et littorale issue de sources externes identifiées ;
 - `a-propos.html` : positionnement et présentation du fondateur ;
 - `qualifier-un-besoin.html` : orientation locale puis prise de contact préparée.
@@ -35,7 +35,7 @@ Le premier, inchangé, reste les dix visualisations BlueWave (`.media-card`, fil
 
 Le second documente les activités, événements et productions effectivement rattachés au développement et aux travaux de BlueWave Solutions. Il a son propre balisage (`.activites-*`), sa feuille `assets/css/activites-bluewave.css` et son script `assets/js/activites-bluewave.js` : aucune règle ni aucun comportement du premier corpus n'est redéfini.
 
-Les données publiques sont dans `assets/data/activites-bluewave.json`, les visuels dans `assets/img/activites/`. Le schéma prévoit les catégories événement, production scientifique, atelier, rencontre, formation, terrain / visite et recherche appliquée ; seules celles réellement représentées sont proposées au filtrage.
+Les données publiques sont dans `assets/data/activites-bluewave.json`, les visuels dans `assets/img/activites/`. Le corpus compte cinq éléments : quatre événements et une production scientifique. Le schéma prévoit les catégories événement, production scientifique, atelier, rencontre, formation, terrain / visite et recherche appliquée ; seules celles réellement représentées sont proposées au filtrage.
 
 ### Doctrine
 
@@ -46,6 +46,16 @@ Une inscription ou un événement à venir n'est jamais présenté comme une act
 Les visuels sont des productions éditoriales BlueWave originales : aucun logo, aucune image institutionnelle tierce, aucune donnée chiffrée inventée.
 
 `quality/scripts/quality_check.py` applique cette doctrine : mention publique présente une seule fois, formulations de relation non établie absentes des données comme de la page, images locales uniquement, aucun hotlink, qualification du statut REFMAR et de l'organisateur de l'atelier, visuels sans identité tierce ni image importée, et aucun résidu de corpus personnel dans la Médiathèque.
+
+### Médias et provenance
+
+Deux natures de visuels coexistent dans `assets/img/activites/`.
+
+Les photographies proviennent du dépôt `ouagabokouayao/oby-site-academique`, qui sert de dépôt-source de preuves et de médias — jamais de partenaire de BlueWave Solutions. Chacune est copiée sans transformation, depuis une entrée dont le statut est `public-valide`, et tracée dans `quality/media-provenance-activites-bluewave.json` : événement BlueWave, dépôt et commit source, chemin source, mode de déclaration, statut, SHA-256 des deux côtés, identité octet et nature de la preuve de rattachement à BlueWave. Ce fichier reste interne et n'entre pas dans `dist`.
+
+Les visuels éditoriaux sont des productions BlueWave originales, utilisées lorsqu'aucune photographie certaine n'est disponible. Ils sont déclarés comme tels dans le même fichier de provenance, avec le motif. Aucune photographie n'est inventée.
+
+`quality_check.py` vérifie que toute photographie du corpus est tracée, copiée à l'octet près depuis une source publiable, porte une preuve de rattachement, et qu'aucun média orphelin ne traîne dans le répertoire.
 
 ## Automatisation visiteurs
 

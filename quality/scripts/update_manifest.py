@@ -49,6 +49,7 @@ CRITICAL_FILES = [
     ".github/workflows/deploy-pages-manual.yml",
     ".github/workflows/site-quality.yml",
     ".github/workflows/update-actualites.yml",
+    "quality/media-provenance-activites-bluewave.json",
     "quality/sources-candidates-afrique-ouest.md",
     "quality/scripts/build_dist.py",
     "quality/scripts/check_dist.py",

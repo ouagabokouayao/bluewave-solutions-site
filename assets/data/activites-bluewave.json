@@ -3,19 +3,91 @@
   "corpus": "activites-bluewave",
   "titre": "Activités et productions BlueWave",
   "categories": [
-    { "slug": "tout", "label": "Tout" },
-    { "slug": "evenement", "label": "Événement" },
-    { "slug": "production", "label": "Production scientifique" },
-    { "slug": "atelier", "label": "Atelier" },
-    { "slug": "rencontre", "label": "Rencontre" },
-    { "slug": "formation", "label": "Formation" },
-    { "slug": "terrain", "label": "Terrain / visite" },
-    { "slug": "recherche-appliquee", "label": "Recherche appliquée" }
+    {
+      "slug": "tout",
+      "label": "Tout"
+    },
+    {
+      "slug": "evenement",
+      "label": "Événement"
+    },
+    {
+      "slug": "production",
+      "label": "Production scientifique"
+    },
+    {
+      "slug": "atelier",
+      "label": "Atelier"
+    },
+    {
+      "slug": "rencontre",
+      "label": "Rencontre"
+    },
+    {
+      "slug": "formation",
+      "label": "Formation"
+    },
+    {
+      "slug": "terrain",
+      "label": "Terrain / visite"
+    },
+    {
+      "slug": "recherche-appliquee",
+      "label": "Recherche appliquée"
+    }
   ],
   "items": [
     {
-      "id": "cciamp-atelier-marche-2026",
+      "id": "loi-littoral-marseille-2026",
       "rang": 1,
+      "categorie": "evenement",
+      "categorie_label": "Événement",
+      "titre": "40 ans après la loi Littoral — espaces publics littoraux",
+      "date": "29 janvier 2026",
+      "lieu": "Cour administrative d’appel de Marseille",
+      "statut": "participation en qualité d’auditeur",
+      "description": "Participation, en qualité d’auditeur, à la rencontre consacrée aux espaces publics littoraux quarante ans après la loi Littoral, dans le cadre des travaux de veille et de développement de BlueWave Solutions sur la gouvernance littorale, l’accès au littoral et l’adaptation des territoires.",
+      "contexte": "Rencontre organisée par des tiers ; leur mention situe le contexte de la participation.",
+      "image": "assets/img/activites/loi-littoral-marseille-2026.webp",
+      "largeur": 1200,
+      "hauteur": 1600,
+      "alt": "Deux participants échangeant lors de la rencontre consacrée aux espaces publics littoraux quarante ans après la loi Littoral, Marseille, 29 janvier 2026."
+    },
+    {
+      "id": "rfdi-gouvernance-oceans-nice-2026",
+      "rang": 2,
+      "categorie": "evenement",
+      "categorie_label": "Événement",
+      "titre": "Gouvernance internationale des océans — 22e colloque annuel du RFDI",
+      "date": "4 mai 2026",
+      "lieu": "Nice",
+      "statut": "participation",
+      "description": "Participation au 22e colloque annuel du Réseau francophone de droit international consacré à la gouvernance internationale des océans, dans le cadre du développement scientifique et professionnel de BlueWave Solutions sur le droit de la mer et la gouvernance maritime.",
+      "contexte": "Colloque organisé par des tiers ; leur mention situe le contexte de la participation.",
+      "image": "assets/img/activites/rfdi-gouvernance-oceans-nice-2026.webp",
+      "largeur": 1200,
+      "hauteur": 1599,
+      "alt": "Portrait d’un participant lors du 22e colloque annuel du Réseau francophone de droit international, à Nice."
+    },
+    {
+      "id": "arbe-sfn-aix-2026",
+      "rang": 3,
+      "categorie": "evenement",
+      "categorie_label": "Événement",
+      "titre": "Club Aménagement & Biodiversité — Solutions fondées sur la Nature",
+      "date": "30 juin 2026",
+      "lieu": "Aix-en-Provence",
+      "statut": "participation réalisée",
+      "description": "Participation à la rencontre régionale du Club Aménagement & Biodiversité consacrée aux Solutions fondées sur la Nature, mobilisée dans le développement de BlueWave Solutions sur l’adaptation, la gouvernance des projets, l’acceptabilité et l’accompagnement des territoires.",
+      "contexte": "Rencontre régionale organisée par des tiers ; leur mention situe le contexte de la participation.",
+      "image": "assets/img/activites/arbe-sfn-aix-2026.webp",
+      "largeur": 1200,
+      "hauteur": 1600,
+      "alt": "Participant devant les kakémonos de la rencontre régionale consacrée aux Solutions fondées sur la Nature, Aix-en-Provence."
+    },
+    {
+      "id": "cciamp-atelier-marche-2026",
+      "rang": 4,
       "categorie": "evenement",
       "categorie_label": "Événement",
       "titre": "Atelier CCI Aix-Marseille-Provence — Connaître son marché, vendre mieux",
@@ -31,7 +103,7 @@
     },
     {
       "id": "refmar-poster-niveau-marin-golfe-guinee-2026",
-      "rang": 2,
+      "rang": 5,
       "categorie": "production",
       "categorie_label": "Production scientifique",
       "titre": "Niveau marin dans le Golfe de Guinée",

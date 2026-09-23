@@ -27,6 +27,8 @@
 
     const visual = document.createElement('div');
     visual.className = 'activites-visual';
+    // Une photographie est recadrée, un visuel éditorial est affiché entier.
+    visual.dataset.media = /\.svg$/i.test(item.image) ? 'editorial' : 'photo';
     const img = document.createElement('img');
     img.src = item.image;
     img.alt = item.alt;

@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "objet": "Traçabilité des médias importés dans le corpus « Activités et productions BlueWave ».",
+  "note": "OBY est un dépôt-source de preuves et de médias, jamais un partenaire de BlueWave Solutions.",
+  "entrees": [
+    {
+      "activite_bluewave": "loi-littoral-marseille-2026",
+      "source_repository": "ouagabokouayao/oby-site-academique",
+      "source_ref": "main",
+      "source_commit": "7e2cac71e7ea1ae78c7a0b6105d926646d7b0d5f",
+      "source_event_id": "colloque-loi-littoral-marseille-2026",
+      "source_path": "assets/img/media/events/colloque-loi-littoral-marseille-2026/oby_colloque_loi_littoral_marseille_2026_02.webp",
+      "declare_via": "galerie",
+      "statut_oby": "public-valide",
+      "sha256_source": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
+      "destination_path": "assets/img/activites/loi-littoral-marseille-2026.webp",
+      "sha256_destination": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
+      "identique": true,
+      "bytes": 196564,
+      "preuve_rattachement_bluewave": "Participation en qualité d’auditeur, mobilisée dans les travaux de veille BlueWave sur la gouvernance littorale. La source OBY signale qu’aucune signalétique de l’événement n’est lisible sur les photographies : le rattachement repose sur les métadonnées de prise de vue."
+    },
+    {
+      "activite_bluewave": "rfdi-gouvernance-oceans-nice-2026",
+      "source_repository": "ouagabokouayao/oby-site-academique",
+      "source_ref": "main",
+      "source_commit": "7e2cac71e7ea1ae78c7a0b6105d926646d7b0d5f",
+      "source_event_id": "rfdi-nice-gouvernance-oceans-2026",
+      "source_path": "assets/img/media/events/rfdi-nice-gouvernance-oceans-2026/oby_rfdi_nice_gouvernance_oceans_2026_03.webp",
+      "declare_via": "galerie",
+      "statut_oby": "public-valide",
+      "sha256_source": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
+      "destination_path": "assets/img/activites/rfdi-gouvernance-oceans-nice-2026.webp",
+      "sha256_destination": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
+      "identique": true,
+      "bytes": 410058,
+      "preuve_rattachement_bluewave": "Participation au colloque, mobilisée dans le développement BlueWave sur le droit de la mer et la gouvernance maritime."
+    },
+    {
+      "activite_bluewave": "arbe-sfn-aix-2026",
+      "source_repository": "ouagabokouayao/oby-site-academique",
+      "source_ref": "main",
+      "source_commit": "7e2cac71e7ea1ae78c7a0b6105d926646d7b0d5f",
+      "source_event_id": "arbe-amenagement-biodiversite-sfn-2026",
+      "source_path": "assets/img/media/events/arbe-amenagement-biodiversite-sfn-2026/oby_arbe_amenagement_biodiversite_sfn_2026_01.webp",
+      "declare_via": "fichier représentatif",
+      "statut_oby": "public-valide",
+      "sha256_source": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
+      "destination_path": "assets/img/activites/arbe-sfn-aix-2026.webp",
+      "sha256_destination": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
+      "identique": true,
+      "bytes": 286800,
+      "preuve_rattachement_bluewave": "Participation réalisée à la rencontre régionale, mobilisée dans le développement BlueWave sur l’adaptation et l’acceptabilité des projets."
+    }
+  ],
+  "medias_editoriaux_bluewave": [
+    {
+      "activite_bluewave": "cciamp-atelier-marche-2026",
+      "media": "assets/img/activites/cciamp-atelier-marche-2026.svg",
+      "origine": "production éditoriale BlueWave originale",
+      "motif": "aucune photographie de l’atelier du 16 septembre 2026 n’est disponible dans les médias accessibles ; aucune photo n’a été inventée."
+    },
+    {
+      "activite_bluewave": "refmar-poster-niveau-marin-golfe-guinee-2026",
+      "media": "assets/img/activites/refmar-poster-niveau-marin-golfe-guinee-2026.svg",
+      "origine": "production éditoriale BlueWave originale",
+      "motif": "le PDF source du poster n’est pas disponible localement ; le visuel reprend les informations publiques du poster, sans donnée chiffrée."
+    }
+  ]
+}

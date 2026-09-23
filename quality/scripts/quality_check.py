@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import re, sys, json
+import re, sys, json, hashlib
 from collections import Counter
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
@@ -329,12 +329,41 @@ def main():
         cci=[item for item in items if 'cci' in item.get('id','')]
         for item in cci:
             if 'organisateur' not in (item.get('contexte') or '').casefold():errors.append(f"corpus activités: organisateur non qualifié comme contexte {item.get('id')}")
-        # Aucun visuel ne doit reprendre une identité institutionnelle tierce.
+        # Les photographies locales validées sont autorisées ; les visuels éditoriaux
+        # BlueWave (SVG) ne doivent reprendre aucune identité institutionnelle tierce.
+        for path in sorted((ROOT/ACT_DIR).glob('*')):
+            if path.suffix.lower() not in {'.svg','.webp','.jpg','.jpeg','.png'}:errors.append(f'visuel activités: extension non autorisée {path.name}')
         for path in sorted((ROOT/ACT_DIR).glob('*.svg')):
             svg=path.read_text(encoding='utf-8')
             for marker in ['CCI ','Chambre de commerce','Shom','REFMAR 2026 —','<image']:
                 if marker.casefold() in svg.casefold():errors.append(f'visuel activités: contenu tiers ou image importée {path.name} ({marker})')
             if '<title' not in svg or '<desc' not in svg:errors.append(f'visuel activités: title/desc absent {path.name}')
+        # Toute photographie du corpus doit être tracée dans la provenance interne,
+        # copiée sans transformation depuis une source OBY publiable.
+        prov=json.loads((ROOT/'quality/media-provenance-activites-bluewave.json').read_text(encoding='utf-8'))
+        traces={entry['destination_path']:entry for entry in prov['entrees']}
+        editoriaux={m['media'] for m in prov.get('medias_editoriaux_bluewave',[])}
+        for item in items:
+            image=item.get('image','')
+            if image.lower().endswith('.svg'):
+                if image not in editoriaux:errors.append(f'provenance activités: visuel éditorial non déclaré {image}')
+                continue
+            entry=traces.get(image)
+            if entry is None:
+                errors.append(f'provenance activités: média sans trace {image}')
+                continue
+            if entry.get('statut_oby')!='public-valide':errors.append(f"provenance activités: source non publiable {image}")
+            if not entry.get('identique'):errors.append(f'provenance activités: copie non conforme {image}')
+            content=(ROOT/image).read_bytes()
+            if entry.get('sha256_destination')!=hashlib.sha256(content).hexdigest():errors.append(f'provenance activités: SHA-256 destination incorrect {image}')
+            if entry.get('bytes')!=len(content):errors.append(f'provenance activités: taille destination incorrecte {image}')
+            if not (entry.get('preuve_rattachement_bluewave') or '').strip():errors.append(f'provenance activités: preuve de rattachement absente {image}')
+        # Toute photographie présente sur disque doit correspondre à un élément du corpus.
+        declarees={item.get('image') for item in items}
+        for path in sorted((ROOT/ACT_DIR).glob('*')):
+            relative=path.relative_to(ROOT).as_posix()
+            if path.is_file() and relative not in declarees:errors.append(f'visuel activités: média orphelin {path.name}')
+        if 'partenaire' in json.dumps(prov,ensure_ascii=False).casefold().replace('jamais un partenaire',''):errors.append('provenance activités: OBY présenté comme partenaire')
     except (OSError,ValueError,KeyError,TypeError) as exc:
         errors.append(f'corpus activités invalide: {exc}')
 

@@ -41,8 +41,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "be8cc33a56e3b62538a9f1f198f6ac703fe3de4ba60904297ad1bbf4978127c9",
-    "bytes": 9644
+    "sha256": "1d854d0ab544d3f9230bdbbdcb5d5331c66766a59242d81d26c88870b1628d48",
+    "bytes": 10876
   },
   {
     "path": "a-propos.html",
@@ -56,8 +56,8 @@
   },
   {
     "path": "assets/css/activites-bluewave.css",
-    "sha256": "437af0b891a60147e7ca66ff4b0dc4d0bcb8fc17273d676d6046448cf1114e81",
-    "bytes": 2776
+    "sha256": "f9cecb6ea6d9abf18ca7b70d203e3e95dcfcfabbce1b0ceb8e4ec563d785694f",
+    "bytes": 3110
   },
   {
     "path": "assets/css/style.css",
@@ -66,8 +66,13 @@
   },
   {
     "path": "assets/data/activites-bluewave.json",
-    "sha256": "a914001e28ad1d377e2878da304c9fc5bae65d7c76af710e8919af46b2922601",
-    "bytes": 2611
+    "sha256": "f5cba7e0745ee4d3283a44b5e895344dbdf4ebe123f9116480290399c7be5e2f",
+    "bytes": 5834
+  },
+  {
+    "path": "assets/img/activites/arbe-sfn-aix-2026.webp",
+    "sha256": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
+    "bytes": 286800
   },
   {
     "path": "assets/img/activites/cciamp-atelier-marche-2026.svg",
@@ -75,9 +80,19 @@
     "bytes": 2849
   },
   {
+    "path": "assets/img/activites/loi-littoral-marseille-2026.webp",
+    "sha256": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
+    "bytes": 196564
+  },
+  {
     "path": "assets/img/activites/refmar-poster-niveau-marin-golfe-guinee-2026.svg",
     "sha256": "ba7842d3c02490eeb84b5b58bcee771b948a9a12c1e0ae5fec9104cc8e2f13f0",
     "bytes": 3629
+  },
+  {
+    "path": "assets/img/activites/rfdi-gouvernance-oceans-nice-2026.webp",
+    "sha256": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
+    "bytes": 410058
   },
   {
     "path": "assets/img/brand/logo/favicon-bluewave-board-192-preview.png",
@@ -191,8 +206,8 @@
   },
   {
     "path": "assets/js/activites-bluewave.js",
-    "sha256": "c5516752c166f5bf66b9f1004128a7bb6391ff6e10a14c6a03db1379cc85d0bc",
-    "bytes": 4828
+    "sha256": "4a60e73ea95a7f65e4ff4937ef5ffc99371e0e7d3aa6d2bc2d2abb42413d289f",
+    "bytes": 4988
   },
   {
     "path": "assets/js/actualites.js",
@@ -295,6 +310,11 @@
     "bytes": 13724
   },
   {
+    "path": "quality/media-provenance-activites-bluewave.json",
+    "sha256": "5b75775a4a2203ca35d6c99867d98d5bcbd2b64a41c66e3625ff0d50c17b8835",
+    "bytes": 4180
+  },
+  {
     "path": "quality/scripts/build_dist.py",
     "sha256": "6c248dc210c985ea30630a80fa7c6f0abcb42ce493aec002efcce54a6f809c44",
     "bytes": 6996
@@ -321,8 +341,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "cf58f21cf85204a84905643b4997faa51707c3228c9dc7f7757b8d9fee6cfc02",
-    "bytes": 27936
+    "sha256": "870685a2e1d335b09fe9c3464adc3993d65b062d6db71b7746ad7c56309ae55f",
+    "bytes": 30411
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -331,8 +351,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "0d0515914e1018cf6239ba06772797a3f8262dd9e582a88feeac7ddd83f6160d",
-    "bytes": 3563
+    "sha256": "62c92ce2a4424c4861c54d48941a66b31082fb4669668c4276a0cf44af771516",
+    "bytes": 3619
   },
   {
     "path": "quality/scripts/verify_manifest.py",
