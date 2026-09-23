@@ -56,8 +56,8 @@
   },
   {
     "path": "assets/css/evidence-fondateur.css",
-    "sha256": "8fb891618f189de63a23848e4ff1148321c67ad51155fbd26d4d3422c9db151d",
-    "bytes": 2989
+    "sha256": "151c2f19e80365edb662543e98519e27b89ef2263f1bb28d33685a9d79354f51",
+    "bytes": 3137
   },
   {
     "path": "assets/css/style.css",
@@ -306,8 +306,8 @@
   },
   {
     "path": "mediatheque.html",
-    "sha256": "13b68a572751ee8912e77797339fbc7ecdd0486c6b7d54c26be47c8e58b45bb8",
-    "bytes": 14252
+    "sha256": "ee45501b8807f7dedfaebbeffd3b9c5efa512d13afd4d00dcb00b1af6381be3e",
+    "bytes": 14520
   },
   {
     "path": "mentions-legales.html",
@@ -376,8 +376,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "7ae04cfc684e9cf2404fd03524e23e87d3fee582622e3706c62503abf524d34a",
-    "bytes": 27067
+    "sha256": "26ff38c342a0d846b343086da1124f28c61f388cff34c428e765a7cf682fa902",
+    "bytes": 27808
   },
   {
     "path": "quality/scripts/update_actualites.py",

@@ -276,7 +276,14 @@ def main():
         'BlueWave a participé','partenaire de BlueWave','client de BlueWave','notre partenaire','notre client',
         'mission BlueWave','référence BlueWave','mandat BlueWave','partenariat BlueWave','BlueWave a accompagné',
     ]
+    EVIDENCE_GUARD=('Les institutions, organismes et lieux cités ou visibles situent uniquement le contexte '
+        'documenté de ces expériences ; leur présence ne vaut ni partenariat, ni mandat, ni relation '
+        'institutionnelle avec BlueWave Solutions.')
     if EVIDENCE_NOTICE not in media:errors.append('mediatheque.html: mention publique de séparation du parcours fondateur absente')
+    # Garde institutionnelle : une seule occurrence globale, jamais répétée par carte.
+    if media.count(EVIDENCE_GUARD)!=1:errors.append(f'mediatheque.html: garde institutionnelle attendue exactement une fois ({media.count(EVIDENCE_GUARD)} trouvée(s))')
+    evidence_js=(ROOT/'assets/js/evidence-fondateur.js').read_text(encoding='utf-8')
+    if EVIDENCE_GUARD[:40] in evidence_js:errors.append('evidence-fondateur.js: garde institutionnelle dupliquée par carte')
     if 'Parcours et environnements du fondateur' not in media:errors.append('mediatheque.html: titre du corpus fondateur absent')
     for asset in ('assets/css/evidence-fondateur.css','assets/js/evidence-fondateur.js'):
         if asset not in media:errors.append(f'mediatheque.html: ressource du corpus fondateur absente {asset}')

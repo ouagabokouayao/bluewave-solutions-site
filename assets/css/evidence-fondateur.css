@@ -21,6 +21,11 @@
   margin-bottom: 0;
 }
 
+/* La garde institutionnelle suit la mention de séparation : deux énoncés distincts. */
+.parcours-note + .parcours-note {
+  margin-top: 12px;
+}
+
 .parcours-filters {
   display: flex;
   flex-wrap: wrap;
