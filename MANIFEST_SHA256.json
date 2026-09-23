@@ -41,8 +41,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "c9f212572ec91dd9c746e3397858bd2fec81197637afe0310bf887836c687971",
-    "bytes": 7549
+    "sha256": "be8cc33a56e3b62538a9f1f198f6ac703fe3de4ba60904297ad1bbf4978127c9",
+    "bytes": 9644
   },
   {
     "path": "a-propos.html",
@@ -55,9 +55,29 @@
     "bytes": 7907
   },
   {
+    "path": "assets/css/activites-bluewave.css",
+    "sha256": "437af0b891a60147e7ca66ff4b0dc4d0bcb8fc17273d676d6046448cf1114e81",
+    "bytes": 2776
+  },
+  {
     "path": "assets/css/style.css",
     "sha256": "0a5f6913418a9aa574fdfe7f689aa74ff565819ecb326bbb7321483e61acf998",
     "bytes": 25233
+  },
+  {
+    "path": "assets/data/activites-bluewave.json",
+    "sha256": "a914001e28ad1d377e2878da304c9fc5bae65d7c76af710e8919af46b2922601",
+    "bytes": 2611
+  },
+  {
+    "path": "assets/img/activites/cciamp-atelier-marche-2026.svg",
+    "sha256": "ef67c0fd9bf9f4657aafe911ea34e1b9dbb3ceeb36921bcfeed6ad94a9b92c88",
+    "bytes": 2849
+  },
+  {
+    "path": "assets/img/activites/refmar-poster-niveau-marin-golfe-guinee-2026.svg",
+    "sha256": "ba7842d3c02490eeb84b5b58bcee771b948a9a12c1e0ae5fec9104cc8e2f13f0",
+    "bytes": 3629
   },
   {
     "path": "assets/img/brand/logo/favicon-bluewave-board-192-preview.png",
@@ -170,6 +190,11 @@
     "bytes": 3724
   },
   {
+    "path": "assets/js/activites-bluewave.js",
+    "sha256": "c5516752c166f5bf66b9f1004128a7bb6391ff6e10a14c6a03db1379cc85d0bc",
+    "bytes": 4828
+  },
+  {
     "path": "assets/js/actualites.js",
     "sha256": "1d7373158eb671a698b99bb40793f82b580ba74c51e9e5a7c797bcc469fd679b",
     "bytes": 7254
@@ -236,8 +261,8 @@
   },
   {
     "path": "mediatheque.html",
-    "sha256": "9bd15ef6f2b4b2e24e5bf8a38b738d71d02c9ce66a77a784aacbf1486f2db80a",
-    "bytes": 12577
+    "sha256": "a0d244f84caa776fe2e6b1616d07d3e184ba3d0378e6d58609a0b77e23907f31",
+    "bytes": 13813
   },
   {
     "path": "mentions-legales.html",
@@ -271,8 +296,8 @@
   },
   {
     "path": "quality/scripts/build_dist.py",
-    "sha256": "6f862ff2115abfa8420f54290a1c3a562563fb3ccc749be6a8f3842ccb3ac2be",
-    "bytes": 6705
+    "sha256": "6c248dc210c985ea30630a80fa7c6f0abcb42ce493aec002efcce54a6f809c44",
+    "bytes": 6996
   },
   {
     "path": "quality/scripts/check_dist.py",
@@ -296,8 +321,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "68644c8fb0c353aecf77fcf2334a2f387a65042f190363fff7b6d9203226dc6d",
-    "bytes": 21170
+    "sha256": "cf58f21cf85204a84905643b4997faa51707c3228c9dc7f7757b8d9fee6cfc02",
+    "bytes": 27936
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -306,8 +331,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "d31a1f01c5322bed5eab5a3818ee9cecbe8412a19f727029db9b1a6df39474cc",
-    "bytes": 3440
+    "sha256": "0d0515914e1018cf6239ba06772797a3f8262dd9e582a88feeac7ddd83f6160d",
+    "bytes": 3563
   },
   {
     "path": "quality/scripts/verify_manifest.py",

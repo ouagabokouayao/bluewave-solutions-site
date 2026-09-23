@@ -259,6 +259,85 @@ def main():
     if 'href="https://ouagabokouayao.github.io/oby-site-academique/" target="_blank" rel="noopener noreferrer"' not in about:errors.append('a-propos.html: lien OBY ou attributs incorrects')
     robots=(ROOT/'robots.txt').read_text(encoding='utf-8')
     if not re.search(r'(?mi)^Disallow:\s*/\s*$',robots):errors.append('robots.txt: Disallow / absent')
+    # Corpus « Activités et productions BlueWave » : activités réellement rattachées
+    # à BlueWave. Les organismes cités situent un contexte, jamais une relation.
+    ACT_DATA=ROOT/'assets/data/activites-bluewave.json'
+    ACT_NOTICE=('Cette sélection documente des activités, événements et productions effectivement rattachés '
+        'au développement et aux travaux de BlueWave Solutions. Les organismes, événements et lieux cités '
+        'situent le contexte de ces activités ; leur mention ne vaut ni partenariat, ni mandat, ni relation '
+        'institutionnelle avec BlueWave Solutions.')
+    ACT_DIR='assets/img/activites/'
+    # Relations commerciales ou institutionnelles non établies.
+    ACT_FORBIDDEN=[
+        'partenaire de BlueWave','client de BlueWave','notre partenaire','notre client','mandat BlueWave',
+        'partenariat BlueWave','partenariat avec','mandaté par','mandatée par','en partenariat avec',
+        'référence commerciale','affilié à','affiliée à',
+    ]
+    # Présence physique ou intervention non établies, et tiers à ne pas impliquer.
+    ACT_PRESENCE=['Brest','Shom','La Rochelle','intervention orale','présent physiquement','présente physiquement']
+    # Le corpus personnel OBY n'a aucune place dans la Médiathèque BlueWave.
+    OBY_FORBIDDEN=['Parcours et environnements du fondateur','site personnel OBY','oby-site-academique',
+        'evidence-fondateur','oby-preuves-selectionnees','parcours du fondateur']
+    if ACT_NOTICE not in media:errors.append('mediatheque.html: mention publique du corpus activités absente')
+    if media.count(ACT_NOTICE)!=1:errors.append('mediatheque.html: mention publique du corpus activités attendue une seule fois')
+    if 'Activités et productions BlueWave' not in media:errors.append('mediatheque.html: titre du corpus activités absent')
+    for asset in ('assets/css/activites-bluewave.css','assets/js/activites-bluewave.js'):
+        if asset not in media:errors.append(f'mediatheque.html: ressource du corpus activités absente {asset}')
+    # Aucun résidu du corpus personnel dans la Médiathèque ni dans les fichiers qu'elle sert.
+    # Portée volontairement limitée : le lien vers le site personnel du fondateur sur
+    # a-propos.html est un élément canonique préexistant, vérifié plus haut, et reste légitime.
+    served=[ROOT/'assets/js/activites-bluewave.js',ROOT/'assets/css/activites-bluewave.css',ACT_DATA]
+    mediatheque_blob='\n'.join([media]+[f.read_text(encoding='utf-8') for f in served if f.is_file()])
+    for marker in OBY_FORBIDDEN:
+        if marker.casefold() in mediatheque_blob.casefold():errors.append(f'Médiathèque: résidu du corpus personnel {marker}')
+    for path in (ROOT/'assets/img').rglob('*'):
+        if path.is_file() and 'evidence-fondateur' in path.as_posix():errors.append(f'dépôt: média du corpus personnel présent {path.name}')
+    try:
+        act=json.loads(ACT_DATA.read_text(encoding='utf-8'))
+        raw=ACT_DATA.read_text(encoding='utf-8')
+        items=act['items']
+        if not items:errors.append('corpus activités: aucun élément')
+        slugs={c['slug'] for c in act['categories']}
+        ids=set()
+        for item in items:
+            missing={'id','rang','categorie','categorie_label','titre','date','lieu','statut','description','image','largeur','hauteur','alt'}-set(item)
+            if missing:errors.append(f"corpus activités: clés absentes {item.get('id')} {sorted(missing)}")
+            if item.get('id') in ids:errors.append(f"corpus activités: id dupliqué {item.get('id')}")
+            ids.add(item.get('id'))
+            if item.get('categorie') not in slugs:errors.append(f"corpus activités: catégorie inconnue {item.get('categorie')}")
+            image=item.get('image','')
+            if not image.startswith(ACT_DIR):errors.append(f"corpus activités: image hors du répertoire dédié {item.get('id')}")
+            if image.startswith(('http://','https://')):errors.append(f"corpus activités: hotlink image {item.get('id')}")
+            if not (ROOT/image).is_file():errors.append(f"corpus activités: image absente {image}")
+            if not (item.get('alt') or '').strip():errors.append(f"corpus activités: alt vide {item.get('id')}")
+            if not isinstance(item.get('largeur'),int) or not isinstance(item.get('hauteur'),int):errors.append(f"corpus activités: dimensions manquantes {item.get('id')}")
+        # Seules les catégories réellement représentées peuvent être proposées au filtrage.
+        used={item.get('categorie') for item in items}
+        js_act=(ROOT/'assets/js/activites-bluewave.js').read_text(encoding='utf-8')
+        if 'utilisees.has' not in js_act:errors.append('activites-bluewave.js: filtrage des catégories non utilisées absent')
+        for marker in ACT_FORBIDDEN:
+            if marker.casefold() in raw.casefold():errors.append(f'corpus activités: relation non établie {marker}')
+            if marker.casefold() in media.casefold():errors.append(f'mediatheque.html: relation non établie {marker}')
+        for marker in ACT_PRESENCE:
+            if marker.casefold() in raw.casefold():errors.append(f'corpus activités: présence ou tiers non établi {marker}')
+        # L'élément REFMAR doit porter la mention d'absence physique.
+        refmar=[item for item in items if item.get('id','').startswith('refmar-')]
+        for item in refmar:
+            if 'absence physique' not in (item.get('contexte') or ''):errors.append(f"corpus activités: mention d'absence physique manquante {item.get('id')}")
+            if item.get('statut')!='poster accepté pour présentation':errors.append(f"corpus activités: statut REFMAR non canonique {item.get('id')}")
+        # L'organisateur de l'atelier reste un contexte, jamais une relation.
+        cci=[item for item in items if 'cci' in item.get('id','')]
+        for item in cci:
+            if 'organisateur' not in (item.get('contexte') or '').casefold():errors.append(f"corpus activités: organisateur non qualifié comme contexte {item.get('id')}")
+        # Aucun visuel ne doit reprendre une identité institutionnelle tierce.
+        for path in sorted((ROOT/ACT_DIR).glob('*.svg')):
+            svg=path.read_text(encoding='utf-8')
+            for marker in ['CCI ','Chambre de commerce','Shom','REFMAR 2026 —','<image']:
+                if marker.casefold() in svg.casefold():errors.append(f'visuel activités: contenu tiers ou image importée {path.name} ({marker})')
+            if '<title' not in svg or '<desc' not in svg:errors.append(f'visuel activités: title/desc absent {path.name}')
+    except (OSError,ValueError,KeyError,TypeError) as exc:
+        errors.append(f'corpus activités invalide: {exc}')
+
     # JS syntax if node available handled outside
     report={'status':'pass' if not errors else 'fail','html_pages_checked':len(HTML),'errors':errors,'warnings':warnings}
     print(json.dumps(report,ensure_ascii=False,indent=2))

@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "corpus": "activites-bluewave",
+  "titre": "Activités et productions BlueWave",
+  "categories": [
+    { "slug": "tout", "label": "Tout" },
+    { "slug": "evenement", "label": "Événement" },
+    { "slug": "production", "label": "Production scientifique" },
+    { "slug": "atelier", "label": "Atelier" },
+    { "slug": "rencontre", "label": "Rencontre" },
+    { "slug": "formation", "label": "Formation" },
+    { "slug": "terrain", "label": "Terrain / visite" },
+    { "slug": "recherche-appliquee", "label": "Recherche appliquée" }
+  ],
+  "items": [
+    {
+      "id": "cciamp-atelier-marche-2026",
+      "rang": 1,
+      "categorie": "evenement",
+      "categorie_label": "Événement",
+      "titre": "Atelier CCI Aix-Marseille-Provence — Connaître son marché, vendre mieux",
+      "date": "16 septembre 2026",
+      "lieu": "Palais de la Bourse, Marseille",
+      "statut": "activité réalisée",
+      "description": "Participation à l’atelier professionnel « Business plan : Connaître son marché, vendre mieux », dans le cadre de l’avancement de BlueWave Solutions.",
+      "contexte": "CCI Aix-Marseille-Provence — organisateur de l’atelier.",
+      "image": "assets/img/activites/cciamp-atelier-marche-2026.svg",
+      "largeur": 1600,
+      "hauteur": 900,
+      "alt": "Visuel éditorial BlueWave annonçant un atelier professionnel « Connaître son marché, vendre mieux », le 16 septembre 2026 à Marseille."
+    },
+    {
+      "id": "refmar-poster-niveau-marin-golfe-guinee-2026",
+      "rang": 2,
+      "categorie": "production",
+      "categorie_label": "Production scientifique",
+      "titre": "Niveau marin dans le Golfe de Guinée",
+      "sous_titre": "Déficit observationnel et enjeux pour les politiques publiques côtières",
+      "date": "2026",
+      "lieu": "Journées REFMAR 2026",
+      "statut": "poster accepté pour présentation",
+      "description": "Poster scientifique BlueWave consacré au patrimoine marégraphique du Golfe de Guinée et à son utilité pour les politiques publiques côtières, accepté pour présentation aux Journées REFMAR 2026.",
+      "contexte": "La présentation a été organisée par relais scientifique, en l’absence physique du fondateur sur le lieu des Journées.",
+      "image": "assets/img/activites/refmar-poster-niveau-marin-golfe-guinee-2026.svg",
+      "largeur": 1600,
+      "hauteur": 900,
+      "alt": "Visuel éditorial BlueWave d’un poster scientifique sur le niveau marin dans le Golfe de Guinée, avec un marégramme schématique signalant une lacune d’observation."
+    }
+  ]
+}

@@ -8,7 +8,7 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-e
 - `solutions.html` : cinq offres cœur et deux formats d’entrée ;
 - `methode.html` : méthode publique BlueWave en six étapes ;
 - `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
-- `mediatheque.html` : dix visuels BlueWave avec visionneuse locale ;
+- `mediatheque.html` : dix visualisations BlueWave avec visionneuse locale, puis le corpus évolutif « Activités et productions BlueWave » ;
 - `actualites.html` : veille maritime et littorale issue de sources externes identifiées ;
 - `a-propos.html` : positionnement et présentation du fondateur ;
 - `qualifier-un-besoin.html` : orientation locale puis prise de contact préparée.
@@ -26,6 +26,26 @@ Le workflow `update-actualites.yml` est volontairement manuel et en lecture seul
 ## Méthode publique
 
 La méthode publique compte six étapes : `Qualifier → Cadrer → Analyser → Cartographier → Structurer → Restituer`.
+
+## Corpus « Activités et productions BlueWave »
+
+La Médiathèque porte deux corpus distincts.
+
+Le premier, inchangé, reste les dix visualisations BlueWave (`.media-card`, filtres et visionneuse de `assets/js/mediatheque.js`).
+
+Le second documente les activités, événements et productions effectivement rattachés au développement et aux travaux de BlueWave Solutions. Il a son propre balisage (`.activites-*`), sa feuille `assets/css/activites-bluewave.css` et son script `assets/js/activites-bluewave.js` : aucune règle ni aucun comportement du premier corpus n'est redéfini.
+
+Les données publiques sont dans `assets/data/activites-bluewave.json`, les visuels dans `assets/img/activites/`. Le schéma prévoit les catégories événement, production scientifique, atelier, rencontre, formation, terrain / visite et recherche appliquée ; seules celles réellement représentées sont proposées au filtrage.
+
+### Doctrine
+
+Un élément n'entre dans ce corpus que s'il est réellement rattaché à BlueWave Solutions. Les organismes, événements et lieux cités situent le contexte d'une activité : leur mention ne vaut ni partenariat, ni mandat, ni relation institutionnelle. Ce corpus ne documente pas le parcours personnel du fondateur.
+
+Une inscription ou un événement à venir n'est jamais présenté comme une activité réalisée ; le champ `statut` porte la qualification exacte. Une présence physique non établie n'est jamais affirmée.
+
+Les visuels sont des productions éditoriales BlueWave originales : aucun logo, aucune image institutionnelle tierce, aucune donnée chiffrée inventée.
+
+`quality/scripts/quality_check.py` applique cette doctrine : mention publique présente une seule fois, formulations de relation non établie absentes des données comme de la page, images locales uniquement, aucun hotlink, qualification du statut REFMAR et de l'organisateur de l'atelier, visuels sans identité tierce ni image importée, et aucun résidu de corpus personnel dans la Médiathèque.
 
 ## Automatisation visiteurs
 

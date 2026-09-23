@@ -61,6 +61,7 @@ FORBIDDEN_SUFFIXES = (".py", ".mjs", ".md", ".yml", ".yaml", ".zip")
 
 CSS_URL = re.compile(r"url\(\s*['\"]?([^'\")]+)['\"]?\s*\)")
 JS_ASSET = re.compile(r"['\"]((?:data|assets)/[^'\"]+\.(?:json|svg|png|jpg|jpeg|webp|css|js))['\"]")
+JSON_ASSET = re.compile(r'"((?:data|assets)/[^"]+\.(?:json|svg|png|jpg|jpeg|webp|css|js))"')
 
 
 class References(HTMLParser):
@@ -129,6 +130,10 @@ def extract(relative: str) -> list[str]:
     elif suffix == ".js":
         raws = JS_ASSET.findall(path.read_text(encoding="utf-8"))
         base = ""  # résolution depuis la page servie, à la racine du site
+    elif suffix == ".json":
+        # Les données lues par le navigateur peuvent désigner des médias locaux.
+        raws = JSON_ASSET.findall(path.read_text(encoding="utf-8"))
+        base = ""
     else:
         return []
     return [target for target in (resolve(relative, raw, base=base) for raw in raws) if target]
