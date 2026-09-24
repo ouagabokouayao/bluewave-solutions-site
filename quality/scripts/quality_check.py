@@ -73,13 +73,8 @@ def main():
         if not {'noindex','nofollow'}.issubset(robots):errors.append(f'{f.name}: noindex,nofollow absent')
         if len(p.ids)!=len(set(p.ids)):errors.append(f'{f.name}: ids dupliqués')
         if PRICE.search(text):errors.append(f'{f.name}: prix public détecté')
-        # La forme civile complete du dirigeant est exigee par les mentions legales et la
-        # politique de confidentialite. Elle est neutralisee avant le controle : toute autre
-        # occurrence du prenom seul reste interdite.
-        NOM_CIVIL='Bokoua Yao (Joseph) OUAGA'
-        controle=text.replace(NOM_CIVIL,'')
         for rx in FORBIDDEN:
-            if rx.search(controle):errors.append(f'{f.name}: formulation interdite {rx.pattern}')
+            if rx.search(text):errors.append(f'{f.name}: formulation interdite {rx.pattern}')
         for held in HELD:
             if held in text:errors.append(f'{f.name}: média HOLD référencé {held}')
         for im in p.img:

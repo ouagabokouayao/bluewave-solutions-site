@@ -281,8 +281,8 @@
   },
   {
     "path": "mentions-legales.html",
-    "sha256": "b929850af81b038b4dea98911ce7008252343a7c114cf76b2ebda3070c513e61",
-    "bytes": 5458
+    "sha256": "50dbccbbe81ed0dead93afee5016c846a059ec74c66daf2c93cc829949d75f6c",
+    "bytes": 5677
   },
   {
     "path": "methode.html",
@@ -296,8 +296,8 @@
   },
   {
     "path": "politique-confidentialite.html",
-    "sha256": "f6d6945c9ef6bf43c86cdff007c6fb7f4341b19c1a7565b0905f96b1db25100a",
-    "bytes": 8792
+    "sha256": "bce3b1606fc543bd1380a194933476ab22432715c5d0246b413d51a8765c339e",
+    "bytes": 8856
   },
   {
     "path": "preuves-demonstrateurs.html",
@@ -356,8 +356,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "748ae1197e49d9122005178db3048742b09f48ac1bef70b8ef58f1686274d440",
-    "bytes": 32174
+    "sha256": "56c70183d34c3c3f75a46a84a8596a454010a0527c9413fa874984767f9a5945",
+    "bytes": 31844
   },
   {
     "path": "quality/scripts/update_actualites.py",
