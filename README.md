@@ -106,11 +106,11 @@ workflow_dispatch → SHA validé → checkout du SHA → build dist → contrô
 
 `.github/workflows/deploy-pages-manual.yml` implémente la seconde chaîne. Il se déclenche uniquement par `workflow_dispatch`, exige en entrée le SHA complet à publier, refuse tout SHA qui n'appartient pas à `main`, reconstruit `dist/` depuis ce SHA exact, le contrôle, vérifie le manifeste public et n'envoie que `dist/` à GitHub Pages. Ses permissions sont limitées à `contents: read`, `pages: write`, `id-token: write`.
 
-### Configuration GitHub Pages restant à modifier
+### Configuration GitHub Pages — bascule effectuée
 
-GitHub Pages est **encore configuré pour publier automatiquement `main`**. Tant que ce réglage n'a pas changé, tout merge sur `main` publie le dépôt tel quel, workflow manuel ou non : ajouter ce workflow ne suffit pas.
+La source GitHub Pages a été basculée vers **GitHub Actions** le **23 septembre 2026**, avec contrôle dans l'interface GitHub et confirmation empirique lors du merge de la PR #6 : aucun builder legacy ni nouveau déploiement Pages ne s'est déclenché.
 
-Le basculement `Settings → Pages → Source → GitHub Actions` reste à effectuer, et seulement après une décision explicite et distincte. Aucun réglage GitHub Pages n'a été modifié dans cette version.
+La publication reste une action séparée, effectuée seulement après GO explicite et sur un SHA validé via le workflow manuel prévu à cet effet.
 
 ## Qualité et intégrité
 
