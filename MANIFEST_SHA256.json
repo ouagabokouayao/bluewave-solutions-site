@@ -41,8 +41,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "fa10125d304eb5514c414806a8fe20c09c6fe5905678f8875275a8e85518b309",
-    "bytes": 10851
+    "sha256": "5124defe2eead3db598e70641f513aea103c72866517efe6f6acf973d42c837a",
+    "bytes": 12460
   },
   {
     "path": "a-propos.html",
@@ -66,13 +66,13 @@
   },
   {
     "path": "assets/data/activites-bluewave.json",
-    "sha256": "f5cba7e0745ee4d3283a44b5e895344dbdf4ebe123f9116480290399c7be5e2f",
-    "bytes": 5834
+    "sha256": "913f1e3bb44c8009569f58d25b55fc2ca69f831abc9fc26cabf673ad606986dc",
+    "bytes": 5980
   },
   {
-    "path": "assets/img/activites/arbe-sfn-aix-2026.webp",
-    "sha256": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
-    "bytes": 286800
+    "path": "assets/img/activites/arbe-sfn-aix-2026.svg",
+    "sha256": "fd3750912543b505a8b1ebcc3fd25ff65f2fc2dd791f98d76ae90b66e562a26e",
+    "bytes": 3118
   },
   {
     "path": "assets/img/activites/cciamp-atelier-marche-2026.svg",
@@ -80,9 +80,9 @@
     "bytes": 2849
   },
   {
-    "path": "assets/img/activites/loi-littoral-marseille-2026.webp",
-    "sha256": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
-    "bytes": 196564
+    "path": "assets/img/activites/loi-littoral-marseille-2026.svg",
+    "sha256": "9f95a5de9f0322b852af82248ce3554be53dc16de0a6fa5160c9b26b602c9548",
+    "bytes": 3024
   },
   {
     "path": "assets/img/activites/refmar-poster-niveau-marin-golfe-guinee-2026.svg",
@@ -90,9 +90,9 @@
     "bytes": 3629
   },
   {
-    "path": "assets/img/activites/rfdi-gouvernance-oceans-nice-2026.webp",
-    "sha256": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
-    "bytes": 410058
+    "path": "assets/img/activites/rfdi-gouvernance-oceans-nice-2026.svg",
+    "sha256": "de9effb8415adb276580fc97c0f1f8644cdb17f9397b76cba1f1b16048ebb772",
+    "bytes": 2970
   },
   {
     "path": "assets/img/brand/logo/favicon-bluewave-board-192-preview.png",
@@ -281,8 +281,8 @@
   },
   {
     "path": "mentions-legales.html",
-    "sha256": "1bca40efb151b7cd2e3a291ce5aad720598c05a53420e921e14930d8e2af828f",
-    "bytes": 4498
+    "sha256": "b929850af81b038b4dea98911ce7008252343a7c114cf76b2ebda3070c513e61",
+    "bytes": 5458
   },
   {
     "path": "methode.html",
@@ -296,8 +296,8 @@
   },
   {
     "path": "politique-confidentialite.html",
-    "sha256": "10fac32f3af8888b77af1616ae972a16f7d839c969ad23fad44fedabb372c57b",
-    "bytes": 5533
+    "sha256": "f6d6945c9ef6bf43c86cdff007c6fb7f4341b19c1a7565b0905f96b1db25100a",
+    "bytes": 8792
   },
   {
     "path": "preuves-demonstrateurs.html",
@@ -310,9 +310,24 @@
     "bytes": 13724
   },
   {
+    "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
+    "sha256": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
+    "bytes": 286800
+  },
+  {
+    "path": "quality/media-evidence/loi-littoral-marseille-2026.webp",
+    "sha256": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
+    "bytes": 196564
+  },
+  {
+    "path": "quality/media-evidence/rfdi-gouvernance-oceans-nice-2026.webp",
+    "sha256": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
+    "bytes": 410058
+  },
+  {
     "path": "quality/media-provenance-activites-bluewave.json",
-    "sha256": "5b75775a4a2203ca35d6c99867d98d5bcbd2b64a41c66e3625ff0d50c17b8835",
-    "bytes": 4180
+    "sha256": "a36ee7df8d8116379488ec130111610e2007afc9bef62ea91b74b2850f458f50",
+    "bytes": 7090
   },
   {
     "path": "quality/scripts/build_dist.py",
@@ -341,8 +356,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "870685a2e1d335b09fe9c3464adc3993d65b062d6db71b7746ad7c56309ae55f",
-    "bytes": 30411
+    "sha256": "748ae1197e49d9122005178db3048742b09f48ac1bef70b8ef58f1686274d440",
+    "bytes": 32174
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -351,8 +366,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "62c92ce2a4424c4861c54d48941a66b31082fb4669668c4276a0cf44af771516",
-    "bytes": 3619
+    "sha256": "2ff4047bdfb08866770ae5f570a72c495e12595ef1fc04fdf21c4d5d3255e86a",
+    "bytes": 3804
   },
   {
     "path": "quality/scripts/verify_manifest.py",

@@ -1,8 +1,9 @@
 {
-  "version": 1,
-  "objet": "Traçabilité des médias importés dans le corpus « Activités et productions BlueWave ».",
+  "version": 2,
+  "objet": "Traçabilité des médias du corpus « Activités et productions BlueWave ».",
   "note": "OBY est un dépôt-source de preuves et de médias, jamais un partenaire de BlueWave Solutions.",
-  "entrees": [
+  "doctrine_medias": "Le build public ne sert que des productions éditoriales BlueWave originales. Une photographie n'est servie publiquement qu'une fois les droits de republication et le droit à l'image explicitement documentés. Tant que ce n'est pas le cas, elle est conservée hors du build public, comme preuve interne.",
+  "preuves_internes_non_servies": [
     {
       "activite_bluewave": "loi-littoral-marseille-2026",
       "source_repository": "ouagabokouayao/oby-site-academique",
@@ -13,11 +14,13 @@
       "declare_via": "galerie",
       "statut_oby": "public-valide",
       "sha256_source": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
-      "destination_path": "assets/img/activites/loi-littoral-marseille-2026.webp",
+      "destination_path": "quality/media-evidence/loi-littoral-marseille-2026.webp",
       "sha256_destination": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
       "identique": true,
       "bytes": 196564,
-      "preuve_rattachement_bluewave": "Participation en qualité d’auditeur, mobilisée dans les travaux de veille BlueWave sur la gouvernance littorale. La source OBY signale qu’aucune signalétique de l’événement n’est lisible sur les photographies : le rattachement repose sur les métadonnées de prise de vue."
+      "preuve_rattachement_bluewave": "Participation en qualité d’auditeur, mobilisée dans les travaux de veille BlueWave sur la gouvernance littorale. La source OBY signale qu’aucune signalétique de l’événement n’est lisible sur les photographies : le rattachement repose sur les métadonnées de prise de vue.",
+      "servi_dans_dist": false,
+      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public."
     },
     {
       "activite_bluewave": "rfdi-gouvernance-oceans-nice-2026",
@@ -29,11 +32,13 @@
       "declare_via": "galerie",
       "statut_oby": "public-valide",
       "sha256_source": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
-      "destination_path": "assets/img/activites/rfdi-gouvernance-oceans-nice-2026.webp",
+      "destination_path": "quality/media-evidence/rfdi-gouvernance-oceans-nice-2026.webp",
       "sha256_destination": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
       "identique": true,
       "bytes": 410058,
-      "preuve_rattachement_bluewave": "Participation au colloque, mobilisée dans le développement BlueWave sur le droit de la mer et la gouvernance maritime."
+      "preuve_rattachement_bluewave": "Participation au colloque, mobilisée dans le développement BlueWave sur le droit de la mer et la gouvernance maritime.",
+      "servi_dans_dist": false,
+      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public."
     },
     {
       "activite_bluewave": "arbe-sfn-aix-2026",
@@ -45,25 +50,65 @@
       "declare_via": "fichier représentatif",
       "statut_oby": "public-valide",
       "sha256_source": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
-      "destination_path": "assets/img/activites/arbe-sfn-aix-2026.webp",
+      "destination_path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
       "sha256_destination": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
       "identique": true,
       "bytes": 286800,
-      "preuve_rattachement_bluewave": "Participation réalisée à la rencontre régionale, mobilisée dans le développement BlueWave sur l’adaptation et l’acceptabilité des projets."
+      "preuve_rattachement_bluewave": "Participation réalisée à la rencontre régionale, mobilisée dans le développement BlueWave sur l’adaptation et l’acceptabilité des projets.",
+      "servi_dans_dist": false,
+      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public."
     }
   ],
-  "medias_editoriaux_bluewave": [
+  "medias_publics_editoriaux": [
+    {
+      "activite_bluewave": "loi-littoral-marseille-2026",
+      "media": "assets/img/activites/loi-littoral-marseille-2026.svg",
+      "origine": "production éditoriale BlueWave originale",
+      "largeur": 1600,
+      "hauteur": 900,
+      "sha256": "9f95a5de9f0322b852af82248ce3554be53dc16de0a6fa5160c9b26b602c9548",
+      "bytes": 3024,
+      "motif": "remplace la photographie d'origine : droits de republication et droit à l'image non documentés."
+    },
+    {
+      "activite_bluewave": "rfdi-gouvernance-oceans-nice-2026",
+      "media": "assets/img/activites/rfdi-gouvernance-oceans-nice-2026.svg",
+      "origine": "production éditoriale BlueWave originale",
+      "largeur": 1600,
+      "hauteur": 900,
+      "sha256": "de9effb8415adb276580fc97c0f1f8644cdb17f9397b76cba1f1b16048ebb772",
+      "bytes": 2970,
+      "motif": "remplace la photographie d'origine : droits de republication et droit à l'image non documentés."
+    },
+    {
+      "activite_bluewave": "arbe-sfn-aix-2026",
+      "media": "assets/img/activites/arbe-sfn-aix-2026.svg",
+      "origine": "production éditoriale BlueWave originale",
+      "largeur": 1600,
+      "hauteur": 900,
+      "sha256": "fd3750912543b505a8b1ebcc3fd25ff65f2fc2dd791f98d76ae90b66e562a26e",
+      "bytes": 3118,
+      "motif": "remplace la photographie d'origine : droits de republication et droit à l'image non documentés."
+    },
     {
       "activite_bluewave": "cciamp-atelier-marche-2026",
       "media": "assets/img/activites/cciamp-atelier-marche-2026.svg",
       "origine": "production éditoriale BlueWave originale",
-      "motif": "aucune photographie de l’atelier du 16 septembre 2026 n’est disponible dans les médias accessibles ; aucune photo n’a été inventée."
+      "largeur": 1600,
+      "hauteur": 900,
+      "sha256": "ef67c0fd9bf9f4657aafe911ea34e1b9dbb3ceeb36921bcfeed6ad94a9b92c88",
+      "bytes": 2849,
+      "motif": "aucune photographie de l'atelier du 16 septembre 2026 n'est disponible dans les médias accessibles ; aucune photo n'a été inventée."
     },
     {
       "activite_bluewave": "refmar-poster-niveau-marin-golfe-guinee-2026",
       "media": "assets/img/activites/refmar-poster-niveau-marin-golfe-guinee-2026.svg",
       "origine": "production éditoriale BlueWave originale",
-      "motif": "le PDF source du poster n’est pas disponible localement ; le visuel reprend les informations publiques du poster, sans donnée chiffrée."
+      "largeur": 1600,
+      "hauteur": 900,
+      "sha256": "ba7842d3c02490eeb84b5b58bcee771b948a9a12c1e0ae5fec9104cc8e2f13f0",
+      "bytes": 3629,
+      "motif": "le PDF source du poster n'est pas disponible localement ; le visuel reprend les informations publiques du poster, sans donnée chiffrée."
     }
   ]
 }

@@ -73,8 +73,13 @@ def main():
         if not {'noindex','nofollow'}.issubset(robots):errors.append(f'{f.name}: noindex,nofollow absent')
         if len(p.ids)!=len(set(p.ids)):errors.append(f'{f.name}: ids dupliqués')
         if PRICE.search(text):errors.append(f'{f.name}: prix public détecté')
+        # La forme civile complete du dirigeant est exigee par les mentions legales et la
+        # politique de confidentialite. Elle est neutralisee avant le controle : toute autre
+        # occurrence du prenom seul reste interdite.
+        NOM_CIVIL='Bokoua Yao (Joseph) OUAGA'
+        controle=text.replace(NOM_CIVIL,'')
         for rx in FORBIDDEN:
-            if rx.search(text):errors.append(f'{f.name}: formulation interdite {rx.pattern}')
+            if rx.search(controle):errors.append(f'{f.name}: formulation interdite {rx.pattern}')
         for held in HELD:
             if held in text:errors.append(f'{f.name}: média HOLD référencé {held}')
         for im in p.img:
@@ -338,31 +343,47 @@ def main():
             for marker in ['CCI ','Chambre de commerce','Shom','REFMAR 2026 —','<image']:
                 if marker.casefold() in svg.casefold():errors.append(f'visuel activités: contenu tiers ou image importée {path.name} ({marker})')
             if '<title' not in svg or '<desc' not in svg:errors.append(f'visuel activités: title/desc absent {path.name}')
-        # Toute photographie du corpus doit être tracée dans la provenance interne,
-        # copiée sans transformation depuis une source OBY publiable.
+        # Doctrine médias : le build public ne sert que des productions éditoriales BlueWave.
+        # Une photographie n'est publiable qu'une fois les droits de republication et le droit
+        # à l'image documentés ; sinon elle reste hors du build, comme preuve interne.
         prov=json.loads((ROOT/'quality/media-provenance-activites-bluewave.json').read_text(encoding='utf-8'))
-        traces={entry['destination_path']:entry for entry in prov['entrees']}
-        editoriaux={m['media'] for m in prov.get('medias_editoriaux_bluewave',[])}
+        editoriaux={m['media']:m for m in prov.get('medias_publics_editoriaux',[])}
+        preuves=prov.get('preuves_internes_non_servies',[])
         for item in items:
             image=item.get('image','')
-            if image.lower().endswith('.svg'):
-                if image not in editoriaux:errors.append(f'provenance activités: visuel éditorial non déclaré {image}')
+            if not image.lower().endswith('.svg'):
+                errors.append(f'corpus activités: média public non éditorial {image}')
                 continue
-            entry=traces.get(image)
-            if entry is None:
-                errors.append(f'provenance activités: média sans trace {image}')
+            media=editoriaux.get(image)
+            if media is None:
+                errors.append(f'provenance activités: visuel éditorial non déclaré {image}')
                 continue
-            if entry.get('statut_oby')!='public-valide':errors.append(f"provenance activités: source non publiable {image}")
-            if not entry.get('identique'):errors.append(f'provenance activités: copie non conforme {image}')
             content=(ROOT/image).read_bytes()
-            if entry.get('sha256_destination')!=hashlib.sha256(content).hexdigest():errors.append(f'provenance activités: SHA-256 destination incorrect {image}')
-            if entry.get('bytes')!=len(content):errors.append(f'provenance activités: taille destination incorrecte {image}')
-            if not (entry.get('preuve_rattachement_bluewave') or '').strip():errors.append(f'provenance activités: preuve de rattachement absente {image}')
-        # Toute photographie présente sur disque doit correspondre à un élément du corpus.
+            if media.get('sha256')!=hashlib.sha256(content).hexdigest():errors.append(f'provenance activités: SHA-256 incorrect {image}')
+            if media.get('bytes')!=len(content):errors.append(f'provenance activités: taille incorrecte {image}')
+            if not (media.get('motif') or '').strip():errors.append(f'provenance activités: motif du visuel éditorial absent {image}')
+        # Aucune photographie ne doit se trouver dans le répertoire public servi.
         declarees={item.get('image') for item in items}
         for path in sorted((ROOT/ACT_DIR).glob('*')):
             relative=path.relative_to(ROOT).as_posix()
-            if path.is_file() and relative not in declarees:errors.append(f'visuel activités: média orphelin {path.name}')
+            if not path.is_file():continue
+            if path.suffix.lower()!='.svg':errors.append(f'visuel activités: média non éditorial dans le répertoire public {path.name}')
+            if relative not in declarees:errors.append(f'visuel activités: média orphelin {path.name}')
+        # Les preuves internes restent tracées, intactes et hors du build public.
+        for entry in preuves:
+            chemin=entry.get('destination_path','')
+            if not chemin.startswith('quality/'):errors.append(f'provenance activités: preuve interne hors zone interne {chemin}')
+            if entry.get('servi_dans_dist'):errors.append(f'provenance activités: preuve interne marquée comme servie {chemin}')
+            if entry.get('statut_oby')!='public-valide':errors.append(f'provenance activités: source non publiable {chemin}')
+            if not entry.get('identique'):errors.append(f'provenance activités: copie non conforme {chemin}')
+            if not (entry.get('motif_non_publication') or '').strip():errors.append(f'provenance activités: motif de non-publication absent {chemin}')
+            if not (entry.get('preuve_rattachement_bluewave') or '').strip():errors.append(f'provenance activités: preuve de rattachement absente {chemin}')
+            cible=ROOT/chemin
+            if not cible.is_file():errors.append(f'provenance activités: preuve interne absente {chemin}')
+            else:
+                octets=cible.read_bytes()
+                if entry.get('sha256_destination')!=hashlib.sha256(octets).hexdigest():errors.append(f'provenance activités: SHA-256 preuve interne incorrect {chemin}')
+                if entry.get('bytes')!=len(octets):errors.append(f'provenance activités: taille preuve interne incorrecte {chemin}')
         if 'partenaire' in json.dumps(prov,ensure_ascii=False).casefold().replace('jamais un partenaire',''):errors.append('provenance activités: OBY présenté comme partenaire')
     except (OSError,ValueError,KeyError,TypeError) as exc:
         errors.append(f'corpus activités invalide: {exc}')
