@@ -10,9 +10,14 @@
     "bytes": 414
   },
   {
+    "path": ".github/workflows/deploy-pages-manual.yml",
+    "sha256": "3e790dabb8ace74be9d67507daf677989045354f5dc35978b798e8e0f18f571a",
+    "bytes": 2977
+  },
+  {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "caa54175ee290314bfdd2729b4f8a408d54ebdcb6db0a729bb3c2cde46967c4d",
-    "bytes": 1436
+    "sha256": "94372d2facb959ce7af4416462ca2ec31952788a21383dcd0d9c9f82a06b2035",
+    "bytes": 1693
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -21,8 +26,8 @@
   },
   {
     "path": ".gitignore",
-    "sha256": "924451c40b0d623bb01c5157e588136690651825b1c4566cda28f4dadfc75700",
-    "bytes": 771
+    "sha256": "4078c9d99e7e988e424641c1ab32ed2a3f7621b361646d973de71de0296a9bbd",
+    "bytes": 855
   },
   {
     "path": ".nojekyll",
@@ -36,13 +41,13 @@
   },
   {
     "path": "README.md",
-    "sha256": "eb11f280b1f0c7b161af84f5c96f46af519cce2f3b947016eda224a6a669a8b6",
-    "bytes": 4651
+    "sha256": "c9f212572ec91dd9c746e3397858bd2fec81197637afe0310bf887836c687971",
+    "bytes": 7549
   },
   {
     "path": "a-propos.html",
-    "sha256": "e0ff8b60c786135d515b143af0b34a3a0ce5310f8e8629a7bd33fd05e327b3ae",
-    "bytes": 6667
+    "sha256": "6436e52fcb171a1c9be72cb9c307a487f413ae9c545a698c9219ff800db4e531",
+    "bytes": 6682
   },
   {
     "path": "actualites.html",
@@ -265,6 +270,16 @@
     "bytes": 13724
   },
   {
+    "path": "quality/scripts/build_dist.py",
+    "sha256": "6f862ff2115abfa8420f54290a1c3a562563fb3ccc749be6a8f3842ccb3ac2be",
+    "bytes": 6705
+  },
+  {
+    "path": "quality/scripts/check_dist.py",
+    "sha256": "b96c6e3aeb6e866650486706641d07ea1cb20176d5c05d7e387259bedf789d87",
+    "bytes": 4497
+  },
+  {
     "path": "quality/scripts/check_external_links.py",
     "sha256": "89ee226ff269882f21f9b7845821602858c58d0d0833da6a4595b913d9640746",
     "bytes": 3057
@@ -273,6 +288,11 @@
     "path": "quality/scripts/check_secrets.py",
     "sha256": "d4cff2a06ad514cbe9d1b47d3aa42867f9eeb892ae10705414bfc3a28f3bcb44",
     "bytes": 1539
+  },
+  {
+    "path": "quality/scripts/dist_manifest.py",
+    "sha256": "42d56d78e0deef1901cf2c3f70d9152f2f68a8f9263211c674ee2bb28b9b19c2",
+    "bytes": 3424
   },
   {
     "path": "quality/scripts/quality_check.py",
@@ -286,13 +306,18 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "14f9bdce77ebebe689d17c1ec527554db12fdc67381bc793a19143619fbb646b",
-    "bytes": 3226
+    "sha256": "d31a1f01c5322bed5eab5a3818ee9cecbe8412a19f727029db9b1a6df39474cc",
+    "bytes": 3440
   },
   {
     "path": "quality/scripts/verify_manifest.py",
     "sha256": "62de54434386ea62497c4e78502e787a18b1e73eefde2ee6a12ccfab06585a9b",
     "bytes": 1850
+  },
+  {
+    "path": "quality/sources-candidates-afrique-ouest.md",
+    "sha256": "10592f6023a3953847578056d9a9712a4010358a511f0e44894613b216eecdd4",
+    "bytes": 4167
   },
   {
     "path": "robots.txt",

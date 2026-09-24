@@ -1,0 +1,106 @@
+name: Publish BlueWave site (manual)
+
+# Publication manuelle et explicite uniquement.
+# Après bascule de GitHub Pages vers GitHub Actions, un merge sur main ne déclenche
+# pas ce workflow de publication.
+# Ce workflow ne publie que le SHA fourni, après contrôle qu'il appartient bien à main.
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "SHA complet (40 caractères) à publier. Doit appartenir à main."
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: bluewave-pages-publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and control dist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate SHA format
+        env:
+          TARGET_SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          if ! printf '%s' "$TARGET_SHA" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "FAIL: SHA invalide — 40 caractères hexadécimaux attendus."
+            exit 1
+          fi
+          echo "PASS: format du SHA valide."
+
+      - name: Checkout main history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify the SHA belongs to main
+        env:
+          TARGET_SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          if ! git cat-file -e "${TARGET_SHA}^{commit}" 2>/dev/null; then
+            echo "FAIL: commit inconnu dans ce dépôt."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$TARGET_SHA" HEAD; then
+            echo "FAIL: ce SHA n'appartient pas à main — publication refusée."
+            exit 1
+          fi
+          echo "PASS: $TARGET_SHA est présent dans main."
+
+      - name: Checkout the exact SHA to publish
+        env:
+          TARGET_SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          git checkout --detach "$TARGET_SHA"
+          echo "HEAD publié : $(git rev-parse HEAD)"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Site quality gate
+        run: python quality/scripts/quality_check.py
+
+      - name: Build dist
+        run: python quality/scripts/build_dist.py
+
+      - name: Control dist contents
+        run: python quality/scripts/check_dist.py
+
+      - name: Generate public manifest
+        run: python quality/scripts/dist_manifest.py
+
+      - name: Verify public manifest
+        run: python quality/scripts/dist_manifest.py --check
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload dist only
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -19,6 +19,8 @@ Les anciennes routes `services.html`, `domaines.html` et `contact.html` restent 
 
 Le collecteur `quality/scripts/update_actualites.py` lit les flux RSS configurés dans `data/actualites-sources.json`, classe et dédoublonne les éléments, calcule un score transparent et conserve au maximum 80 publications sur 90 jours. `data/actualites-curation.json` permet les exceptions manuelles. Les données et l’état de collecte sont écrits dans `data/actualites.json` et `data/actualites-status.json`.
 
+L'instruction des sources Côte d'Ivoire / Afrique de l'Ouest est consignée dans `quality/sources-candidates-afrique-ouest.md`. Aucune de ces sources n'est intégrée au collecteur : aucun flux RSS ou Atom n'a pu être ouvert et constaté, et une URL de flux supposée reste une invention. Ces institutions restent des pistes de curation manuelle. Aucun contenu n'a été créé pour équilibrer artificiellement les géographies.
+
 Le workflow `update-actualites.yml` est volontairement manuel et en lecture seule. Il prépare une régénération, les contrôles et un patch inspectable sans commit ni push automatique. Une panne de source reste isolée ; une panne totale conserve le dernier jeu valide.
 
 ## Méthode publique
@@ -42,6 +44,43 @@ Pour activer ultérieurement le pipeline en sécurité, il reste à :
 - éventuellement ajouter le snippet de chat Brevo réel et une URL réelle de rendez-vous après validation distincte.
 
 Aucune clé API, aucun identifiant réel de liste ou de modèle ne doit être placé dans le dépôt ou dans le JavaScript public. Le consentement newsletter reste indépendant de la demande commerciale et désactivé dans l’interface tant que sa configuration réelle n’est pas validée.
+
+## Build public et publication
+
+`dist/` est le seul périmètre servi. Il est reconstruit à la demande et n'est pas versionné :
+
+```bash
+python quality/scripts/build_dist.py      # construit dist/ depuis le graphe de références réel
+python quality/scripts/check_dist.py      # aucun fichier interne, parité exacte avec les sources
+python quality/scripts/dist_manifest.py   # écrit dist/MANIFEST_SHA256.json
+python quality/scripts/dist_manifest.py --check
+```
+
+`build_dist.py` part des pages publiques de la racine, de `robots.txt` et de `.nojekyll`, puis suit les références sortantes réelles (HTML vers CSS, JS, images et pages ; CSS vers `url()` ; JS vers les JSON lus par le navigateur). Ce qui n'est pas atteint par ce graphe n'est pas publié : `.claude/`, `.github/`, `QA/`, `quality/`, `serverless/`, `README.md`, `.gitignore`, tout `.env*` et tout artefact de développement restent hors de `dist/`. Aucun fichier source n'est supprimé ni déplacé pour construire le build.
+
+`dist/MANIFEST_SHA256.json` est écrit après construction complète, ne se référence jamais lui-même et porte pour chaque fichier servi le chemin, son SHA-256 et sa taille exacte.
+
+### Merge n'est pas publication
+
+La chaîne retenue sépare strictement les deux :
+
+```
+PR → contrôles → merge main → contrôles → ARRÊT
+```
+
+puis, seulement après une décision de publication distincte :
+
+```
+workflow_dispatch → SHA validé → checkout du SHA → build dist → contrôle dist → manifeste → upload → déploiement Pages
+```
+
+`.github/workflows/deploy-pages-manual.yml` implémente la seconde chaîne. Il se déclenche uniquement par `workflow_dispatch`, exige en entrée le SHA complet à publier, refuse tout SHA qui n'appartient pas à `main`, reconstruit `dist/` depuis ce SHA exact, le contrôle, vérifie le manifeste public et n'envoie que `dist/` à GitHub Pages. Ses permissions sont limitées à `contents: read`, `pages: write`, `id-token: write`.
+
+### Configuration GitHub Pages restant à modifier
+
+GitHub Pages est **encore configuré pour publier automatiquement `main`**. Tant que ce réglage n'a pas changé, tout merge sur `main` publie le dépôt tel quel, workflow manuel ou non : ajouter ce workflow ne suffit pas.
+
+Le basculement `Settings → Pages → Source → GitHub Actions` reste à effectuer, et seulement après une décision explicite et distincte. Aucun réglage GitHub Pages n'a été modifié dans cette version.
 
 ## Qualité et intégrité
 

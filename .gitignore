@@ -34,3 +34,6 @@ pitch-deck-template.html
 charte-graphique.html
 actualites-participations.html
 logo-bluewave.png
+
+# Build public : reconstruit a la demande par quality/scripts/build_dist.py.
+dist/
