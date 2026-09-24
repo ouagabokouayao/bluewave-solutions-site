@@ -1,0 +1,65 @@
+name: Publish validated BlueWave artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      validated_sha:
+        description: "SHA complet validé et présent sur main"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: bluewave-pages-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout validated SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.validated_sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Require the exact current main SHA
+        env:
+          VALIDATED_SHA: ${{ inputs.validated_sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$VALIDATED_SHA"
+          test "$(git rev-parse origin/main)" = "$VALIDATED_SHA"
+
+      - name: Build public artifact
+        run: python quality/scripts/build_dist.py
+
+      - name: QA public artifact
+        run: |
+          python quality/scripts/check_dist.py
+          python quality/scripts/verify_manifest.py
+          git diff --exit-code -- dist/ MANIFEST_SHA256.json
+
+      - name: Upload verified Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build-and-verify
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy verified artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

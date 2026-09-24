@@ -40,5 +40,8 @@ jobs:
         run: node --test serverless/bluewave-leads/tests/handler.test.mjs
       - name: Secret values scan
         run: python quality/scripts/check_secrets.py
-      - name: Integrity manifest
-        run: python quality/scripts/verify_manifest.py
+      - name: Public artifact and integrity manifest
+        run: |
+          python quality/scripts/build_dist.py --check
+          python quality/scripts/check_dist.py
+          python quality/scripts/verify_manifest.py

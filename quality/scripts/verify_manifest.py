@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from update_manifest import DEFAULT_OUTPUT, ROOT, canonical_paths
+from update_manifest import DEFAULT_OUTPUT, DIST, canonical_paths
 
 
 def main() -> int:
@@ -32,7 +32,7 @@ def main() -> int:
         if not isinstance(relative, str):
             errors.append("entrée sans chemin valide")
             continue
-        path = ROOT / relative
+        path = DIST / relative
         if not path.is_file():
             errors.append(f"fichier absent : {relative}")
             continue

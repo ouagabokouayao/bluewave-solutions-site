@@ -32,7 +32,9 @@ jobs:
           node --check assets/js/automation.js
       - name: Refresh and verify integrity manifest
         run: |
+          python quality/scripts/build_dist.py
           python quality/scripts/update_manifest.py
+          python quality/scripts/check_dist.py
           python quality/scripts/verify_manifest.py
           git diff --check
       - name: Prepare inspectable patch
@@ -45,5 +47,6 @@ jobs:
             bluewave-actualites-review.patch
             data/actualites.json
             data/actualites-status.json
+            dist/
             MANIFEST_SHA256.json
           if-no-files-found: error
