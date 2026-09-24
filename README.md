@@ -8,7 +8,7 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-e
 - `solutions.html` : cinq offres cœur et deux formats d’entrée ;
 - `methode.html` : méthode publique BlueWave en six étapes ;
 - `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
-- `mediatheque.html` : dix visuels BlueWave avec visionneuse locale ;
+- `mediatheque.html` : dix visualisations BlueWave avec visionneuse locale, puis cinq activités et productions BlueWave documentées ;
 - `actualites.html` : veille maritime et littorale issue de sources externes identifiées ;
 - `a-propos.html` : positionnement et présentation du fondateur ;
 - `qualifier-un-besoin.html` : orientation locale puis prise de contact préparée.
@@ -26,6 +26,36 @@ Le workflow `update-actualites.yml` est volontairement manuel et en lecture seul
 ## Méthode publique
 
 La méthode publique compte six étapes : `Qualifier → Cadrer → Analyser → Cartographier → Structurer → Restituer`.
+
+## Corpus « Activités et productions BlueWave »
+
+La Médiathèque porte deux corpus distincts.
+
+Le premier, inchangé, reste les dix visualisations BlueWave (`.media-card`, filtres et visionneuse de `assets/js/mediatheque.js`).
+
+Le second documente les activités, événements et productions effectivement rattachés au développement et aux travaux de BlueWave Solutions. Il a son propre balisage (`.activites-*`), sa feuille `assets/css/activites-bluewave.css` et son script `assets/js/activites-bluewave.js` : aucune règle ni aucun comportement du premier corpus n'est redéfini.
+
+Les données publiques sont dans `assets/data/activites-bluewave.json`, les visuels dans `assets/img/activites/`. Le corpus compte cinq éléments : quatre événements et une production scientifique. Le schéma prévoit les catégories événement, production scientifique, atelier, rencontre, formation, terrain / visite et recherche appliquée ; seules celles réellement représentées sont proposées au filtrage.
+
+### Doctrine
+
+Un élément n'entre dans ce corpus que s'il est réellement rattaché à BlueWave Solutions. Les organismes, événements et lieux cités situent le contexte d'une activité : leur mention ne vaut ni partenariat, ni mandat, ni relation institutionnelle. Ce corpus ne documente pas le parcours personnel du fondateur.
+
+Une inscription ou un événement à venir n'est jamais présenté comme une activité réalisée ; le champ `statut` porte la qualification exacte. Une présence physique non établie n'est jamais affirmée.
+
+Les visuels sont des productions éditoriales BlueWave originales : aucun logo, aucune image institutionnelle tierce, aucune donnée chiffrée inventée.
+
+`quality/scripts/quality_check.py` applique cette doctrine : mention publique présente une seule fois, formulations de relation non établie absentes des données comme de la page, images locales uniquement, aucun hotlink, qualification du statut REFMAR et de l'organisateur de l'atelier, visuels sans identité tierce ni image importée, et aucun résidu de corpus personnel dans la Médiathèque.
+
+### Médias et provenance
+
+Deux natures de visuels coexistent dans `assets/img/activites/`.
+
+Les photographies proviennent du dépôt `ouagabokouayao/oby-site-academique`, qui sert de dépôt-source de preuves et de médias — jamais de partenaire de BlueWave Solutions. Chacune est copiée sans transformation, depuis une entrée dont le statut est `public-valide`, et tracée dans `quality/media-provenance-activites-bluewave.json` : événement BlueWave, dépôt et commit source, chemin source, mode de déclaration, statut, SHA-256 des deux côtés, identité octet et nature de la preuve de rattachement à BlueWave. Ce fichier reste interne et n'entre pas dans `dist`.
+
+Les visuels éditoriaux sont des productions BlueWave originales, utilisées lorsqu'aucune photographie certaine n'est disponible. Ils sont déclarés comme tels dans le même fichier de provenance, avec le motif. Aucune photographie n'est inventée.
+
+`quality_check.py` vérifie que toute photographie du corpus est tracée, copiée à l'octet près depuis une source publiable, porte une preuve de rattachement, et qu'aucun média orphelin ne traîne dans le répertoire.
 
 ## Automatisation visiteurs
 
@@ -76,11 +106,11 @@ workflow_dispatch → SHA validé → checkout du SHA → build dist → contrô
 
 `.github/workflows/deploy-pages-manual.yml` implémente la seconde chaîne. Il se déclenche uniquement par `workflow_dispatch`, exige en entrée le SHA complet à publier, refuse tout SHA qui n'appartient pas à `main`, reconstruit `dist/` depuis ce SHA exact, le contrôle, vérifie le manifeste public et n'envoie que `dist/` à GitHub Pages. Ses permissions sont limitées à `contents: read`, `pages: write`, `id-token: write`.
 
-### Configuration GitHub Pages restant à modifier
+### Configuration GitHub Pages — bascule effectuée
 
-GitHub Pages est **encore configuré pour publier automatiquement `main`**. Tant que ce réglage n'a pas changé, tout merge sur `main` publie le dépôt tel quel, workflow manuel ou non : ajouter ce workflow ne suffit pas.
+La source GitHub Pages a été basculée vers **GitHub Actions** le **23 septembre 2026**, avec contrôle dans l'interface GitHub et confirmation empirique lors du merge de la PR #6 : aucun builder legacy ni nouveau déploiement Pages ne s'est déclenché.
 
-Le basculement `Settings → Pages → Source → GitHub Actions` reste à effectuer, et seulement après une décision explicite et distincte. Aucun réglage GitHub Pages n'a été modifié dans cette version.
+La publication reste une action séparée, effectuée seulement après GO explicite et sur un SHA validé via le workflow manuel prévu à cet effet.
 
 ## Qualité et intégrité
 
