@@ -49,13 +49,15 @@ Les visuels sont des productions éditoriales BlueWave originales : aucun logo, 
 
 ### Médias et provenance
 
-Deux natures de visuels coexistent dans `assets/img/activites/`.
+**Le build public ne sert que des productions éditoriales BlueWave originales.** `assets/img/activites/` ne contient que des SVG produits pour le site : aucun logo institutionnel tiers, aucune photographie, aucun portrait, aucune donnée chiffrée inventée.
 
-Les photographies proviennent du dépôt `ouagabokouayao/oby-site-academique`, qui sert de dépôt-source de preuves et de médias — jamais de partenaire de BlueWave Solutions. Chacune est copiée sans transformation, depuis une entrée dont le statut est `public-valide`, et tracée dans `quality/media-provenance-activites-bluewave.json` : événement BlueWave, dépôt et commit source, chemin source, mode de déclaration, statut, SHA-256 des deux côtés, identité octet et nature de la preuve de rattachement à BlueWave. Ce fichier reste interne et n'entre pas dans `dist`.
+Une photographie n'est servie publiquement qu'une fois les droits de republication et le droit à l'image explicitement documentés pour une publication au nom de BlueWave Solutions. Tant que ce n'est pas le cas, elle reste hors du build public.
 
-Les visuels éditoriaux sont des productions BlueWave originales, utilisées lorsqu'aucune photographie certaine n'est disponible. Ils sont déclarés comme tels dans le même fichier de provenance, avec le motif. Aucune photographie n'est inventée.
+Les photographies rassemblées comme preuves de rattachement sont conservées dans `quality/media-evidence/`, zone interne exclue de `dist` par construction. Elles proviennent du dépôt `ouagabokouayao/oby-site-academique`, qui sert de dépôt-source de preuves et de médias — jamais de partenaire de BlueWave Solutions — copiées sans transformation depuis une entrée au statut `public-valide`.
 
-`quality_check.py` vérifie que toute photographie du corpus est tracée, copiée à l'octet près depuis une source publiable, porte une preuve de rattachement, et qu'aucun média orphelin ne traîne dans le répertoire.
+`quality/media-provenance-activites-bluewave.json` trace les deux natures : pour chaque preuve interne, l'activité, le dépôt, le commit et le chemin source, le mode de déclaration, le statut, les SHA-256 des deux côtés, l'identité octet, la preuve de rattachement et le motif de non-publication ; pour chaque visuel public, son origine éditoriale, son empreinte et le motif de son emploi. Ce fichier reste interne et n'entre pas dans `dist`.
+
+`quality_check.py` vérifie qu'aucun média non éditorial ne figure dans le répertoire public ni dans le corpus, qu'aucun média orphelin ne traîne, que chaque visuel public est déclaré et intact, et que chaque preuve interne reste hors zone servie, intacte, tracée et motivée.
 
 ## Automatisation visiteurs
 
@@ -128,6 +130,12 @@ python quality/scripts/verify_manifest.py
 ```
 
 `MANIFEST_SHA256.json` inclut les données de veille dynamiques. Le workflow de collecte le régénère dans le même commit que les données afin de conserver une doctrine d’intégrité unique.
+
+## Mentions légales et données personnelles
+
+`mentions-legales.html` identifie l'éditeur, le directeur de la publication et l'hébergement technique, et énonce ce qui n'est pas encore acquis : aucun SIREN, SIRET, RCS, Kbis, numéro de TVA, capital libéré, immatriculation ni agrément n'est affiché tant que les justificatifs correspondants n'existent pas. La page porte également la doctrine de propriété intellectuelle : les organismes et événements cités le sont à titre contextuel, sans revendication sur des marques ou contenus tiers.
+
+`politique-confidentialite.html` décrit l'état technique réel : aucune transmission automatisée, aucun traceur BlueWave, aucun assistant, le message étant préparé localement puis envoyé par l'utilisateur depuis sa propre messagerie. Elle nomme le responsable du traitement, les finalités, les bases juridiques, les données, les destinataires, les durées de conservation, les droits et la voie de réclamation. Elle distingue explicitement ce que BlueWave met en œuvre du traitement technique relevant de l'hébergeur.
 
 ## Préactivation
 
