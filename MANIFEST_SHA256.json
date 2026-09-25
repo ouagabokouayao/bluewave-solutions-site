@@ -46,8 +46,8 @@
   },
   {
     "path": "a-propos.html",
-    "sha256": "5675236d702259fbe652d0c5c0d8bd9e4b60239884c6b607ff3ff19b558d363a",
-    "bytes": 7096
+    "sha256": "1c4566d46e725031f79dd942d3599bf5cc561a6878f562d2684c59b726614038",
+    "bytes": 7138
   },
   {
     "path": "actualites.html",
@@ -66,7 +66,7 @@
   },
   {
     "path": "assets/data/activites-bluewave.json",
-    "sha256": "82a0bcceb41c11e7e8cac413628cce88ef03e977bc984e84ad1b4424b1378b72",
+    "sha256": "ac0ca7744957672754dc1153c6d6c390cbbef725a088080c3531da42651cdfc9",
     "bytes": 5815
   },
   {
@@ -276,13 +276,13 @@
   },
   {
     "path": "index.html",
-    "sha256": "e9dcc86dc74e7e594f5749af8071da933f591041354903d021b3032f18fd8359",
-    "bytes": 12818
+    "sha256": "83d7f7089162aaaa79c0e1b16d0fbfcdc8d53bf7c3ae1a48e9cc947f00f01abc",
+    "bytes": 12856
   },
   {
     "path": "mediatheque-activites.html",
-    "sha256": "a3164098a51c06e82aaba2966d513977b24445a07036779e92b71af71e67e73d",
-    "bytes": 5644
+    "sha256": "5edb864b699b984813f9c1e25ce44ee198302894a30ea0ecbac726f50398d67f",
+    "bytes": 5675
   },
   {
     "path": "mediatheque-visualisations.html",
@@ -291,8 +291,8 @@
   },
   {
     "path": "mediatheque.html",
-    "sha256": "3c4c0e1c5e572e2e7dd86c309a1887502ddb0ae4a386d22df7932675cb2211a0",
-    "bytes": 6066
+    "sha256": "f27a17de039ae71be28f33ccec23f80095b9596e4ba9d7fcedcf80f3136f543f",
+    "bytes": 6097
   },
   {
     "path": "mentions-legales.html",
@@ -316,8 +316,8 @@
   },
   {
     "path": "preuves-demonstrateurs.html",
-    "sha256": "f7aab4eb9962e09acc7200f3c1c2b124eec181178aef27ccbccdf4bb4fb54de3",
-    "bytes": 8993
+    "sha256": "24cbd0d62f8991e4e8cca477b539aa2f1d6599477d57c3f4dd671a20049c0e9b",
+    "bytes": 9010
   },
   {
     "path": "qualifier-un-besoin.html",
@@ -441,7 +441,7 @@
   },
   {
     "path": "solutions.html",
-    "sha256": "d8991fd077f0c9b2016442932191330dde0c876bc4c32b30e851756ee60dd67d",
-    "bytes": 8940
+    "sha256": "c6b755e3b54d9e54c91960d8ac141ece181b7dae08aa8b5d4f821c4fe075d6ba",
+    "bytes": 8939
   }
 ]

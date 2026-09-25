@@ -38,20 +38,21 @@
   ],
   "items": [
     {
-      "id": "loi-littoral-marseille-2026",
+      "id": "refmar-poster-niveau-marin-golfe-guinee-2026",
       "rang": 1,
-      "categorie": "evenement",
-      "categorie_label": "Événement",
-      "titre": "40 ans après la loi Littoral — espaces publics littoraux",
-      "date": "29 janvier 2026",
-      "lieu": "Cour administrative d’appel de Marseille",
-      "statut": "participation en qualité d’auditeur",
-      "description": "Quarante ans après la loi Littoral : l’état des espaces publics du rivage, de leur accès et de leur protection. Une matière directement utile aux travaux BlueWave sur la gouvernance littorale et l’adaptation des territoires.",
-      "contexte": "Rencontre professionnelle consacrée au bilan de quarante ans d’application de la loi Littoral.",
-      "image": "assets/img/activites/loi-littoral-marseille-2026.svg",
+      "categorie": "production",
+      "categorie_label": "Production scientifique",
+      "titre": "Niveau marin dans le Golfe de Guinée",
+      "sous_titre": "Déficit observationnel et enjeux pour les politiques publiques côtières",
+      "date": "2026",
+      "lieu": "Journées REFMAR 2026",
+      "statut": "poster accepté pour présentation",
+      "description": "Poster scientifique BlueWave sur le patrimoine marégraphique du Golfe de Guinée : ce que le déficit d’observation du niveau marin implique pour les politiques publiques côtières.",
+      "contexte": "Poster présenté par relais scientifique, en l’absence physique du fondateur.",
+      "image": "assets/img/activites/refmar-poster-niveau-marin-golfe-guinee-2026.svg",
       "largeur": 1600,
       "hauteur": 900,
-      "alt": "Visuel éditorial BlueWave annonçant la rencontre « 40 ans après la loi Littoral — espaces publics littoraux », le 29 janvier 2026 à la Cour administrative d’appel de Marseille."
+      "alt": "Visuel éditorial BlueWave d’un poster scientifique sur le niveau marin dans le Golfe de Guinée, avec un marégramme schématique signalant une lacune d’observation."
     },
     {
       "id": "rfdi-gouvernance-oceans-nice-2026",
@@ -86,8 +87,24 @@
       "alt": "Visuel éditorial BlueWave annonçant la rencontre régionale du Club Aménagement & Biodiversité consacrée aux Solutions fondées sur la Nature, le 30 juin 2026 à Aix-en-Provence."
     },
     {
-      "id": "cciamp-atelier-marche-2026",
+      "id": "loi-littoral-marseille-2026",
       "rang": 4,
+      "categorie": "evenement",
+      "categorie_label": "Événement",
+      "titre": "40 ans après la loi Littoral — espaces publics littoraux",
+      "date": "29 janvier 2026",
+      "lieu": "Cour administrative d’appel de Marseille",
+      "statut": "participation en qualité d’auditeur",
+      "description": "Quarante ans après la loi Littoral : l’état des espaces publics du rivage, de leur accès et de leur protection. Une matière directement utile aux travaux BlueWave sur la gouvernance littorale et l’adaptation des territoires.",
+      "contexte": "Rencontre professionnelle consacrée au bilan de quarante ans d’application de la loi Littoral.",
+      "image": "assets/img/activites/loi-littoral-marseille-2026.svg",
+      "largeur": 1600,
+      "hauteur": 900,
+      "alt": "Visuel éditorial BlueWave annonçant la rencontre « 40 ans après la loi Littoral — espaces publics littoraux », le 29 janvier 2026 à la Cour administrative d’appel de Marseille."
+    },
+    {
+      "id": "cciamp-atelier-marche-2026",
+      "rang": 5,
       "categorie": "evenement",
       "categorie_label": "Événement",
       "titre": "Atelier CCI Aix-Marseille-Provence — Connaître son marché, vendre mieux",
@@ -100,23 +117,6 @@
       "largeur": 1600,
       "hauteur": 900,
       "alt": "Visuel éditorial BlueWave annonçant un atelier professionnel « Connaître son marché, vendre mieux », le 16 septembre 2026 à Marseille."
-    },
-    {
-      "id": "refmar-poster-niveau-marin-golfe-guinee-2026",
-      "rang": 5,
-      "categorie": "production",
-      "categorie_label": "Production scientifique",
-      "titre": "Niveau marin dans le Golfe de Guinée",
-      "sous_titre": "Déficit observationnel et enjeux pour les politiques publiques côtières",
-      "date": "2026",
-      "lieu": "Journées REFMAR 2026",
-      "statut": "poster accepté pour présentation",
-      "description": "Poster scientifique BlueWave sur le patrimoine marégraphique du Golfe de Guinée : ce que le déficit d’observation du niveau marin implique pour les politiques publiques côtières.",
-      "contexte": "Poster présenté par relais scientifique, en l’absence physique du fondateur.",
-      "image": "assets/img/activites/refmar-poster-niveau-marin-golfe-guinee-2026.svg",
-      "largeur": 1600,
-      "hauteur": 900,
-      "alt": "Visuel éditorial BlueWave d’un poster scientifique sur le niveau marin dans le Golfe de Guinée, avec un marégramme schématique signalant une lacune d’observation."
     }
   ]
 }
