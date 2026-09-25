@@ -6,7 +6,7 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-e
 
 - `index.html` : accueil, situations, méthode, preuves et sélection « À la une » ;
 - `solutions.html` : cinq offres cœur et deux formats d’entrée ;
-- `methode.html` : méthode publique BlueWave en six étapes ;
+- `methode.html` : méthode publique BlueWave en six étapes et bloc « Recherche appliquée » ;
 - `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
 - `mediatheque.html` : hub d’orientation vers les deux corpus de la Médiathèque ;
 - `mediatheque-visualisations.html` : dix visualisations BlueWave, filtres et visionneuse locale ;
@@ -72,6 +72,46 @@ L'image est **recadrée sans retouche** : le cadre original porte le monogramme 
 ### Arbitrage des photographies d'activités
 
 Le choix entre photographie réelle et visuel éditorial est fait image par image, pas par principe. Vingt cadrages du dépôt-source ont été examinés pour les trois activités concernées ; les trois arbitrages et leurs motifs figurent dans `rearbitrage_photographies_v3_2` du fichier de provenance. Une photographie l'emporte dès lors qu'elle documente l'activité, qu'elle est de qualité suffisante, que sa provenance est tracée et que sa diffusion publique au nom de BlueWave est sûre.
+
+## Écosystème, recherche appliquée et événements
+
+### Parcours Collaboration
+
+Le parcours Collaboration s'adresse à l'écosystème réel : bureaux d'études, cabinets d'avocats, sociétés d'ingénierie, cabinets de conseil, universités, laboratoires et équipes de recherche, ONG, collectivités, ports, programmes, consortiums et experts. Le Project Qualifier ne présélectionne plus de type de structure : le visiteur choisit le sien, et les options `Cabinet de conseil / ingénierie`, `Cabinet d'avocats / conseil juridique` et `Consortium / projet collaboratif` ont été ajoutées.
+
+BlueWave n'est pas un cabinet d'avocats. La représentation, le contentieux et l'avis juridique opposable relèvent des professions réglementées ; BlueWave produit de l'analyse juridique et institutionnelle à usage d'aide à la décision et travaille en complémentarité. `quality_check.py` refuse toute attribution d'acte réservé et n'admet l'expression « avis juridique opposable » que dans la phrase qui l'exclut.
+
+### Entrée événementielle
+
+Sous les trois parcours — Projet, Collaboration, Formation, inchangés — l'accueil porte une entrée secondaire « Inviter ou rencontrer BlueWave », avec le CTA « Proposer un événement ou une intervention » vers `qualifier-un-besoin.html?parcours=evenement`. Pas de quatrième parcours principal, pas de formulaire concurrent, pas d'entrée supplémentaire dans le header.
+
+Les rôles possibles lors d'un événement et leur régime de preuve sont dans `quality/radar/doctrine-evenements-interventions.md`. Un rôle listé est un rôle *possible* : il ne devient affirmable qu'une fois tenu et documenté.
+
+### Recherche appliquée
+
+Définie sur `methode.html`. Elle est **transversale** aux offres existantes et n'en constitue pas une de plus : `quality_check.py` verrouille les 5 offres cœur, les 2 formats d'entrée et les 3 parcours, et refuse toute carte d'offre mentionnant la recherche appliquée. La doctrine complète est dans `quality/radar/doctrine-recherche-appliquee.md`.
+
+## Radar interne d'opportunités
+
+`quality/radar/` porte une couche **interne** de détection et de qualification d'opportunités : appels à projets, marchés, consultations, appels à communications, événements, consortiums, réseaux. Elle est exclue de `dist` par construction et contrôlée par `quality/scripts/radar_check.py`.
+
+**Actualités et radar sont séparés.** La page Actualités reste une veille éditoriale publique ; le radar prépare des décisions et ne publie rien. Une actualité n'est pas une opportunité, une opportunité n'est pas une actualité.
+
+| Fichier | Rôle |
+| --- | --- |
+| `types.json` | 25 types d'opportunité, 17 rôles possibles |
+| `schema-opportunite.json` | 28 champs de la fiche, dont 21 obligatoires |
+| `scoring.json` | 10 critères pondérés à 100, 4 seuils, 6 statuts |
+| `opportunites.json` | registre — **vide**, aucune fiche d'exemple n'est admise |
+| `mapping-crm.json` | 17 correspondances radar ↔ CRM, `id` comme clé d'identité unique |
+| `alertes-config.json` | 5 canaux et 8 déclencheurs, **tous inactifs** |
+| `alertes.md` | architecture et procédure d'activation future |
+
+Le score trie, il ne décide pas : `decision_humaine` est le seul champ qui engage BlueWave, et `radar_check.py` refuse qu'il soit rendu obligatoire ou rempli automatiquement.
+
+**Les alertes ne sont pas activées.** Aucun envoi, aucune notification externe, aucun appel réseau sortant. `radar_check.py` refuse tout canal ouvert, tout déclencheur armé et toute clé d'API en clair. Leur activation fera l'objet d'un GO distinct.
+
+Le CRM maître reste propriétaire de l'engagement commercial. Le radar l'alimente par export manuel, sous le même `id` : un identifiant, une fiche, une entrée CRM — pas de base parallèle.
 
 ## Automatisation visiteurs
 

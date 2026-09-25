@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "objet": "Scoring interne de tri. Il hiérarchise les fiches ; il ne décide jamais à la place d'une personne.",
+  "echelle": "Chaque critère est noté de 0 à 5. Le score total est la somme pondérée, ramenée sur 100.",
+  "criteres": [
+    {
+      "slug": "adequation-metier",
+      "label": "Adéquation métier",
+      "poids": 20,
+      "aide": "mer, littoral, gouvernance, adaptation, économie bleue"
+    },
+    {
+      "slug": "adequation-geographique",
+      "label": "Adéquation géographique",
+      "poids": 10,
+      "aide": "Méditerranée, golfe de Guinée"
+    },
+    {
+      "slug": "valeur-commerciale",
+      "label": "Valeur commerciale",
+      "poids": 15,
+      "aide": "perspective de mission ou de référence"
+    },
+    {
+      "slug": "valeur-scientifique",
+      "label": "Valeur scientifique",
+      "poids": 10,
+      "aide": "apport de connaissance, publication, communication"
+    },
+    {
+      "slug": "valeur-partenariale",
+      "label": "Valeur partenariale",
+      "poids": 10,
+      "aide": "consortium, coopération, réseau durable"
+    },
+    {
+      "slug": "visibilite",
+      "label": "Visibilité",
+      "poids": 8,
+      "aide": "exposition utile auprès des bons interlocuteurs"
+    },
+    {
+      "slug": "accessibilite",
+      "label": "Accessibilité",
+      "poids": 9,
+      "aide": "éligibilité réelle au regard du stade de BlueWave"
+    },
+    {
+      "slug": "delai",
+      "label": "Délai",
+      "poids": 6,
+      "aide": "temps disponible avant la date limite"
+    },
+    {
+      "slug": "cout",
+      "label": "Coût",
+      "poids": 6,
+      "aide": "coût d'entrée et coût de préparation"
+    },
+    {
+      "slug": "capacite-execution",
+      "label": "Capacité réelle d'exécution",
+      "poids": 6,
+      "aide": "ce qui est tenable sans surpromesse"
+    }
+  ],
+  "seuils_indicatifs": [
+    {
+      "min": 75,
+      "decision_recommandee": "GO À PRÉPARER"
+    },
+    {
+      "min": 55,
+      "decision_recommandee": "À ÉTUDIER"
+    },
+    {
+      "min": 30,
+      "decision_recommandee": "VEILLE"
+    },
+    {
+      "min": 0,
+      "decision_recommandee": "NO GO"
+    }
+  ],
+  "statuts": [
+    "À ÉTUDIER",
+    "GO À PRÉPARER",
+    "VEILLE",
+    "NO GO",
+    "EXPIRÉ",
+    "ACTION EN COURS"
+  ],
+  "regle": "Le seuil produit une recommandation, pas une décision. decision_humaine est le seul champ qui engage BlueWave, et il est renseigné par une personne."
+}

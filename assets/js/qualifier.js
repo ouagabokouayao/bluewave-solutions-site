@@ -34,7 +34,8 @@
   };
   const journeyPresets = {
     projet: { requestType:'projet-mission', label:'Projet', message:'Le parcours Projet est présélectionné. Vous pouvez modifier chaque réponse.' },
-    collaboration: { organisation:'bureau', problematique:'multiple', stade:'cadrage', resultat:'perimetre', requestType:'collaboration', label:'Collaboration', message:'Le parcours Collaboration est présélectionné pour une compétence complémentaire. Vous pouvez modifier chaque réponse.' },
+    collaboration: { problematique:'multiple', stade:'cadrage', resultat:'perimetre', requestType:'collaboration', label:'Collaboration', message:'Le parcours Collaboration est présélectionné. Précisez votre structure — bureau d’études, cabinet d’avocats, conseil, recherche, ONG, collectivité, port, programme ou consortium — et modifiez chaque réponse si besoin.' },
+    evenement: { problematique:'multiple', stade:'initial', resultat:'comprendre', requestType:'evenement-intervention', label:'Événement ou intervention', message:'Le parcours Événement ou intervention est présélectionné. Décrivez le format envisagé : conférence, table ronde, atelier, salon, stand, poster ou contribution scientifique.' },
     formation: { problematique:'formation', stade:'formation', resultat:'former', requestType:'formation', label:'Formation', message:'Le parcours Formation est présélectionné. Vous pouvez modifier chaque réponse.' }
   };
 
