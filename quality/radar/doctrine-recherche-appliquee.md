@@ -31,7 +31,7 @@ publique et du projet.
 ## Formes
 
 étude comparative · revue de littérature orientée décision · recherche documentaire ·
-benchmark international · analyse juridique et institutionnelle non réservée · analyse de
+benchmark international · analyse documentaire des cadres juridiques et institutionnels · analyse de
 données publiques · étude de gouvernance · recherche sur les acteurs et les usages ·
 recherche-action · étude pilote · prospective · observatoire thématique · étude de
 politiques publiques · production de connaissances pour un projet ou une stratégie ·
@@ -40,7 +40,7 @@ coopération scientifique avec université, laboratoire, ONG, collectivité ou p
 ## Livrables possibles
 
 note de recherche appliquée · état de l'art · revue de littérature · benchmark · analyse
-comparative · note juridique ou institutionnelle non opposable · cartographie d'acteurs ·
+comparative · note d'analyse des cadres juridiques et institutionnels · cartographie d'acteurs ·
 analyse de données secondaires · scénario prospectif · rapport de recherche-action ·
 synthèse destinée aux décideurs · poster ou communication scientifique · contribution à
 un projet de recherche collaborative.
@@ -56,8 +56,8 @@ d'études, cabinets de conseil et cabinets d'avocats · institutions et bailleur
 
 ## Frontière avec les professions réglementées
 
-BlueWave produit de l'analyse juridique et institutionnelle **à usage d'aide à la
-décision**. La représentation, le contentieux et l'avis juridique opposable relèvent des
+BlueWave produit de l'analyse documentaire des cadres juridiques et institutionnels,
+**à usage d'aide à la décision**. La représentation, le contentieux et l'avis juridique opposable relèvent des
 professions réglementées, avec lesquelles BlueWave travaille en complémentarité.
 
 BlueWave n'est pas un cabinet d'avocats et ne se présente jamais comme tel. La

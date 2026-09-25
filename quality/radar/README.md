@@ -35,7 +35,26 @@ source officielle
                       └─ action ................ export CRM (mapping-crm.json)
 ```
 
-Le score trie ; il ne décide pas. Aucune fiche ne change de statut sans décision humaine.
+Le score trie ; il ne décide pas. Il produit une **décision recommandée** et rien d'autre.
+
+**Décision et statut sont deux choses distinctes.** La décision dit quoi faire, le statut dit
+où en est le traitement. Les deux ensembles sont disjoints et `radar_check.py` refuse tout
+recouvrement.
+
+| Décisions | Statuts de cycle de vie |
+| --- | --- |
+| `GO À PRÉPARER` · `À ÉTUDIER` · `VEILLE` · `NO GO` | `DÉTECTÉE` · `À QUALIFIER` · `ACTION EN COURS` · `CLÔTURÉE` · `EXPIRÉE` |
+
+`decision_recommandee` vient du score, `decision_humaine` d'une personne, `statut` du
+traitement. Aucun des trois ne se substitue aux autres.
+
+## Identifiant
+
+Le radar reprend **le canon d'identifiant du CRM maître** : `OPP-` suivi du numéro
+séquentiel du CRM (`OPP-014`, `OPP-015`, `OPP-016`…). Aucune convention concurrente n'est
+créée, aucune migration du CRM n'est demandée.
+
+> Un identifiant CRM canonique = une opportunité = une fiche radar.
 
 ## Fichiers
 
@@ -43,7 +62,7 @@ Le score trie ; il ne décide pas. Aucune fiche ne change de statut sans décisi
 | --- | --- |
 | `types.json` | types d'opportunité détectables et rôles possibles |
 | `schema-opportunite.json` | schéma JSON de la fiche d'opportunité |
-| `scoring.json` | critères, pondérations, seuils et statuts |
+| `scoring.json` | critères, pondérations, seuils et décisions recommandées |
 | `opportunites.json` | registre des fiches qualifiées — **vide tant qu'aucune opportunité réelle n'est instruite** |
 | `mapping-crm.json` | correspondance champ à champ radar ↔ CRM, règle d'identité |
 | `alertes.md` | architecture d'alerte et procédure d'activation |

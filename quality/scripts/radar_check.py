@@ -18,7 +18,7 @@ RADAR = ROOT / "quality" / "radar"
 FICHIERS = ["README.md", "types.json", "schema-opportunite.json", "scoring.json",
             "opportunites.json", "mapping-crm.json", "alertes.md", "alertes-config.json",
             "doctrine-recherche-appliquee.md", "doctrine-evenements-interventions.md"]
-ID = re.compile(r"^OPP-\d{4}-\d{3}$")
+ID = re.compile(r"^OPP-\d{3,}$")  # canon du CRM maître : OPP-014, OPP-015, OPP-016…
 URL = re.compile(r"^https://[^\s\"']+$")
 
 
@@ -56,16 +56,30 @@ def main() -> int:
     poids = sum(c.get("poids", 0) for c in scoring.get("criteres", []))
     if poids != 100:
         errors.append(f"radar: somme des pondérations de scoring = {poids}, attendu 100")
-    statuts = scoring.get("statuts", [])
-    for requis in ["À ÉTUDIER", "GO À PRÉPARER", "VEILLE", "NO GO", "EXPIRÉ", "ACTION EN COURS"]:
-        if requis not in statuts:
-            errors.append(f"radar: statut canonique absent {requis}")
-    seuils = [s.get("min") for s in scoring.get("seuils_indicatifs", [])]
+    # Décisions et cycle de vie sont deux ensembles distincts et disjoints.
+    DECISIONS = ["GO À PRÉPARER", "À ÉTUDIER", "VEILLE", "NO GO"]
+    STATUTS = ["DÉTECTÉE", "À QUALIFIER", "ACTION EN COURS", "CLÔTURÉE", "EXPIRÉE"]
+    decisions = scoring.get("decisions", [])
+    statuts = schema.get("statuts", [])
+    if sorted(decisions) != sorted(DECISIONS):
+        errors.append(f"radar: ensemble des décisions non canonique {decisions}")
+    if sorted(statuts) != sorted(STATUTS):
+        errors.append(f"radar: ensemble des statuts non canonique {statuts}")
+    if sorted(schema.get("decisions", [])) != sorted(DECISIONS):
+        errors.append("radar: décisions du schéma non alignées sur le scoring")
+    if set(decisions) & set(statuts):
+        errors.append(f"radar: décision et statut se recouvrent {sorted(set(decisions) & set(statuts))}")
+    if "statuts" in scoring:
+        errors.append("radar: le scoring ne doit pas porter de statut — il ne produit qu'une décision recommandée")
+    seuils = [x.get("min") for x in scoring.get("seuils_indicatifs", [])]
     if seuils != sorted(seuils, reverse=True):
         errors.append("radar: seuils de scoring non ordonnés")
     for seuil in scoring.get("seuils_indicatifs", []):
-        if seuil.get("decision_recommandee") not in statuts:
-            errors.append(f"radar: seuil vers un statut inconnu {seuil.get('decision_recommandee')}")
+        recommandee = seuil.get("decision_recommandee")
+        if recommandee not in DECISIONS:
+            errors.append(f"radar: seuil vers une valeur qui n'est pas une décision {recommandee}")
+        if recommandee in STATUTS:
+            errors.append(f"radar: un seuil ne peut pas recommander un statut {recommandee}")
 
     # --- Le score ne décide pas : le schéma doit porter une décision humaine distincte.
     noms = {c.get("nom") for c in schema.get("champs", [])}
@@ -90,7 +104,7 @@ def main() -> int:
     for item in items:
         oid = item.get("id", "")
         if not ID.match(oid):
-            errors.append(f"radar: id non conforme {oid!r}, format attendu OPP-AAAA-NNN")
+            errors.append(f"radar: id non conforme {oid!r}, format attendu OPP-NNN, canon du CRM maître")
         if oid in vus_id:
             errors.append(f"radar: id dupliqué {oid}")
         vus_id.add(oid)
@@ -104,8 +118,17 @@ def main() -> int:
             errors.append(f"radar: type inconnu sur {oid} ({item.get('type')})")
         if item.get("role_possible") not in roles_connus:
             errors.append(f"radar: rôle inconnu sur {oid} ({item.get('role_possible')})")
-        if item.get("statut") not in statuts:
+        if item.get("statut") not in STATUTS:
             errors.append(f"radar: statut inconnu sur {oid} ({item.get('statut')})")
+        if item.get("statut") in DECISIONS:
+            errors.append(f"radar: une décision est employée comme statut sur {oid}")
+        if item.get("decision_recommandee") not in DECISIONS:
+            errors.append(f"radar: décision recommandée invalide sur {oid} ({item.get('decision_recommandee')})")
+        if item.get("decision_recommandee") in STATUTS:
+            errors.append(f"radar: un statut est employé comme décision recommandée sur {oid}")
+        humaine = item.get("decision_humaine")
+        if humaine is not None and humaine not in DECISIONS:
+            errors.append(f"radar: décision humaine invalide sur {oid} ({humaine})")
         for manquant in set(schema.get("champs_obligatoires", [])) - set(item):
             errors.append(f"radar: champ obligatoire absent sur {oid} ({manquant})")
         blob = json.dumps(item, ensure_ascii=False).casefold()
@@ -116,12 +139,23 @@ def main() -> int:
             errors.append(f"radar: date de détection dans le futur sur {oid}")
 
     # --- Anti-doublon avec le CRM : une seule clé d'identité, dans les deux sens.
-    if mapping.get("cle_identite", {}).get("champ") != "id":
+    identite = mapping.get("cle_identite", {})
+    if identite.get("champ") != "id":
         errors.append("radar: la clé d'identité CRM doit être le champ id")
+    if "OPP-NNN" not in (identite.get("format") or ""):
+        errors.append("radar: le format d'identifiant doit reprendre le canon du CRM (OPP-NNN)")
+    if "CRM" not in (identite.get("canon") or ""):
+        errors.append("radar: le canon d'identifiant doit désigner le CRM maître")
     crm_statuts = mapping.get("correspondance_statuts", {})
-    for statut in statuts:
+    crm_decisions = mapping.get("correspondance_decisions", {})
+    for statut in STATUTS:
         if statut not in crm_statuts:
             errors.append(f"radar: statut non mappé vers le CRM {statut}")
+    for decision in DECISIONS:
+        if decision not in crm_decisions:
+            errors.append(f"radar: décision non mappée vers le CRM {decision}")
+    if set(crm_statuts) & set(crm_decisions):
+        errors.append("radar: décisions et statuts partagent une entrée de mapping CRM")
     if not mapping.get("anti_doublon"):
         errors.append("radar: règles anti-doublon absentes du mapping CRM")
 

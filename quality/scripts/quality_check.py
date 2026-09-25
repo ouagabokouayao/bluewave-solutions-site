@@ -488,12 +488,28 @@ def main():
     if home.count('<form')!=0:errors.append('index.html: formulaire concurrent sur l’accueil')
 
     # Collaboration élargie à l’écosystème réel.
-    for structure in ['cabinets d’avocats','universités','ONG','consortiums','ports']:
+    # L'accueil énonce l'ouverture de façon ramassée ; le détail vit dans le Qualifier.
+    for structure in ['bureaux d’études','cabinets d’avocats et de conseil','ingénieristes',
+                      'acteurs publics','scientifiques','associatifs','consortiums']:
         if structure not in home:errors.append(f'index.html: structure absente du parcours Collaboration ({structure})')
+    for option in ['value="bureau"','value="conseil"','value="avocat"','value="institution"',
+                   'value="consortium"','value="ong"','value="recherche"','value="collectivite"','value="port"']:
+        if option not in qualifier:errors.append(f'qualifier-un-besoin.html: catégorie détaillée absente ({option})')
     if "organisation:'bureau'" in qualifier_js:errors.append('qualifier.js: le parcours Collaboration force encore un type de structure')
 
     # Visuels : plus aucune formulation défensive résiduelle.
-    SVG_RETIRES=['Aucune implantation locale','aucun diagnostic réel ni résultat client','aucun mandat ni résultat réel']
+    SVG_RETIRES=['Aucune implantation locale','aucun diagnostic réel ni résultat client','aucun mandat ni résultat réel',
+        'travaillées depuis Marseille']
+    # Légendes canoniques attendues dans les visuels corrigés.
+    SVG_CANON={
+        'visualisation-deux-marches.svg':'Méditerranée et golfe de Guinée : deux géographies prioritaires.',
+        'apercu-diagnostic.svg':'Démonstrateur de structure de diagnostic.',
+        'apercu-note-strategique.svg':'Démonstrateur de structure de note stratégique.',
+    }
+    for nom,legende in SVG_CANON.items():
+        chemin=next((x for x in (ROOT/'assets/img').rglob(nom)),None)
+        if chemin is None:errors.append(f'visuel absent {nom}')
+        elif legende not in chemin.read_text(encoding='utf-8'):errors.append(f'visuel: légende canonique absente {nom}')
     for path in sorted((ROOT/'assets/img').rglob('*.svg')):
         svg=path.read_text(encoding='utf-8')
         for marker in SVG_RETIRES:
@@ -501,8 +517,25 @@ def main():
 
     # Radar interne : strictement hors du site public.
     for page,text_ in pages_publiques.items():
-        for marker in ['quality/radar','opportunites.json','radar interne','OPP-20']:
+        for marker in ['quality/radar','opportunites.json','radar interne']:
             if marker.casefold() in text_.casefold():errors.append(f'{page}: référence au radar interne ({marker})')
+        # Identifiants d'opportunité au canon du CRM maître : jamais publics.
+        if re.search(r'\bOPP-\d{3,}\b',text_):errors.append(f'{page}: identifiant d’opportunité exposé')
+    # Formulations juridiques publiques : pas de prestation juridique générique.
+    JURIDIQUE_INTERDIT=['note juridique','consultation juridique','conseil juridique à',
+        'avis juridique BlueWave','expertise juridique opposable','non opposable']
+    for page,text_ in pages_publiques.items():
+        for marker in JURIDIQUE_INTERDIT:
+            if marker.casefold() in text_.casefold():errors.append(f'{page}: formulation juridique à retirer ({marker})')
+    for requis in ['analyse documentaire des cadres juridiques et institutionnels',
+                   'note d’analyse des cadres juridiques et institutionnels']:
+        if requis not in methode:errors.append(f'methode.html: formulation retenue absente ({requis})')
+    if 'lecture des cadres juridiques et institutionnels applicables' not in sol:
+        errors.append('solutions.html: lecture des cadres juridiques et institutionnels absente')
+    # Champs de connaissance conservés.
+    if 'droit de la mer' not in ''.join(pages_publiques.values()).casefold():
+        errors.append('site: le droit de la mer a disparu des champs de connaissance')
+
     radar=ROOT/'quality/radar'
     if not radar.is_dir():
         errors.append('radar interne absent')

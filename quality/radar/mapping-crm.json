@@ -3,8 +3,9 @@
   "objet": "Correspondance radar ↔ CRM maître BlueWave. Le radar alimente le CRM ; il ne le remplace pas.",
   "cle_identite": {
     "champ": "id",
-    "format": "OPP-AAAA-NNN",
-    "regle": "Le même id identifie la fiche radar et l'entrée CRM. Aucune entrée CRM n'est créée sans id radar ; aucune fiche radar n'est dupliquée pour un même id. C'est ce qui empêche les bases parallèles."
+    "canon": "CRM maître BlueWave",
+    "format": "OPP-NNN (OPP-014, OPP-015, OPP-016…)",
+    "regle": "L'identifiant est celui du CRM, repris tel quel par le radar. Aucune convention concurrente n'est créée et aucune migration du CRM n'est demandée. Un identifiant CRM canonique = une opportunité = une fiche radar."
   },
   "sens_de_synchronisation": {
     "radar_vers_crm": [
@@ -89,12 +90,8 @@
     },
     {
       "radar": "statut",
-      "crm": "stage"
-    },
-    {
-      "radar": "decision_humaine",
       "crm": "stage",
-      "note": "le CRM fait foi en cas de divergence"
+      "note": "état de traitement ; le CRM fait foi en cas de divergence"
     },
     {
       "radar": "risques",
@@ -104,20 +101,30 @@
       "radar": "contact_public",
       "crm": "contact_public",
       "note": "contact publié par la source uniquement"
+    },
+    {
+      "radar": "decision_recommandee",
+      "crm": "recommended_decision",
+      "note": "issue du score, indicative"
+    },
+    {
+      "radar": "decision_humaine",
+      "crm": "decision",
+      "note": "décision engageante, distincte du stage"
     }
   ],
   "correspondance_statuts": {
-    "À ÉTUDIER": "Qualification",
-    "GO À PRÉPARER": "Preparation",
+    "DÉTECTÉE": "Detected",
+    "À QUALIFIER": "Qualification",
     "ACTION EN COURS": "In progress",
-    "VEILLE": "Watch",
-    "NO GO": "Closed lost",
-    "EXPIRÉ": "Closed expired"
+    "CLÔTURÉE": "Closed",
+    "EXPIRÉE": "Expired"
   },
   "anti_doublon": [
+    "id reprend le canon du CRM maître : le radar n'invente aucun identifiant.",
     "Un id ne peut apparaître qu'une fois dans opportunites.json — contrôlé par radar_check.py.",
     "Une url_source ne peut être rattachée qu'à un seul id — contrôlé par radar_check.py.",
-    "Aucune entrée CRM n'est créée directement : elle passe toujours par une fiche radar portant l'id.",
+    "Aucune entrée CRM n'est créée directement : elle passe toujours par une fiche radar portant l'id CRM.",
     "Aucune base intermédiaire n'est créée entre le radar et le CRM."
   ],
   "export": {
@@ -125,5 +132,11 @@
     "declencheur": "manuel",
     "statut": "non activé",
     "note": "Aucun export automatique n'est en place. L'export est une action humaine explicite."
+  },
+  "correspondance_decisions": {
+    "GO À PRÉPARER": "Go - prepare",
+    "À ÉTUDIER": "To assess",
+    "VEILLE": "Watch",
+    "NO GO": "No go"
   }
 }

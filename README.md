@@ -107,7 +107,11 @@ Définie sur `methode.html`. Elle est **transversale** aux offres existantes et 
 | `alertes-config.json` | 5 canaux et 8 déclencheurs, **tous inactifs** |
 | `alertes.md` | architecture et procédure d'activation future |
 
-Le score trie, il ne décide pas : `decision_humaine` est le seul champ qui engage BlueWave, et `radar_check.py` refuse qu'il soit rendu obligatoire ou rempli automatiquement.
+Le score trie, il ne décide pas : il produit une **décision recommandée**, rien de plus. `decision_humaine` est le seul champ qui engage BlueWave, et `radar_check.py` refuse qu'il soit rendu obligatoire ou rempli automatiquement.
+
+**Décision et statut sont séparés** : `GO À PRÉPARER · À ÉTUDIER · VEILLE · NO GO` d'un côté, `DÉTECTÉE · À QUALIFIER · ACTION EN COURS · CLÔTURÉE · EXPIRÉE` de l'autre. Les deux ensembles sont disjoints et le validateur refuse tout recouvrement, un seuil qui recommanderait un statut, ou un statut employé comme décision.
+
+L'identifiant reprend **le canon du CRM maître** — `OPP-014`, `OPP-015`, `OPP-016`… Le radar n'invente aucune convention : un identifiant CRM canonique = une opportunité = une fiche radar.
 
 **Les alertes ne sont pas activées.** Aucun envoi, aucune notification externe, aucun appel réseau sortant. `radar_check.py` refuse tout canal ouvert, tout déclencheur armé et toute clé d'API en clair. Leur activation fera l'objet d'un GO distinct.
 

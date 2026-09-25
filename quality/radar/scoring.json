@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "objet": "Scoring interne de tri. Il hiérarchise les fiches ; il ne décide jamais à la place d'une personne.",
+  "objet": "Scoring interne de tri. Il produit une décision *recommandée* et rien d'autre : ni décision humaine, ni statut.",
   "echelle": "Chaque critère est noté de 0 à 5. Le score total est la somme pondérée, ramenée sur 100.",
   "criteres": [
     {
@@ -82,13 +82,11 @@
       "decision_recommandee": "NO GO"
     }
   ],
-  "statuts": [
-    "À ÉTUDIER",
+  "regle": "Le seuil produit une décision recommandée, jamais un statut ni une décision engageante. decision_humaine est le seul champ qui engage BlueWave, et il est renseigné par une personne. Le cycle de vie opérationnel est porté séparément par statut (voir schema-opportunite.json).",
+  "decisions": [
     "GO À PRÉPARER",
+    "À ÉTUDIER",
     "VEILLE",
-    "NO GO",
-    "EXPIRÉ",
-    "ACTION EN COURS"
-  ],
-  "regle": "Le seuil produit une recommandation, pas une décision. decision_humaine est le seul champ qui engage BlueWave, et il est renseigné par une personne."
+    "NO GO"
+  ]
 }

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "objet": "Schéma de la fiche d'opportunité du radar interne BlueWave.",
-  "identite": "Le champ id est la clé partagée avec le CRM. Une opportunité a une seule fiche radar et une seule entrée CRM ; l'unicité est contrôlée par radar_check.py.",
+  "identite": "Le champ id reprend le canon d'identifiant du CRM maître BlueWave (OPP- suivi du numéro séquentiel du CRM, zéro-padé sur trois chiffres au minimum : OPP-014, OPP-015, OPP-016…). Le radar ne crée aucune convention concurrente : un identifiant CRM canonique = une opportunité = une fiche radar.",
   "champs_obligatoires": [
     "id",
     "titre",
@@ -28,8 +28,8 @@
   "champs": [
     {
       "nom": "id",
-      "type": "string",
-      "description": "Identifiant stable, unique et partagé avec le CRM. Format OPP-AAAA-NNN."
+      "type": "string:OPP-NNN",
+      "description": "Identifiant canonique du CRM maître, repris tel quel. Format OPP- suivi de trois chiffres au minimum."
     },
     {
       "nom": "titre",
@@ -138,13 +138,13 @@
     },
     {
       "nom": "decision_recommandee",
-      "type": "enum:scoring.json#statuts",
-      "description": "Recommandation issue du score."
+      "type": "enum:decisions",
+      "description": "Décision recommandée par le score. Jamais un statut."
     },
     {
       "nom": "decision_humaine",
-      "type": "enum:scoring.json#statuts|null",
-      "description": "Décision effectivement prise. null tant qu'elle n'est pas prise."
+      "type": "enum:decisions|null",
+      "description": "Décision effectivement prise par une personne. null tant qu'elle ne l'est pas."
     },
     {
       "nom": "action_immediate",
@@ -158,8 +158,8 @@
     },
     {
       "nom": "statut",
-      "type": "enum:scoring.json#statuts",
-      "description": "Statut courant de la fiche."
+      "type": "enum:statuts",
+      "description": "État de traitement de la fiche dans le cycle de vie. Jamais une décision."
     },
     {
       "nom": "export_crm",
@@ -171,8 +171,24 @@
     "url_source est obligatoire et doit pointer vers la source officielle constatée.",
     "role_possible décrit une intention, jamais un rôle acquis ou promis.",
     "offres_concernees ne référence que des offres existantes ; le radar n'en crée aucune.",
-    "decision_humaine reste null tant qu'une personne n'a pas tranché ; le score ne la remplit jamais.",
     "Aucune fiche d'exemple, de démonstration ou de remplissage n'est admise dans opportunites.json.",
-    "Aucun champ de la fiche n'est publié sur le site."
-  ]
+    "Aucun champ de la fiche n'est publié sur le site.",
+    "decision_recommandee et decision_humaine ne peuvent porter qu'une décision ; statut qu'un état de cycle de vie.",
+    "decision_humaine reste null tant qu'une personne n'a pas tranché ; le score ne la remplit jamais.",
+    "id reprend le canon du CRM maître : aucune convention d'identifiant concurrente n'est créée."
+  ],
+  "decisions": [
+    "GO À PRÉPARER",
+    "À ÉTUDIER",
+    "VEILLE",
+    "NO GO"
+  ],
+  "statuts": [
+    "DÉTECTÉE",
+    "À QUALIFIER",
+    "ACTION EN COURS",
+    "CLÔTURÉE",
+    "EXPIRÉE"
+  ],
+  "separation_decision_statut": "decision_recommandee et decision_humaine prennent une valeur de decisions. statut prend une valeur de statuts. Les deux ensembles sont disjoints : une décision ne décrit jamais un état de traitement, un statut ne vaut jamais décision."
 }
