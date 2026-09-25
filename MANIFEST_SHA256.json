@@ -41,13 +41,13 @@
   },
   {
     "path": "README.md",
-    "sha256": "5124defe2eead3db598e70641f513aea103c72866517efe6f6acf973d42c837a",
-    "bytes": 12460
+    "sha256": "25f330d15cb20592ca194237fbe4895bdc2d0dc864640606cc49544298f67744",
+    "bytes": 14580
   },
   {
     "path": "a-propos.html",
-    "sha256": "6436e52fcb171a1c9be72cb9c307a487f413ae9c545a698c9219ff800db4e531",
-    "bytes": 6682
+    "sha256": "1c4566d46e725031f79dd942d3599bf5cc561a6878f562d2684c59b726614038",
+    "bytes": 7138
   },
   {
     "path": "actualites.html",
@@ -61,13 +61,13 @@
   },
   {
     "path": "assets/css/style.css",
-    "sha256": "0a5f6913418a9aa574fdfe7f689aa74ff565819ecb326bbb7321483e61acf998",
-    "bytes": 25233
+    "sha256": "b44df65eb34f60b91ca1c3f268a9361ed0564c6bf25e92e648bc0a2316942a69",
+    "bytes": 26749
   },
   {
     "path": "assets/data/activites-bluewave.json",
-    "sha256": "913f1e3bb44c8009569f58d25b55fc2ca69f831abc9fc26cabf673ad606986dc",
-    "bytes": 5980
+    "sha256": "ac0ca7744957672754dc1153c6d6c390cbbef725a088080c3531da42651cdfc9",
+    "bytes": 5815
   },
   {
     "path": "assets/img/activites/arbe-sfn-aix-2026.svg",
@@ -128,6 +128,11 @@
     "path": "assets/img/brand/logo/logo-bluewave-vertical-officiel.png",
     "sha256": "7dc47f8dc66d796764900a3a3417965389c7f3939b33409b1877f6594343a5e4",
     "bytes": 67737
+  },
+  {
+    "path": "assets/img/fondateur/bokoua-yao-ouaga.webp",
+    "sha256": "535774c5cd660a85b86d5f8bb0054a6fd54a14ef47c76bccb23fcc360775ab38",
+    "bytes": 43182
   },
   {
     "path": "assets/img/site/about-mangrove-optimized.jpg",
@@ -271,13 +276,23 @@
   },
   {
     "path": "index.html",
-    "sha256": "df27e622917cb5b8e163903e8fb9f01c7f2d193fdbe03c039f90778c50dcb705",
-    "bytes": 12777
+    "sha256": "83d7f7089162aaaa79c0e1b16d0fbfcdc8d53bf7c3ae1a48e9cc947f00f01abc",
+    "bytes": 12856
+  },
+  {
+    "path": "mediatheque-activites.html",
+    "sha256": "5edb864b699b984813f9c1e25ce44ee198302894a30ea0ecbac726f50398d67f",
+    "bytes": 5675
+  },
+  {
+    "path": "mediatheque-visualisations.html",
+    "sha256": "2f3cf7675fd31e955ab321e7e1592de09a28d6b2f1bed5a7a41a681794e31588",
+    "bytes": 12926
   },
   {
     "path": "mediatheque.html",
-    "sha256": "a0d244f84caa776fe2e6b1616d07d3e184ba3d0378e6d58609a0b77e23907f31",
-    "bytes": 13813
+    "sha256": "f27a17de039ae71be28f33ccec23f80095b9596e4ba9d7fcedcf80f3136f543f",
+    "bytes": 6097
   },
   {
     "path": "mentions-legales.html",
@@ -301,13 +316,13 @@
   },
   {
     "path": "preuves-demonstrateurs.html",
-    "sha256": "ce9e17fcbe800802f32a87a0f461bb7adf8ead4eb956cf347defa3c99c69f3ac",
-    "bytes": 8420
+    "sha256": "24cbd0d62f8991e4e8cca477b539aa2f1d6599477d57c3f4dd671a20049c0e9b",
+    "bytes": 9010
   },
   {
     "path": "qualifier-un-besoin.html",
-    "sha256": "bd7723ede05dbff5c97ee11a45f17c04394dfce7f4d3769e35c40985be15a88f",
-    "bytes": 13724
+    "sha256": "6322e3551b8272c3087dee16c475557bcae45958eb7f93351ac56ed9b4e7bcb2",
+    "bytes": 13717
   },
   {
     "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
@@ -326,8 +341,8 @@
   },
   {
     "path": "quality/media-provenance-activites-bluewave.json",
-    "sha256": "a36ee7df8d8116379488ec130111610e2007afc9bef62ea91b74b2850f458f50",
-    "bytes": 7090
+    "sha256": "d6e223ec45bbf678ae67e7ebe439fda81e674f0b72f91914f2261fd73eb7c226",
+    "bytes": 10620
   },
   {
     "path": "quality/scripts/build_dist.py",
@@ -356,8 +371,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "56c70183d34c3c3f75a46a84a8596a454010a0527c9413fa874984767f9a5945",
-    "bytes": 31844
+    "sha256": "dbe3a735867905a30e933f1fa56a6588c964dc3839c1035fadb9c0863e39328d",
+    "bytes": 36408
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -366,8 +381,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "2ff4047bdfb08866770ae5f570a72c495e12595ef1fc04fdf21c4d5d3255e86a",
-    "bytes": 3804
+    "sha256": "6547c23f139d715f4c1c1ff5c031b5abfdc0774172cb6de2acb3c976e08d6ed3",
+    "bytes": 3877
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -426,7 +441,7 @@
   },
   {
     "path": "solutions.html",
-    "sha256": "5300d62b9e1797507447a3a352f26ddca7d009005e34b3438179a0c97599f16f",
-    "bytes": 8869
+    "sha256": "c6b755e3b54d9e54c91960d8ac141ece181b7dae08aa8b5d4f821c4fe075d6ba",
+    "bytes": 8939
   }
 ]

@@ -20,6 +20,8 @@ CRITICAL_FILES = [
     "contact.html",
     "domaines.html",
     "index.html",
+    "mediatheque-activites.html",
+    "mediatheque-visualisations.html",
     "mediatheque.html",
     "mentions-legales.html",
     "methode.html",

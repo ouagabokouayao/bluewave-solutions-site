@@ -99,15 +99,35 @@ def main():
       'Structuration de projets maritimes, littoraux ou d’économie bleue',
       'Formation et renforcement des capacités','Note stratégique BlueWave','Atelier de cadrage BlueWave']:
         if name not in sol:errors.append(f'solutions.html: canon absent {name}')
-    # Médiathèque : corpus, visionneuse et métadonnées
-    media=(ROOT/'mediatheque.html').read_text(encoding='utf-8')
-    if media.count('class="media-card"')!=len(MEDIA_ASSETS):errors.append('mediatheque.html: corpus incomplet')
+    # Médiathèque : un hub et deux corpus distincts.
+    # mediatheque.html oriente ; mediatheque-visualisations.html porte les dix visuels
+    # et la visionneuse ; mediatheque-activites.html porte le corpus des activités.
+    HUB_PAGE='mediatheque.html'
+    VIS_PAGE='mediatheque-visualisations.html'
+    ACT_PAGE='mediatheque-activites.html'
+    hub=(ROOT/HUB_PAGE).read_text(encoding='utf-8')
+    media=(ROOT/VIS_PAGE).read_text(encoding='utf-8')
+    act_page=(ROOT/ACT_PAGE).read_text(encoding='utf-8')
+    for page,text_ in ((HUB_PAGE,hub),(VIS_PAGE,media),(ACT_PAGE,act_page)):
+        canonical=f'https://ouagabokouayao.github.io/bluewave-solutions-site/{page}'
+        if f'<link rel="canonical" href="{canonical}">' not in text_:errors.append(f'{page}: canonical incorrecte')
+        if f'<meta property="og:url" content="{canonical}">' not in text_:errors.append(f'{page}: og:url incorrecte')
+    # Le hub oriente vers les deux corpus et n'en héberge aucun.
+    for target in (VIS_PAGE,ACT_PAGE):
+        if f'href="{target}"' not in hub:errors.append(f'{HUB_PAGE}: lien vers {target} absent')
+    if 'class="media-card"' in hub:errors.append(f'{HUB_PAGE}: corpus visualisations hébergé sur le hub')
+    if 'data-activites-grid' in hub:errors.append(f'{HUB_PAGE}: corpus activités hébergé sur le hub')
+    # Liens réciproques entre les deux sous-pages.
+    if f'href="{ACT_PAGE}"' not in media:errors.append(f'{VIS_PAGE}: lien réciproque absent')
+    if f'href="{VIS_PAGE}"' not in act_page:errors.append(f'{ACT_PAGE}: lien réciproque absent')
+    for page,text_ in ((VIS_PAGE,media),(ACT_PAGE,act_page)):
+        if f'href="{HUB_PAGE}"' not in text_:errors.append(f'{page}: retour Médiathèque absent')
+    # Corpus des visualisations : dix visuels et visionneuse, sur la sous-page dédiée.
+    if media.count('class="media-card"')!=len(MEDIA_ASSETS):errors.append(f'{VIS_PAGE}: corpus incomplet')
     for asset in MEDIA_ASSETS:
-        if asset not in media:errors.append(f'mediatheque.html: visuel absent {asset}')
-    if '<dialog ' not in media or 'id="media-dialog"' not in media:errors.append('mediatheque.html: visionneuse dialog absente')
-    canonical='https://ouagabokouayao.github.io/bluewave-solutions-site/mediatheque.html'
-    if f'<link rel="canonical" href="{canonical}">' not in media:errors.append('mediatheque.html: canonical incorrecte')
-    if f'<meta property="og:url" content="{canonical}">' not in media:errors.append('mediatheque.html: og:url incorrecte')
+        if asset not in media:errors.append(f'{VIS_PAGE}: visuel absent {asset}')
+    if '<dialog ' not in media or 'id="media-dialog"' not in media:errors.append(f'{VIS_PAGE}: visionneuse dialog absente')
+    if 'assets/js/mediatheque.js' not in media:errors.append(f'{VIS_PAGE}: script de la visionneuse absent')
     # Actualités : page, données et règles de sélection
     news_page=(ROOT/'actualites.html').read_text(encoding='utf-8')
     news_js=(ROOT/'assets/js/actualites.js').read_text(encoding='utf-8')
@@ -278,16 +298,19 @@ def main():
     # Le corpus personnel OBY n'a aucune place dans la Médiathèque BlueWave.
     OBY_FORBIDDEN=['Parcours et environnements du fondateur','site personnel OBY','oby-site-academique',
         'evidence-fondateur','oby-preuves-selectionnees','parcours du fondateur']
-    if ACT_NOTICE not in media:errors.append('mediatheque.html: mention publique du corpus activités absente')
-    if media.count(ACT_NOTICE)!=1:errors.append('mediatheque.html: mention publique du corpus activités attendue une seule fois')
-    if 'Activités et productions BlueWave' not in media:errors.append('mediatheque.html: titre du corpus activités absent')
+    if ACT_NOTICE not in act_page:errors.append(f'{ACT_PAGE}: mention publique du corpus activités absente')
+    if act_page.count(ACT_NOTICE)!=1:errors.append(f'{ACT_PAGE}: mention publique du corpus activités attendue une seule fois')
+    if 'Activités et productions BlueWave' not in act_page:errors.append(f'{ACT_PAGE}: titre du corpus activités absent')
     for asset in ('assets/css/activites-bluewave.css','assets/js/activites-bluewave.js'):
-        if asset not in media:errors.append(f'mediatheque.html: ressource du corpus activités absente {asset}')
+        if asset not in act_page:errors.append(f'{ACT_PAGE}: ressource du corpus activités absente {asset}')
+    # La mention publique n'a de sens que là où le corpus est servi.
+    for page,text_ in ((HUB_PAGE,hub),(VIS_PAGE,media)):
+        if ACT_NOTICE in text_:errors.append(f'{page}: mention du corpus activités hors de sa page')
     # Aucun résidu du corpus personnel dans la Médiathèque ni dans les fichiers qu'elle sert.
     # Portée volontairement limitée : le lien vers le site personnel du fondateur sur
     # a-propos.html est un élément canonique préexistant, vérifié plus haut, et reste légitime.
     served=[ROOT/'assets/js/activites-bluewave.js',ROOT/'assets/css/activites-bluewave.css',ACT_DATA]
-    mediatheque_blob='\n'.join([media]+[f.read_text(encoding='utf-8') for f in served if f.is_file()])
+    mediatheque_blob='\n'.join([hub,media,act_page]+[f.read_text(encoding='utf-8') for f in served if f.is_file()])
     for marker in OBY_FORBIDDEN:
         if marker.casefold() in mediatheque_blob.casefold():errors.append(f'Médiathèque: résidu du corpus personnel {marker}')
     for path in (ROOT/'assets/img').rglob('*'):
@@ -317,9 +340,11 @@ def main():
         if 'utilisees.has' not in js_act:errors.append('activites-bluewave.js: filtrage des catégories non utilisées absent')
         for marker in ACT_FORBIDDEN:
             if marker.casefold() in raw.casefold():errors.append(f'corpus activités: relation non établie {marker}')
-            if marker.casefold() in media.casefold():errors.append(f'mediatheque.html: relation non établie {marker}')
+            for page,text_ in ((HUB_PAGE,hub),(VIS_PAGE,media),(ACT_PAGE,act_page)):
+                if marker.casefold() in text_.casefold():errors.append(f'{page}: relation non établie {marker}')
         for marker in ACT_PRESENCE:
             if marker.casefold() in raw.casefold():errors.append(f'corpus activités: présence ou tiers non établi {marker}')
+            if marker.casefold() in act_page.casefold():errors.append(f'{ACT_PAGE}: présence ou tiers non établi {marker}')
         # L'élément REFMAR doit porter la mention d'absence physique.
         refmar=[item for item in items if item.get('id','').startswith('refmar-')]
         for item in refmar:
@@ -349,14 +374,14 @@ def main():
             if not image.lower().endswith('.svg'):
                 errors.append(f'corpus activités: média public non éditorial {image}')
                 continue
-            media=editoriaux.get(image)
-            if media is None:
+            declaree=editoriaux.get(image)
+            if declaree is None:
                 errors.append(f'provenance activités: visuel éditorial non déclaré {image}')
                 continue
             content=(ROOT/image).read_bytes()
-            if media.get('sha256')!=hashlib.sha256(content).hexdigest():errors.append(f'provenance activités: SHA-256 incorrect {image}')
-            if media.get('bytes')!=len(content):errors.append(f'provenance activités: taille incorrecte {image}')
-            if not (media.get('motif') or '').strip():errors.append(f'provenance activités: motif du visuel éditorial absent {image}')
+            if declaree.get('sha256')!=hashlib.sha256(content).hexdigest():errors.append(f'provenance activités: SHA-256 incorrect {image}')
+            if declaree.get('bytes')!=len(content):errors.append(f'provenance activités: taille incorrecte {image}')
+            if not (declaree.get('motif') or '').strip():errors.append(f'provenance activités: motif du visuel éditorial absent {image}')
         # Aucune photographie ne doit se trouver dans le répertoire public servi.
         declarees={item.get('image') for item in items}
         for path in sorted((ROOT/ACT_DIR).glob('*')):
@@ -380,6 +405,39 @@ def main():
                 if entry.get('sha256_destination')!=hashlib.sha256(octets).hexdigest():errors.append(f'provenance activités: SHA-256 preuve interne incorrect {chemin}')
                 if entry.get('bytes')!=len(octets):errors.append(f'provenance activités: taille preuve interne incorrecte {chemin}')
         if 'partenaire' in json.dumps(prov,ensure_ascii=False).casefold().replace('jamais un partenaire',''):errors.append('provenance activités: OBY présenté comme partenaire')
+        # Portrait du fondateur : photographie réelle, tracée, et servie sur la page À propos.
+        portrait=prov.get('portrait_fondateur')
+        if not portrait:
+            errors.append('provenance: portrait du fondateur non déclaré')
+        else:
+            chemin=portrait.get('media','')
+            if not chemin.startswith('assets/img/fondateur/'):errors.append(f'portrait fondateur: hors du répertoire dédié {chemin}')
+            cible=ROOT/chemin
+            if not cible.is_file():
+                errors.append(f'portrait fondateur: média absent {chemin}')
+            else:
+                octets=cible.read_bytes()
+                if portrait.get('sha256')!=hashlib.sha256(octets).hexdigest():errors.append(f'portrait fondateur: SHA-256 incorrect {chemin}')
+                if portrait.get('bytes')!=len(octets):errors.append(f'portrait fondateur: taille incorrecte {chemin}')
+            for champ in ('source_repository','source_commit','source_path','sha256_source','rattachement'):
+                if not (portrait.get(champ) or '').strip():errors.append(f'portrait fondateur: provenance incomplète ({champ})')
+            # Une image recadrée doit dire qu'elle l'est, et pourquoi.
+            if portrait.get('identique') is False:
+                for champ in ('transformation','motif_transformation'):
+                    if not (portrait.get(champ) or '').strip():errors.append(f'portrait fondateur: transformation non documentée ({champ})')
+            elif portrait.get('sha256')!=portrait.get('sha256_source'):
+                errors.append('portrait fondateur: copie déclarée identique mais SHA-256 différent')
+            if chemin not in about:errors.append('a-propos.html: portrait du fondateur non servi')
+            alt=portrait.get('alt') or ''
+            if alt and f'alt="{alt}"' not in about:errors.append('a-propos.html: alt du portrait non conforme à la provenance')
+            # Le répertoire du portrait ne contient que ce média déclaré.
+            for chem in sorted((ROOT/'assets/img/fondateur').glob('*')):
+                if chem.is_file() and chem.relative_to(ROOT).as_posix()!=chemin:
+                    errors.append(f'portrait fondateur: média orphelin {chem.name}')
+            # Aucune identité visuelle du dépôt-source ne doit transiter dans le build public.
+            for marque in ('oby-logo','oby-monogramme','oby_portrait','oby-favicon','oby-og-image'):
+                for chem in (ROOT/'assets/img').rglob('*'):
+                    if chem.is_file() and marque in chem.name.casefold():errors.append(f'dépôt: identité du dépôt-source présente {chem.name}')
     except (OSError,ValueError,KeyError,TypeError) as exc:
         errors.append(f'corpus activités invalide: {exc}')
 

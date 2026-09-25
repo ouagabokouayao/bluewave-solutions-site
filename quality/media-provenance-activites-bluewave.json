@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "objet": "Traçabilité des médias du corpus « Activités et productions BlueWave ».",
   "note": "OBY est un dépôt-source de preuves et de médias, jamais un partenaire de BlueWave Solutions.",
   "doctrine_medias": "Le build public ne sert que des productions éditoriales BlueWave originales. Une photographie n'est servie publiquement qu'une fois les droits de republication et le droit à l'image explicitement documentés. Tant que ce n'est pas le cas, elle est conservée hors du build public, comme preuve interne.",
@@ -110,5 +110,51 @@
       "bytes": 3629,
       "motif": "le PDF source du poster n'est pas disponible localement ; le visuel reprend les informations publiques du poster, sans donnée chiffrée."
     }
-  ]
+  ],
+  "portrait_fondateur": {
+    "media": "assets/img/fondateur/bokoua-yao-ouaga.webp",
+    "sujet": "Bokoua Yao OUAGA, fondateur de BlueWave Solutions",
+    "nature": "photographie de studio",
+    "source_repository": "ouagabokouayao/oby-site-academique",
+    "source_commit": "7e2cac71e7ea1ae78c7a0b6105d926646d7b0d5f",
+    "source_ref": "main",
+    "source_path": "assets/img/portrait/oby_portrait_officiel_accueil_v1.png",
+    "sha256_source": "320ef15b4d32932cf2cf86642d88b97d892ae1fe2f815f1b74027e33ce59ed36",
+    "bytes_source": 705470,
+    "rattachement": "Portrait servi publiquement sur index.html du dépôt source, dont l'attribut alt nomme la personne représentée. Le rattachement au fondateur est établi par l'usage documenté dans le dépôt, non par l'image seule.",
+    "transformation": "recadrage sans retouche : boîte source x=250 y=60 l=910 h=1140 sur un original 1200×1200, rééchantillonnée en 880×1100, encodage WebP qualité 0,90",
+    "motif_transformation": "Le cadre original porte, en haut à gauche, le monogramme du site personnel du fondateur. Servir cette marque sur une page BlueWave y importerait une identité visuelle tierce ; le recadrage la retire et ne conserve que le sujet.",
+    "identique": false,
+    "sha256": "535774c5cd660a85b86d5f8bb0054a6fd54a14ef47c76bccb23fcc360775ab38",
+    "bytes": 43182,
+    "largeur": 880,
+    "hauteur": 1100,
+    "page": "a-propos.html",
+    "alt": "Bokoua Yao OUAGA, fondateur de BlueWave Solutions"
+  },
+  "rearbitrage_photographies_v3_2": {
+    "objet": "Réexamen, image par image, de l'arbitrage photographie réelle / visuel éditorial. Vingt cadrages examinés dans le dépôt-source pour les trois activités concernées.",
+    "regle": "Une photographie réelle l'emporte sur un visuel éditorial dès lors qu'elle documente l'activité, qu'elle est de qualité suffisante, que sa provenance est tracée et que sa diffusion publique au nom de BlueWave est sûre.",
+    "decisions": [
+      {
+        "activite_bluewave": "loi-littoral-marseille-2026",
+        "cadrages_examines": 3,
+        "decision": "visuel éditorial conservé",
+        "motif": "Aucun des trois cadrages ne documente l'événement : pas de signalétique, pas de contenu identifiable. Le seul cadrage net montre une personne tierce en gros plan, sans autorisation de diffusion documentée. Les deux autres sont des vues de salle."
+      },
+      {
+        "activite_bluewave": "rfdi-gouvernance-oceans-nice-2026",
+        "cadrages_examines": 7,
+        "decision": "visuel éditorial conservé",
+        "motif": "Les cadrages documentent bien le colloque, mais tous montrent des intervenants tiers identifiables et reproduisent le contenu de leurs présentations, dont une diapositive nommant son autrice. Diffusion publique non sûre au nom de BlueWave."
+      },
+      {
+        "activite_bluewave": "arbe-sfn-aix-2026",
+        "cadrages_examines": 10,
+        "decision": "visuel éditorial conservé",
+        "motif": "Les cadrages où le fondateur apparaît sont saturés d'identités institutionnelles tierces, dont des marques de financement européen : publiés sur une vitrine commerciale, ils suggéreraient une affiliation ou un financement qui n'existe pas. Les autres cadrages sont des vues de salle sans valeur de vitrine."
+      }
+    ],
+    "consequence": "Les trois photographies restent des preuves internes, tracées et intactes, hors du build public. La décision n'est plus une prudence générale mais un motif propre à chaque image."
+  }
 }

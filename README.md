@@ -8,9 +8,11 @@ Site vitrine statique, multipage et responsive de BlueWave Solutions. Le front-e
 - `solutions.html` : cinq offres cœur et deux formats d’entrée ;
 - `methode.html` : méthode publique BlueWave en six étapes ;
 - `preuves-demonstrateurs.html` : preuves de méthode et simulations explicitement illustratives ;
-- `mediatheque.html` : dix visualisations BlueWave avec visionneuse locale, puis cinq activités et productions BlueWave documentées ;
+- `mediatheque.html` : hub d’orientation vers les deux corpus de la Médiathèque ;
+- `mediatheque-visualisations.html` : dix visualisations BlueWave, filtres et visionneuse locale ;
+- `mediatheque-activites.html` : cinq activités et productions BlueWave documentées ;
 - `actualites.html` : veille maritime et littorale issue de sources externes identifiées ;
-- `a-propos.html` : positionnement et présentation du fondateur ;
+- `a-propos.html` : positionnement et bloc fondateur, portrait photographique compris ;
 - `qualifier-un-besoin.html` : orientation locale puis prise de contact préparée.
 
 Les anciennes routes `services.html`, `domaines.html` et `contact.html` restent de légères pages de transition afin d’éviter les liens cassés. Les pages légales, la page 404 et les notes de démonstration complètent cette surface.
@@ -27,13 +29,13 @@ Le workflow `update-actualites.yml` est volontairement manuel et en lecture seul
 
 La méthode publique compte six étapes : `Qualifier → Cadrer → Analyser → Cartographier → Structurer → Restituer`.
 
-## Corpus « Activités et productions BlueWave »
+## Médiathèque — un hub et deux corpus
 
-La Médiathèque porte deux corpus distincts.
+La Médiathèque est répartie sur trois pages : `mediatheque.html` oriente sans rien héberger, `mediatheque-visualisations.html` porte les dix visualisations (`.media-card`, filtres et visionneuse de `assets/js/mediatheque.js`), `mediatheque-activites.html` porte le corpus des activités. Les deux sous-pages se renvoient l'une à l'autre et vers le hub.
 
-Le premier, inchangé, reste les dix visualisations BlueWave (`.media-card`, filtres et visionneuse de `assets/js/mediatheque.js`).
+`quality_check.py` vérifie cette séparation : le hub ne contient ni grille de visualisations ni corpus d'activités, la mention publique du corpus activités ne figure que sur sa propre page, chaque page porte sa canonique et son `og:url`, et les liens réciproques existent.
 
-Le second documente les activités, événements et productions effectivement rattachés au développement et aux travaux de BlueWave Solutions. Il a son propre balisage (`.activites-*`), sa feuille `assets/css/activites-bluewave.css` et son script `assets/js/activites-bluewave.js` : aucune règle ni aucun comportement du premier corpus n'est redéfini.
+Le corpus des activités documente les activités, événements et productions effectivement rattachés au développement et aux travaux de BlueWave Solutions. Il a son propre balisage (`.activites-*`), sa feuille `assets/css/activites-bluewave.css` et son script `assets/js/activites-bluewave.js` : aucune règle ni aucun comportement du premier corpus n'est redéfini.
 
 Les données publiques sont dans `assets/data/activites-bluewave.json`, les visuels dans `assets/img/activites/`. Le corpus compte cinq éléments : quatre événements et une production scientifique. Le schéma prévoit les catégories événement, production scientifique, atelier, rencontre, formation, terrain / visite et recherche appliquée ; seules celles réellement représentées sont proposées au filtrage.
 
@@ -58,6 +60,18 @@ Les photographies rassemblées comme preuves de rattachement sont conservées da
 `quality/media-provenance-activites-bluewave.json` trace les deux natures : pour chaque preuve interne, l'activité, le dépôt, le commit et le chemin source, le mode de déclaration, le statut, les SHA-256 des deux côtés, l'identité octet, la preuve de rattachement et le motif de non-publication ; pour chaque visuel public, son origine éditoriale, son empreinte et le motif de son emploi. Ce fichier reste interne et n'entre pas dans `dist`.
 
 `quality_check.py` vérifie qu'aucun média non éditorial ne figure dans le répertoire public ni dans le corpus, qu'aucun média orphelin ne traîne, que chaque visuel public est déclaré et intact, et que chaque preuve interne reste hors zone servie, intacte, tracée et motivée.
+
+### Portrait du fondateur
+
+`a-propos.html` sert une photographie réelle de Bokoua Yao OUAGA, `assets/img/fondateur/bokoua-yao-ouaga.webp`. La source est le portrait officiel publié par `ouagabokouayao/oby-site-academique` ; le rattachement au fondateur est établi par l'usage documenté dans ce dépôt, jamais par l'image seule.
+
+L'image est **recadrée sans retouche** : le cadre original porte le monogramme du site personnel du fondateur, qu'il n'y a pas lieu de servir sur une page BlueWave. `quality/media-provenance-activites-bluewave.json` consigne la boîte de recadrage, le motif, les SHA-256 source et destination et le fait que la copie n'est pas identique.
+
+`quality_check.py` exige que ce portrait soit déclaré, intact, effectivement servi sur `a-propos.html` avec l'`alt` déclaré, seul dans son répertoire, et qu'un recadrage déclaré soit motivé. Il refuse aussi toute identité visuelle du dépôt-source dans `assets/img/`.
+
+### Arbitrage des photographies d'activités
+
+Le choix entre photographie réelle et visuel éditorial est fait image par image, pas par principe. Vingt cadrages du dépôt-source ont été examinés pour les trois activités concernées ; les trois arbitrages et leurs motifs figurent dans `rearbitrage_photographies_v3_2` du fichier de provenance. Une photographie l'emporte dès lors qu'elle documente l'activité, qu'elle est de qualité suffisante, que sa provenance est tracée et que sa diffusion publique au nom de BlueWave est sûre.
 
 ## Automatisation visiteurs
 
