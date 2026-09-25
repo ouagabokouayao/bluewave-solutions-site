@@ -51,6 +51,6 @@
       <tspan x="1095" dy="45">Réorienter</tspan>
     </text>
 
-    <text x="800" y="738" text-anchor="middle" fill="#55707F" font-family="Arial, sans-serif" font-size="18">Exemple de structure — aucun diagnostic réel ni résultat client.</text>
+    <text x="800" y="738" text-anchor="middle" fill="#55707F" font-family="Arial, sans-serif" font-size="18">Démonstrateur de structure de diagnostic.</text>
   </g>
 </svg>

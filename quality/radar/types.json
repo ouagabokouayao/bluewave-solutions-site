@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "objet": "Types d'opportunité détectables par le radar interne, et rôles que BlueWave peut y tenir.",
+  "types_opportunite": [
+    {
+      "slug": "appel-a-projets",
+      "label": "Appel à projets"
+    },
+    {
+      "slug": "ami",
+      "label": "Appel à manifestation d'intérêt"
+    },
+    {
+      "slug": "marche-public",
+      "label": "Marché public"
+    },
+    {
+      "slug": "consultation",
+      "label": "Consultation"
+    },
+    {
+      "slug": "appel-a-consultants",
+      "label": "Appel à consultants"
+    },
+    {
+      "slug": "consortium",
+      "label": "Constitution de consortium"
+    },
+    {
+      "slug": "appel-a-communications",
+      "label": "Appel à communications"
+    },
+    {
+      "slug": "appel-a-abstracts",
+      "label": "Appel à abstracts"
+    },
+    {
+      "slug": "appel-a-posters",
+      "label": "Appel à posters"
+    },
+    {
+      "slug": "conference",
+      "label": "Conférence"
+    },
+    {
+      "slug": "colloque",
+      "label": "Colloque"
+    },
+    {
+      "slug": "symposium",
+      "label": "Symposium"
+    },
+    {
+      "slug": "congres",
+      "label": "Congrès"
+    },
+    {
+      "slug": "salon",
+      "label": "Salon professionnel"
+    },
+    {
+      "slug": "exposition",
+      "label": "Exposition"
+    },
+    {
+      "slug": "stand",
+      "label": "Possibilité de stand"
+    },
+    {
+      "slug": "sponsoring",
+      "label": "Sponsoring"
+    },
+    {
+      "slug": "atelier",
+      "label": "Atelier"
+    },
+    {
+      "slug": "ecole-ete",
+      "label": "École d'été"
+    },
+    {
+      "slug": "formation",
+      "label": "Formation"
+    },
+    {
+      "slug": "fellowship",
+      "label": "Fellowship"
+    },
+    {
+      "slug": "programme-recherche",
+      "label": "Programme de recherche collaborative"
+    },
+    {
+      "slug": "reseau",
+      "label": "Réseau scientifique ou professionnel"
+    },
+    {
+      "slug": "evenement-institutionnel",
+      "label": "Événement institutionnel"
+    },
+    {
+      "slug": "rencontre-b2b",
+      "label": "Rencontre B2B maritime"
+    }
+  ],
+  "roles_possibles": [
+    {
+      "slug": "candidat",
+      "label": "Candidat"
+    },
+    {
+      "slug": "consultant",
+      "label": "Consultant"
+    },
+    {
+      "slug": "cotraitant",
+      "label": "Cotraitant"
+    },
+    {
+      "slug": "consortium",
+      "label": "Membre de consortium"
+    },
+    {
+      "slug": "intervenant",
+      "label": "Intervenant"
+    },
+    {
+      "slug": "panelliste",
+      "label": "Panéliste"
+    },
+    {
+      "slug": "animateur-atelier",
+      "label": "Animateur d'atelier"
+    },
+    {
+      "slug": "poster",
+      "label": "Auteur ou présentateur de poster"
+    },
+    {
+      "slug": "exposant",
+      "label": "Exposant"
+    },
+    {
+      "slug": "stand-institutionnel",
+      "label": "Stand institutionnel"
+    },
+    {
+      "slug": "contributeur-scientifique",
+      "label": "Contributeur scientifique"
+    },
+    {
+      "slug": "co-organisateur",
+      "label": "Co-organisateur"
+    },
+    {
+      "slug": "partenaire-contenu",
+      "label": "Partenaire de contenu"
+    },
+    {
+      "slug": "formateur",
+      "label": "Intervenant en formation ou capacity building"
+    },
+    {
+      "slug": "partenaire-scientifique",
+      "label": "Partenaire scientifique"
+    },
+    {
+      "slug": "visiteur-reseau",
+      "label": "Visiteur / mise en réseau"
+    },
+    {
+      "slug": "veille",
+      "label": "Veille uniquement"
+    }
+  ],
+  "regle_de_preuve": "Un rôle listé ici est un rôle *possible*. Il ne devient affirmable publiquement qu'une fois réellement tenu et documenté. Le radar n'autorise aucune publication : il prépare une décision, il ne produit pas de référence."
+}

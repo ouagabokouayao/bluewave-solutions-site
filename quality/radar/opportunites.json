@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "objet": "Registre des opportunités qualifiées. Vide tant qu'aucune opportunité réelle n'est instruite.",
+  "schema": "schema-opportunite.json",
+  "items": []
+}

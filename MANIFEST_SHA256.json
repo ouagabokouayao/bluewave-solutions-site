@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "94372d2facb959ce7af4416462ca2ec31952788a21383dcd0d9c9f82a06b2035",
-    "bytes": 1693
+    "sha256": "be4b985504382217e471f489c68d6e80771a213ec72780368f2e47d998575158",
+    "bytes": 1786
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -41,8 +41,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "25f330d15cb20592ca194237fbe4895bdc2d0dc864640606cc49544298f67744",
-    "bytes": 14580
+    "sha256": "74651d8e9be2f7a78292c56d6aa3573b4658bc19211a5b34ccabf4cce641b685",
+    "bytes": 19036
   },
   {
     "path": "a-propos.html",
@@ -61,8 +61,8 @@
   },
   {
     "path": "assets/css/style.css",
-    "sha256": "b44df65eb34f60b91ca1c3f268a9361ed0564c6bf25e92e648bc0a2316942a69",
-    "bytes": 26749
+    "sha256": "a93695d3ee7d92ef813e9d1374194366e6de3b74de99e8becb59e4417a21f51e",
+    "bytes": 27664
   },
   {
     "path": "assets/data/activites-bluewave.json",
@@ -161,8 +161,8 @@
   },
   {
     "path": "assets/img/visuals/apercu-diagnostic.svg",
-    "sha256": "4a95d9530bce0c68b71d3bca4ff2cb26fea5d78212f51649d85d9ff0513bf652",
-    "bytes": 3461
+    "sha256": "93f712cb8f575b0b06dbbcf9c1b579d5d9f36b511622a41274803c82c7c497c6",
+    "bytes": 3435
   },
   {
     "path": "assets/img/visuals/apercu-fiche-projet.svg",
@@ -171,8 +171,8 @@
   },
   {
     "path": "assets/img/visuals/apercu-note-strategique.svg",
-    "sha256": "9e74acb1778e856b40a99ae791f40979e655b93a9c27c1a97188174363770288",
-    "bytes": 3260
+    "sha256": "757a3ab90a10a7c5c23c25239a2f2a00a7fa164afa3ba6826f7a3e34ca143861",
+    "bytes": 3252
   },
   {
     "path": "assets/img/visuals/apercu-support-formation.svg",
@@ -196,8 +196,8 @@
   },
   {
     "path": "assets/img/visuals/visualisation-deux-marches.svg",
-    "sha256": "fba3ece271583c647e36ba7c5f6b740738f7ac51589a2edf657dc83639a599c5",
-    "bytes": 4570
+    "sha256": "577415df8a9c6308d007afa7a52d4a82a6907580997127c512b37b8974c15a01",
+    "bytes": 4553
   },
   {
     "path": "assets/img/visuals/visualisation-donnees-decision.svg",
@@ -236,8 +236,8 @@
   },
   {
     "path": "assets/js/qualifier.js",
-    "sha256": "4bd80bc48cc7173daeacd0a49c816fb83170afee38cdd05bc4a213c79f046804",
-    "bytes": 14557
+    "sha256": "e2f6ac15ae6b6516f508dbc96ff20efd8625f89d5b536f4eef2f55dea70aafa6",
+    "bytes": 14995
   },
   {
     "path": "contact.html",
@@ -276,8 +276,8 @@
   },
   {
     "path": "index.html",
-    "sha256": "83d7f7089162aaaa79c0e1b16d0fbfcdc8d53bf7c3ae1a48e9cc947f00f01abc",
-    "bytes": 12856
+    "sha256": "694d04209030fc40f98580f82b473b4adf2b96bc0ff16660f78eba9e96d4651a",
+    "bytes": 13656
   },
   {
     "path": "mediatheque-activites.html",
@@ -301,8 +301,8 @@
   },
   {
     "path": "methode.html",
-    "sha256": "29cc4ef77182fec3f5a13aeb8ed284642e76748fdaeb07ccab454037cae93270",
-    "bytes": 6707
+    "sha256": "b62afb7e8365a1a677adcc159ba76cfbeaf8ff0c93040d603243e23f3e1664dd",
+    "bytes": 9600
   },
   {
     "path": "notes-demonstrateurs.html",
@@ -321,8 +321,8 @@
   },
   {
     "path": "qualifier-un-besoin.html",
-    "sha256": "6322e3551b8272c3087dee16c475557bcae45958eb7f93351ac56ed9b4e7bcb2",
-    "bytes": 13717
+    "sha256": "a204655ed7f0963447a852d49eee5c43de52be3d6e62bafe865b3ddb3c149958",
+    "bytes": 13995
   },
   {
     "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
@@ -345,14 +345,64 @@
     "bytes": 10620
   },
   {
+    "path": "quality/radar/README.md",
+    "sha256": "5501df435078cce38202da0095babcb193474d8ef2c1ed334f82e732a7e8865f",
+    "bytes": 4424
+  },
+  {
+    "path": "quality/radar/alertes-config.json",
+    "sha256": "7f98ed07592b7826f8e862c2c0145e1808872cba308a93e0cb420e6acb36669f",
+    "bytes": 2551
+  },
+  {
+    "path": "quality/radar/alertes.md",
+    "sha256": "2f05ef278afd7b7d8a1316349c59a5c79e60811eeb63ccd6fb45d9ed13f7390f",
+    "bytes": 2767
+  },
+  {
+    "path": "quality/radar/doctrine-evenements-interventions.md",
+    "sha256": "df56699206ccf356199ee0e74e13645f9f44121690b88742f33c7761ab8d708a",
+    "bytes": 2970
+  },
+  {
+    "path": "quality/radar/doctrine-recherche-appliquee.md",
+    "sha256": "ac47786d980cc434793824d3c6b7def785e0e8fbf73a6fd50f9f7a3c8ec02823",
+    "bytes": 3878
+  },
+  {
+    "path": "quality/radar/mapping-crm.json",
+    "sha256": "9e551a9d4b4c64a0c79ea93db44a70d585c723d475d2e5da5b6634a259b1ad5d",
+    "bytes": 3881
+  },
+  {
+    "path": "quality/radar/opportunites.json",
+    "sha256": "c980fbe66575f9dffb2d173f92c20b8366e5cc7d37dc5d504e98c52eb7e52157",
+    "bytes": 185
+  },
+  {
+    "path": "quality/radar/schema-opportunite.json",
+    "sha256": "10da47499bc610321651cc56b22b131bcda472400942c1e979e9ace8816b71bd",
+    "bytes": 6212
+  },
+  {
+    "path": "quality/radar/scoring.json",
+    "sha256": "b638fc5d9033871f1eaa1cef8d41f8eed45b7d8c83e6a4d7f18d7a1d842df1ef",
+    "bytes": 2580
+  },
+  {
+    "path": "quality/radar/types.json",
+    "sha256": "7fbc74c3d06a9bbcfd2c1865023822347bb83a8a2ea4fe2f9567edb9245c5d48",
+    "bytes": 3758
+  },
+  {
     "path": "quality/scripts/build_dist.py",
     "sha256": "6c248dc210c985ea30630a80fa7c6f0abcb42ce493aec002efcce54a6f809c44",
     "bytes": 6996
   },
   {
     "path": "quality/scripts/check_dist.py",
-    "sha256": "b96c6e3aeb6e866650486706641d07ea1cb20176d5c05d7e387259bedf789d87",
-    "bytes": 4497
+    "sha256": "fd0873fdcd44b9d0802510dee3a0a5d7fdbe440ba64f441268a50019fbf847f1",
+    "bytes": 4526
   },
   {
     "path": "quality/scripts/check_external_links.py",
@@ -371,8 +421,13 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "dbe3a735867905a30e933f1fa56a6588c964dc3839c1035fadb9c0863e39328d",
-    "bytes": 36408
+    "sha256": "e08193adb5d8e1315d830336ec5336cef5d262dfe8fef3111796884bead76d37",
+    "bytes": 44862
+  },
+  {
+    "path": "quality/scripts/radar_check.py",
+    "sha256": "c88ea40c017d8eac4a3fc4dad9fd1a755d67882c8e54ce6b9dda4c7a6f89feba",
+    "bytes": 10229
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -381,8 +436,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "6547c23f139d715f4c1c1ff5c031b5abfdc0774172cb6de2acb3c976e08d6ed3",
-    "bytes": 3877
+    "sha256": "41ad0fa711327aee88f1407cddd3040b94b221046267f5666511506958cff3f2",
+    "bytes": 4318
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -441,7 +496,7 @@
   },
   {
     "path": "solutions.html",
-    "sha256": "c6b755e3b54d9e54c91960d8ac141ece181b7dae08aa8b5d4f821c4fe075d6ba",
-    "bytes": 8939
+    "sha256": "82b1d98bec12f3860123d1837e0856ba46a4dc82b207866a5ef0557f47049f9f",
+    "bytes": 9273
   }
 ]

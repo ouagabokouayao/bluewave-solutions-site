@@ -25,6 +25,7 @@ FORBIDDEN_SEGMENTS = {
     ".claude", ".github", ".git", "QA", "quality", "serverless",
     "archives", "backups", "prompts", "documents", "supports",
     "exports", "captures", "node_modules", "boards", "libraries", "sources",
+    "radar", "opportunites",
 }
 FORBIDDEN_NAMES = {"README.md", ".gitignore", "CLAUDE.md", "AGENTS.md"}
 FORBIDDEN_SUFFIXES = (".py", ".mjs", ".md", ".yml", ".yaml", ".zip", ".log", ".bak")

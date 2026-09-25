@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "objet": "Configuration préparatoire des alertes du radar. Aucun canal n'est activé.",
+  "active": false,
+  "canaux": {
+    "email": {
+      "active": false,
+      "destinataire": null,
+      "fournisseur": null
+    },
+    "notification_externe": {
+      "active": false,
+      "endpoint": null
+    },
+    "brevo": {
+      "active": false,
+      "api_key_env": null,
+      "liste": null
+    },
+    "webhook": {
+      "active": false,
+      "url": null
+    },
+    "resume_local": {
+      "active": false,
+      "chemin": "quality/radar/resume-alertes.md"
+    }
+  },
+  "declencheurs": [
+    {
+      "slug": "opportunite-forte",
+      "label": "Nouvelle opportunité forte",
+      "condition": "score.total >= 75",
+      "active": false
+    },
+    {
+      "slug": "deadline-proche",
+      "label": "Date limite proche",
+      "condition": "deadline - aujourd'hui <= 14 jours et statut != NO GO",
+      "active": false
+    },
+    {
+      "slug": "evenement-pertinent",
+      "label": "Événement pertinent",
+      "condition": "type ∈ {conference, colloque, symposium, congres, salon, evenement-institutionnel} et score.total >= 55",
+      "active": false
+    },
+    {
+      "slug": "stand-disponible",
+      "label": "Stand ou exposition disponible",
+      "condition": "type ∈ {stand, exposition, salon} et accessibilite = ouverte",
+      "active": false
+    },
+    {
+      "slug": "appel-a-communications",
+      "label": "Appel à communications ouvert",
+      "condition": "type ∈ {appel-a-communications, appel-a-abstracts, appel-a-posters}",
+      "active": false
+    },
+    {
+      "slug": "appel-a-consultants",
+      "label": "Appel à consultants",
+      "condition": "type = appel-a-consultants",
+      "active": false
+    },
+    {
+      "slug": "appel-a-projets",
+      "label": "Appel à projets pertinent",
+      "condition": "type ∈ {appel-a-projets, ami, marche-public} et score.total >= 55",
+      "active": false
+    },
+    {
+      "slug": "consortium-possible",
+      "label": "Consortium possible",
+      "condition": "type = consortium et accessibilite != reservee",
+      "active": false
+    }
+  ],
+  "garde_fous": [
+    "Aucun envoi, aucune notification externe, aucun appel réseau sortant tant que active = false.",
+    "L'activation d'un canal exige un GO explicite et distinct, hors de ce lot.",
+    "Aucune clé d'API n'est stockée ici : seul un nom de variable d'environnement le sera, le jour venu.",
+    "Une alerte informe une personne ; elle ne décide ni ne candidate à sa place."
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "objet": "Schéma de la fiche d'opportunité du radar interne BlueWave.",
+  "identite": "Le champ id reprend le canon d'identifiant du CRM maître BlueWave (OPP- suivi du numéro séquentiel du CRM, zéro-padé sur trois chiffres au minimum : OPP-014, OPP-015, OPP-016…). Le radar ne crée aucune convention concurrente : un identifiant CRM canonique = une opportunité = une fiche radar.",
+  "champs_obligatoires": [
+    "id",
+    "titre",
+    "organisme",
+    "pays_zone",
+    "type",
+    "source_officielle",
+    "url_source",
+    "date_detection",
+    "pertinence_bluewave",
+    "offres_concernees",
+    "geographie",
+    "role_possible",
+    "valeur_attendue",
+    "cout_statut",
+    "accessibilite",
+    "conditions",
+    "risques",
+    "score",
+    "decision_recommandee",
+    "statut",
+    "export_crm"
+  ],
+  "champs": [
+    {
+      "nom": "id",
+      "type": "string:OPP-NNN",
+      "description": "Identifiant canonique du CRM maître, repris tel quel. Format OPP- suivi de trois chiffres au minimum."
+    },
+    {
+      "nom": "titre",
+      "type": "string",
+      "description": "Intitulé de l'opportunité, tel que la source le nomme."
+    },
+    {
+      "nom": "organisme",
+      "type": "string",
+      "description": "Structure qui émet l'opportunité."
+    },
+    {
+      "nom": "pays_zone",
+      "type": "string",
+      "description": "Pays ou zone géographique concernée."
+    },
+    {
+      "nom": "type",
+      "type": "enum:types.json#types_opportunite",
+      "description": "Type d'opportunité."
+    },
+    {
+      "nom": "source_officielle",
+      "type": "string",
+      "description": "Nom de la source où l'opportunité a été constatée."
+    },
+    {
+      "nom": "url_source",
+      "type": "string:url",
+      "description": "URL de la source. Obligatoire : une opportunité sans URL constatée n'existe pas."
+    },
+    {
+      "nom": "date_detection",
+      "type": "string:date",
+      "description": "Date de détection par le radar."
+    },
+    {
+      "nom": "date_evenement",
+      "type": "string:date|null",
+      "description": "Date de l'événement, si l'opportunité en est un."
+    },
+    {
+      "nom": "deadline",
+      "type": "string:date|null",
+      "description": "Date limite de réponse, si elle existe."
+    },
+    {
+      "nom": "pertinence_bluewave",
+      "type": "string",
+      "description": "En quoi cela relève des domaines BlueWave. Une phrase, pas un slogan."
+    },
+    {
+      "nom": "offres_concernees",
+      "type": "array<string>",
+      "description": "Offres existantes concernées. Le radar ne crée aucune offre."
+    },
+    {
+      "nom": "geographie",
+      "type": "enum",
+      "description": "mediterranee | golfe-de-guinee | autre | multi"
+    },
+    {
+      "nom": "role_possible",
+      "type": "enum:types.json#roles_possibles",
+      "description": "Rôle envisagé, jamais un rôle acquis."
+    },
+    {
+      "nom": "valeur_attendue",
+      "type": "string",
+      "description": "Ce que BlueWave en retirerait concrètement."
+    },
+    {
+      "nom": "cout_connu",
+      "type": "number|null",
+      "description": "Coût en euros s'il est publié à la source, sinon null."
+    },
+    {
+      "nom": "cout_statut",
+      "type": "enum",
+      "description": "connu | inconnu | sans-objet"
+    },
+    {
+      "nom": "accessibilite",
+      "type": "enum",
+      "description": "ouverte | sur-invitation | sur-selection | reservee | inconnue"
+    },
+    {
+      "nom": "conditions",
+      "type": "string",
+      "description": "Conditions d'éligibilité relevées à la source."
+    },
+    {
+      "nom": "contact_public",
+      "type": "string|null",
+      "description": "Contact publié par la source, jamais une donnée privée."
+    },
+    {
+      "nom": "risques",
+      "type": "string",
+      "description": "Ce qui peut faire échouer, coûter ou exposer."
+    },
+    {
+      "nom": "score",
+      "type": "object",
+      "description": "Résultat du scoring, voir scoring.json."
+    },
+    {
+      "nom": "decision_recommandee",
+      "type": "enum:decisions",
+      "description": "Décision recommandée par le score. Jamais un statut."
+    },
+    {
+      "nom": "decision_humaine",
+      "type": "enum:decisions|null",
+      "description": "Décision effectivement prise par une personne. null tant qu'elle ne l'est pas."
+    },
+    {
+      "nom": "action_immediate",
+      "type": "string|null",
+      "description": "Prochaine action concrète, si décidée."
+    },
+    {
+      "nom": "prochaine_verification",
+      "type": "string:date|null",
+      "description": "Date de la prochaine revue de la fiche."
+    },
+    {
+      "nom": "statut",
+      "type": "enum:statuts",
+      "description": "État de traitement de la fiche dans le cycle de vie. Jamais une décision."
+    },
+    {
+      "nom": "export_crm",
+      "type": "object",
+      "description": "État d'export vers le CRM, voir mapping-crm.json."
+    }
+  ],
+  "regles": [
+    "url_source est obligatoire et doit pointer vers la source officielle constatée.",
+    "role_possible décrit une intention, jamais un rôle acquis ou promis.",
+    "offres_concernees ne référence que des offres existantes ; le radar n'en crée aucune.",
+    "Aucune fiche d'exemple, de démonstration ou de remplissage n'est admise dans opportunites.json.",
+    "Aucun champ de la fiche n'est publié sur le site.",
+    "decision_recommandee et decision_humaine ne peuvent porter qu'une décision ; statut qu'un état de cycle de vie.",
+    "decision_humaine reste null tant qu'une personne n'a pas tranché ; le score ne la remplit jamais.",
+    "id reprend le canon du CRM maître : aucune convention d'identifiant concurrente n'est créée."
+  ],
+  "decisions": [
+    "GO À PRÉPARER",
+    "À ÉTUDIER",
+    "VEILLE",
+    "NO GO"
+  ],
+  "statuts": [
+    "DÉTECTÉE",
+    "À QUALIFIER",
+    "ACTION EN COURS",
+    "CLÔTURÉE",
+    "EXPIRÉE"
+  ],
+  "separation_decision_statut": "decision_recommandee et decision_humaine prennent une valeur de decisions. statut prend une valeur de statuts. Les deux ensembles sont disjoints : une décision ne décrit jamais un état de traitement, un statut ne vaut jamais décision."
+}

@@ -38,6 +38,9 @@ jobs:
           node --check assets/js/automation.js
       - name: Serverless lead pipeline tests
         run: node --test serverless/bluewave-leads/tests/handler.test.mjs
+      - name: Internal opportunity radar
+        run: python quality/scripts/radar_check.py
+
       - name: Secret values scan
         run: python quality/scripts/check_secrets.py
       - name: Integrity manifest
