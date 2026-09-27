@@ -85,14 +85,29 @@ test('newsletter false : seule la liste Leads est transmise', async () => {
   const brevo = mockBrevo();
   await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: false }));
   assert.deepEqual(brevo.calls[0].body.listIds, [11]);
-  assert.equal(brevo.calls[0].body.attributes.BW_CONSENT_VEILLE, false);
+  assert.equal('BW_CONSENT_VEILLE' in brevo.calls[0].body.attributes, false);
 });
 
 test('newsletter true : la liste Newsletter est ajoutée indépendamment', async () => {
   const brevo = mockBrevo();
-  await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: true }));
+  await createLeadHandler({ environment: {...environment, NEWSLETTER_ENABLED: 'true'}, fetchImpl: brevo.fetchImpl, guard: createMemoryGuard() })(request({ ...validPayload, newsletter_consent: true }));
   assert.deepEqual(brevo.calls[0].body.listIds, [11, 22]);
   assert.equal(brevo.calls[0].body.attributes.BW_CONSENT_VEILLE, true);
+});
+
+test('la liste newsletter n’est pas nécessaire lorsque le canal reste fermé', async () => {
+  const brevo = mockBrevo();
+  const environmentSansListe = { ...environment };
+  delete environmentSansListe.BREVO_NEWSLETTER_LIST_ID;
+  const response = await createLeadHandler({environment: environmentSansListe, fetchImpl: brevo.fetchImpl, guard:createMemoryGuard()})(request());
+  assert.equal(response.status,201);
+});
+
+test('newsletter forgée et désactivée rejetée avant Brevo', async () => {
+  const brevo = mockBrevo();
+  const response = await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: true }));
+  assert.equal(response.status, 400);
+  assert.equal(brevo.calls.length, 0);
 });
 
 test('contact existant : updateEnabled évite la création d’un doublon', async () => {

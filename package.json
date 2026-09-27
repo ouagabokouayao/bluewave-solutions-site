@@ -1,0 +1,16 @@
+{
+  "name": "bluewave-site-preparation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test serverless/bluewave-leads/tests/*.test.mjs serverless/cloudflare/tests/*.test.mjs",
+    "build": "python quality/scripts/build_dist.py && python quality/scripts/check_dist.py && python quality/scripts/dist_manifest.py && python quality/scripts/dist_manifest.py --check",
+    "cloudflare:check": "wrangler deploy --config serverless/cloudflare/wrangler.jsonc --dry-run --outdir ../../quality/reports/cloudflare-worker-build",
+    "cloudflare:test-runtime": "npm run cloudflare:check && esbuild serverless/cloudflare/worker.mjs --bundle --format=esm --platform=browser --outfile=quality/reports/cloudflare-worker-build/worker-native.js && node serverless/cloudflare/tests/native-worker.check.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "miniflare": "4.20260730.0",
+    "wrangler": "4.141.0"
+  }
+}
