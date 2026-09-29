@@ -126,8 +126,8 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=()):
                 'Ces mentions seront complétées après immatriculation sur présentation des justificatifs correspondants.')
             document = article(document, 'Hébergement',
                 '<p>Hébergement technique du site public : Cloudflare Workers et Static Assets, '
-                'services fournis par Cloudflare, Inc. Les informations contractuelles et de '
-                'contact de l’hébergeur sont disponibles auprès du responsable du site.</p>')
+                'services fournis par Cloudflare, Inc., 101 Townsend St., San Francisco, '
+                'CA 94107, États-Unis. Téléphone : +1 888 993 5273.</p>')
             document = article(document, 'Publication',
                 '<p>Le site est public et indexable. Les mentions légales seront complétées après '
                 'immatriculation sur justificatifs.</p>' if indexable else
