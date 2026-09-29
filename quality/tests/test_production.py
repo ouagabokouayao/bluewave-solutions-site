@@ -53,6 +53,8 @@ class ProductionProfile(unittest.TestCase):
         self.assertIn('treize mois', (out / 'politique-confidentialite.html').read_text())
         self.assertNotIn('GitHub Pages', (out / 'politique-confidentialite.html').read_text())
         self.assertNotIn('préactivation', (out / 'mentions-legales.html').read_text())
+        self.assertIn('101 Townsend St.', (out / 'mentions-legales.html').read_text())
+        self.assertIn('+1 888 993 5273', (out / 'mentions-legales.html').read_text())
         self.assertEqual(json.loads((out / 'data/automation-config.json').read_text())['lead_endpoint'], '/api/leads')
         self.assertEqual(json.loads((out / 'data/analytics-config.json').read_text())['campaigns'], ['salon_2026'])
         self.assertFalse(json.loads((out / 'data/automation-config.json').read_text())['newsletter_enabled'])
