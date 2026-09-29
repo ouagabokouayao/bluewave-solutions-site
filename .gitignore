@@ -37,7 +37,9 @@ logo-bluewave.png
 
 # Build public : reconstruit a la demande par quality/scripts/build_dist.py.
 dist/
+dist-production/
 
 # Dépendances et état local Cloudflare : jamais versionnés.
 node_modules/
 .wrangler/
+serverless/cloudflare/.wrangler-production.generated.json

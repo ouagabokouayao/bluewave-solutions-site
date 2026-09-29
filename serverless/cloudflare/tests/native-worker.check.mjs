@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {Miniflare} from 'miniflare';
+import productionWorker from '../worker.mjs';
 
 const root=new URL('../../../',import.meta.url);
 const compiled=await readFile(new URL('../../../quality/reports/cloudflare-worker-build/worker-native.js',import.meta.url),'utf8');
@@ -52,6 +53,11 @@ try {
  assert.equal(counts.results.length,1);
  assert.equal(counts.results[0].count,2);
  assert.doesNotMatch(JSON.stringify(counts),/pii@example|texte libre|192\.0\.2|user-agent/i);
+ const oldDay=new Date(Date.UTC(new Date().getUTCFullYear()-2,0,1)).toISOString().slice(0,10);
+ await db.prepare('INSERT INTO conversion_counts (day,event_name,page,count) VALUES (?,?,?,?)').bind(oldDay,'qualifier_start','index',1).run();
+ await productionWorker.scheduled({}, {CONVERSION_DB:db});
+ assert.equal((await db.prepare('SELECT count(*) AS total FROM conversion_counts WHERE day = ?').bind(oldDay).first()).total,0);
+ assert.equal((await db.prepare('SELECT count(*) AS total FROM conversion_counts').first()).total,1);
  const lead=await on.dispatchFetch(`${origin}/api/leads`,post('/api/leads',validLead));
  assert.equal(lead.status,200); // Honeypot stops before an external Brevo request.
  assert.equal((await on.dispatchFetch(`${origin}/api/leads`,post('/api/leads',{...validLead,website:'',newsletter_consent:true}))).status,400);

@@ -32,7 +32,8 @@ export async function createAnalytics(win,doc,fetchImpl){
   const event=sanitizeEvent({...context,...detail,event_name,page},allowedCampaigns);
   if(!event)return;
   win.dispatchEvent(new CustomEvent('bluewave:event',{detail:event}));
-  if(!active||config.endpoint!=='/api/events'||sent>=100||win.location.protocol!=='https:')return;
+  // Traffic belongs to Web Analytics; D1 is reserved for bounded conversion events.
+  if(event_name==='page_view'||!active||config.endpoint!=='/api/events'||sent>=100||win.location.protocol!=='https:')return;
   sent++;
   fetchImpl(new URL(config.endpoint,win.location.origin).href,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'omit',referrerPolicy:'no-referrer',keepalive:true,body:JSON.stringify(event)}).catch(()=>{});
  };

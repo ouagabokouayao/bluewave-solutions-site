@@ -126,6 +126,33 @@ test('API Brevo indisponible : erreur générique sans réponse brute', async ()
   assert.equal(JSON.stringify(body).includes('private-upstream-detail'), false);
 });
 
+test('échec accusé après contact : pas de notification et rapprochement nécessaire', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    calls.push({url, body:JSON.parse(options.body)});
+    return new Response(null,{status:calls.length===2?503:201});
+  };
+  const response = await handler(fetchImpl)(request());
+  assert.equal(response.status,502);
+  assert.equal(calls.length,2);
+  assert.equal(calls[0].url,'https://api.brevo.com/v3/contacts');
+  assert.equal(calls[1].body.templateId,33);
+  assert.deepEqual(await response.json(),{success:false,message:ERROR_MESSAGE});
+});
+
+test('échec notification après contact et accusé : réponse neutre et aucune reprise automatique', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    calls.push({url, body:JSON.parse(options.body)});
+    return new Response(null,{status:calls.length===3?503:201});
+  };
+  const response = await handler(fetchImpl)(request());
+  assert.equal(response.status,502);
+  assert.equal(calls.length,3);
+  assert.equal(calls[2].body.templateId,44);
+  assert.deepEqual(await response.json(),{success:false,message:ERROR_MESSAGE});
+});
+
 test('double soumission rapprochée rejetée', async () => {
   const brevo = mockBrevo();
   const guard = createMemoryGuard({ rateLimit: 20 });

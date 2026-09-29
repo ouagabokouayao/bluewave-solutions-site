@@ -61,6 +61,9 @@ CRITICAL_FILES = [
     "quality/media-provenance-activites-bluewave.json",
     "quality/sources-candidates-afrique-ouest.md",
     "quality/scripts/build_dist.py",
+    "quality/scripts/build_production_dist.py",
+    "quality/scripts/render_production_wrangler.py",
+    "quality/tests/test_production.py",
     "quality/scripts/check_preactivation.py",
     "quality/scripts/check_dist.py",
     "quality/scripts/check_external_links.py",
@@ -86,7 +89,7 @@ CRITICAL_FILES = [
 
 def canonical_paths() -> list[str]:
     images = [path.relative_to(ROOT).as_posix() for path in (ROOT / "assets" / "img").rglob("*") if path.is_file() and path.name != ".DS_Store"]
-    serverless = [path.relative_to(ROOT).as_posix() for path in (ROOT / "serverless").rglob("*") if path.is_file() and path.name != ".DS_Store" and ".wrangler" not in path.parts]
+    serverless = [path.relative_to(ROOT).as_posix() for path in (ROOT / "serverless").rglob("*") if path.is_file() and path.name != ".DS_Store" and ".wrangler" not in path.parts and not path.name.startswith('.wrangler-production.generated')]
     return sorted(set(CRITICAL_FILES + images + serverless))
 
 

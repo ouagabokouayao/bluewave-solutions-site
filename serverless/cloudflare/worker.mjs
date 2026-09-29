@@ -37,7 +37,7 @@ async function conversion(request, env, url) {
   try {input=JSON.parse(body.raw);} catch {return new Response(null,{status:400,headers:noStore});}
   const campaigns=(env.ALLOWED_CAMPAIGNS || '').split(',').filter(code=>/^[a-z0-9][a-z0-9_-]{0,39}$/.test(code));
   const clean=sanitizeEvent(input,campaigns);
-  if (!clean) return new Response(null,{status:400,headers:noStore});
+  if (!clean || clean.event_name==='page_view') return new Response(null,{status:400,headers:noStore});
   const day=new Date().toISOString().slice(0,10);
   await env.CONVERSION_DB.prepare(`INSERT INTO conversion_counts (day,event_name,page,journey,offer,status,source,campaign,count) VALUES (?,?,?,?,?,?,?,?,1) ON CONFLICT(day,event_name,page,journey,offer,status,source,campaign) DO UPDATE SET count=count+1`).bind(day,clean.event_name,clean.page,clean.journey||'',clean.offer||'',clean.status||'',clean.source||'',clean.campaign||'').run();
   return new Response(null,{status:204,headers:noStore});
@@ -45,6 +45,15 @@ async function conversion(request, env, url) {
 }
 
 export default {
+ async scheduled(_event, env) {
+  if (!env.CONVERSION_DB) return;
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth() - 13;
+  const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const cutoff = new Date(Date.UTC(year, month, Math.min(now.getUTCDate(), lastDay))).toISOString().slice(0,10);
+  await env.CONVERSION_DB.prepare('DELETE FROM conversion_counts WHERE day < ?').bind(cutoff).run();
+ },
  async fetch(request, env) {
   const url=new URL(request.url);
   if (url.pathname==='/api/leads') {
@@ -64,7 +73,8 @@ export default {
   if (url.pathname==='/') url.pathname='/index.html';
   const response=await env.ASSETS.fetch(new Request(url,request));
   const headers=new Headers(response.headers);
-  Object.entries(noStore).forEach(([name,value])=>{if(name!=='cache-control')headers.set(name,value);});
+  Object.entries(noStore).forEach(([name,value])=>{if(name!=='cache-control'&&name!=='x-robots-tag')headers.set(name,value);});
+  headers.set('x-robots-tag',env.PUBLIC_INDEXABLE==='true'&&url.pathname!=='/404.html'&&response.status<400?'index, follow':'noindex, nofollow');
   headers.set('content-security-policy', "default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com");
   headers.set('referrer-policy','strict-origin-when-cross-origin');
   headers.set('permissions-policy','camera=(), microphone=(), geolocation=()');

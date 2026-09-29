@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "811bb64c6ccb7c40d5144d3ccd43c4731e7287f9b7e1812af50fade56b3c3a46",
-    "bytes": 2252
+    "sha256": "9446d4a5257133ab275441f1a36f44c906c4572b8cea7d50cf0f668fd7d9b33e",
+    "bytes": 2780
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -26,8 +26,8 @@
   },
   {
     "path": ".gitignore",
-    "sha256": "13812535efff3afbec06fc6b8c4e45af3547b2053dacf8121f12b715c2b41c1e",
-    "bytes": 944
+    "sha256": "ba7860533b8bc2ed7dcb7ebf74e9cd9e306e4adb862adb18c32395d48b5cf680",
+    "bytes": 1019
   },
   {
     "path": ".nojekyll",
@@ -221,8 +221,8 @@
   },
   {
     "path": "assets/js/analytics.js",
-    "sha256": "526d110e16637d5992206d5260bc147cd533b3b2b4dc187f280828c755e0fb5b",
-    "bytes": 3941
+    "sha256": "6c3bda1b20d930c9eb6e867a21b6ef2bf4acf5387d731e55558eade90e11d6ad",
+    "bytes": 4052
   },
   {
     "path": "assets/js/automation.js",
@@ -420,6 +420,11 @@
     "bytes": 6996
   },
   {
+    "path": "quality/scripts/build_production_dist.py",
+    "sha256": "d415d90b94911f778824af60658536da9b88a0f91747ae7605e1b286dc836aab",
+    "bytes": 11741
+  },
+  {
     "path": "quality/scripts/check_dist.py",
     "sha256": "fd0873fdcd44b9d0802510dee3a0a5d7fdbe440ba64f441268a50019fbf847f1",
     "bytes": 4526
@@ -455,14 +460,19 @@
     "bytes": 10229
   },
   {
+    "path": "quality/scripts/render_production_wrangler.py",
+    "sha256": "58f167012d6de9fce3e6801356a6bfbb6f956193fec5b1099c570b858fc44d56",
+    "bytes": 2083
+  },
+  {
     "path": "quality/scripts/update_actualites.py",
     "sha256": "e8bd16aeb0a53fc190ac3a3a20c99fd98ac452c7f7013a9697e61a543287defe",
     "bytes": 27569
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "962a65d00968bc8b39ccaa37ae44db108fea659f997b6ec970cf33596f8628f6",
-    "bytes": 4507
+    "sha256": "ef7ebfa826af1f09415da4a81f91a5ac2d32c741573c226d6c3c4c586b21a044",
+    "bytes": 4711
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -473,6 +483,11 @@
     "path": "quality/sources-candidates-afrique-ouest.md",
     "sha256": "10592f6023a3953847578056d9a9712a4010358a511f0e44894613b216eecdd4",
     "bytes": 4167
+  },
+  {
+    "path": "quality/tests/test_production.py",
+    "sha256": "571647b2da7c1e24f61097723f0d94ce889cb7d48b1f77a1afc7d211d8ef071e",
+    "bytes": 4325
   },
   {
     "path": "robots.txt",
@@ -506,13 +521,18 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/handler.test.mjs",
-    "sha256": "a22530e2503f7a1dbe16dbbf168cda541a767eed480e6f7cf082293a43cf41a6",
-    "bytes": 6871
+    "sha256": "161102d45905095328bdc7c71ca1450310585d433cad7bcb0731f988d628d637",
+    "bytes": 8048
   },
   {
     "path": "serverless/bluewave-leads/validation.mjs",
     "sha256": "6862efe998d1e71ae793e12e280097716a921c00751ae4ee374c5a51b4de407d",
     "bytes": 3774
+  },
+  {
+    "path": "serverless/cloudflare/PRODUCTION.md",
+    "sha256": "9e7e3a36364b03e88f2e91139d34a26f21e8af3cbec06d1dfda901798a9079e6",
+    "bytes": 5470
   },
   {
     "path": "serverless/cloudflare/README.md",
@@ -536,8 +556,8 @@
   },
   {
     "path": "serverless/cloudflare/tests/native-worker.check.mjs",
-    "sha256": "731abe7be660fbe138344d3601d71782635962e958fdd15ab5acbee4edfc0c0f",
-    "bytes": 5243
+    "sha256": "6cc3c95969e0185edf696a1fe946e619122488cda2b1d743037efda8b357c094",
+    "bytes": 5818
   },
   {
     "path": "serverless/cloudflare/tests/preactivation.test.mjs",
@@ -545,14 +565,24 @@
     "bytes": 1305
   },
   {
+    "path": "serverless/cloudflare/tests/production.test.mjs",
+    "sha256": "232868d9b32f7b234f637d13348832fc086a61f1c96ee01127be5da1abbccb60",
+    "bytes": 1989
+  },
+  {
     "path": "serverless/cloudflare/worker.mjs",
-    "sha256": "f60c302d4e41390e8af6a1eb7d9c6b596a0c922afcaac75b43e265d99ec145d2",
-    "bytes": 4194
+    "sha256": "907ae89adff5bc784e3ef632a879afda57b370d6927891fb73df9a0a484dec1c",
+    "bytes": 4855
   },
   {
     "path": "serverless/cloudflare/wrangler.jsonc",
     "sha256": "936ecbf70a98afea391696beb2180b50c250fd859b12600975dcae0b5d352379",
     "bytes": 657
+  },
+  {
+    "path": "serverless/cloudflare/wrangler.production.jsonc",
+    "sha256": "047afb5f6405abe8fee5dba25f28252636b8f07220428382256bfa634c6ef29b",
+    "bytes": 892
   },
   {
     "path": "services.html",
