@@ -18,6 +18,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Reproducible dependencies
+        run: npm ci
       - name: Git whitespace
         run: git diff --check HEAD^ HEAD
       - name: JSON syntax
@@ -27,6 +33,7 @@ jobs:
           python -m json.tool data/actualites-sources.json >/dev/null
           python -m json.tool data/actualites-curation.json >/dev/null
           python -m json.tool data/automation-config.json >/dev/null
+          python -m json.tool data/analytics-config.json >/dev/null
       - name: HTML and content quality
         run: python quality/scripts/quality_check.py
       - name: JavaScript syntax
@@ -36,8 +43,12 @@ jobs:
           node --check assets/js/mediatheque.js
           node --check assets/js/actualites.js
           node --check assets/js/automation.js
+          node --check assets/js/analytics.js
+          node --check serverless/cloudflare/worker.mjs
       - name: Serverless lead pipeline tests
-        run: node --test serverless/bluewave-leads/tests/handler.test.mjs
+        run: npm test
+      - name: Pre-activation locks
+        run: python quality/scripts/check_preactivation.py
       - name: Internal opportunity radar
         run: python quality/scripts/radar_check.py
 
@@ -51,3 +62,11 @@ jobs:
           python quality/scripts/check_dist.py
           python quality/scripts/dist_manifest.py
           python quality/scripts/dist_manifest.py --check
+      - name: Production profile OFF and ON without external calls
+        run: |
+          python -m unittest discover -s quality/tests -p 'test_production.py'
+          python quality/scripts/build_production_dist.py --indexable --leads --events
+          python quality/scripts/render_production_wrangler.py --database-id 11111111-1111-1111-1111-111111111111
+          npx wrangler deploy --config serverless/cloudflare/.wrangler-production.generated.json --dry-run --outdir ../../quality/reports/cloudflare-production-build
+      - name: Workers package and native runtime
+        run: npm run cloudflare:test-runtime

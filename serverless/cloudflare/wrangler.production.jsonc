@@ -1,0 +1,29 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "bluewave-site-production",
+  "main": "./worker.mjs",
+  "compatibility_date": "2026-08-06",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "../../dist-production",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "none",
+    "not_found_handling": "404-page"
+  },
+  "vars": {
+    "LEADS_ENABLED": "false",
+    "EVENTS_ENABLED": "false",
+    "NEWSLETTER_ENABLED": "false",
+    "PUBLIC_INDEXABLE": "false",
+    "ALLOWED_ORIGIN": "https://www.bluewavesolutions.fr",
+    "BLUEWAVE_SITE_URL": "https://www.bluewavesolutions.fr",
+    "ALLOWED_CAMPAIGNS": ""
+  },
+  "durable_objects": {
+    "bindings": [{"name":"LEAD_GUARD","class_name":"LeadGuard"}]
+  },
+  "migrations": [{"tag":"v1","new_sqlite_classes":["LeadGuard"]}],
+  "triggers": {"crons": ["0 3 * * *"]}
+}

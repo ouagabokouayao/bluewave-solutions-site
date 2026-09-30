@@ -65,7 +65,7 @@ Les attributs à créer dans le compte Brevo sont :
 | `BW_CONSENT_VEILLE` | consentement newsletter booléen |
 
 `FIRSTNAME` et `LASTNAME` utilisent les attributs standards du contact. La liste newsletter n’est
-ajoutée que lorsque `newsletter_consent` vaut `true`. Le double opt-in pourra remplacer cette
+ajoutée que lorsque `newsletter_consent` vaut `true` et que `NEWSLETTER_ENABLED=true` ; autrement la demande est rejetée côté serveur. Le double opt-in pourra remplacer cette
 affectation directe lors de la configuration réelle du compte.
 
 ## Modèles transactionnels à configurer dans Brevo
@@ -129,3 +129,9 @@ node --test serverless/bluewave-leads/tests/handler.test.mjs
 ```
 
 Les tests injectent un faux transport HTTP. Ils ne contactent jamais Brevo.
+
+## Adaptateur préparé Cloudflare
+
+Dans la cible, l'URL est `/api/leads` sur la même origine HTTPS que le site ; le chemin `/bluewave-leads` ci-dessus décrit seulement le handler portable historique. Le Worker bloque l'API lorsque `LEADS_ENABLED` n'est pas `true`. `GUARD_HMAC_KEY` (32 caractères minimum) et le binding `LEAD_GUARD` protègent le débit et les doublons sans stocker d'IP brute. `NEWSLETTER_ENABLED=false` rejette une demande forgée avec consentement newsletter ; aucun attribut de consentement false ne doit écraser un consentement ancien dans Brevo. Une erreur dans la suite upsert/accusé/notification peut nécessiter un rapprochement manuel avant nouvel envoi.
+
+Configuration privée nécessaire pour une future recette : `BREVO_API_KEY`, `BREVO_LEADS_LIST_ID`, `BREVO_NEWSLETTER_LIST_ID`, `BREVO_ACK_TEMPLATE_ID`, `BREVO_INTERNAL_TEMPLATE_ID`, `BLUEWAVE_INTERNAL_EMAIL`, `ALLOWED_ORIGIN`, et optionnellement `BREVO_FOLLOWUP_TEMPLATE_ID` non utilisé. `BLUEWAVE_SITE_URL` définit la base des liens si elle diffère de l'origine. Brevo requiert des listes, modèles, attributs et identité d'expéditeur préalablement configurés dans le compte. Voir `serverless/cloudflare/README.md` pour le contrôle de l'activation et du rollback.

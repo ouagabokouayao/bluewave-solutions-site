@@ -1,49 +1,28 @@
-const DEFAULT_WINDOW_MS = 15 * 60 * 1000;
-const DEFAULT_DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
+const WINDOW_MS = 15 * 60 * 1000;
+const DUPLICATE_MS = 5 * 60 * 1000;
 
-function hashText(value) {
-  let hash = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return (hash >>> 0).toString(16).padStart(8, '0');
+export async function submissionFingerprint(lead) {
+  const bytes = new TextEncoder().encode(`${lead.email}|${lead.type}|${lead.need}`);
+  const hash = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(hash)].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
-export function submissionFingerprint(lead) {
-  return hashText(`${lead.email}|${lead.type}|${lead.need}`);
-}
-
-export function createMemoryGuard({
-  now = () => Date.now(),
-  rateLimit = 5,
-  windowMs = DEFAULT_WINDOW_MS,
-  duplicateWindowMs = DEFAULT_DUPLICATE_WINDOW_MS
-} = {}) {
+export function createMemoryGuard({ now = () => Date.now(), rateLimit = 5, windowMs = WINDOW_MS, duplicateWindowMs = DUPLICATE_MS } = {}) {
   const rates = new Map();
   const submissions = new Map();
-
   return {
     allowRate(key) {
-      const cutoff = now() - windowMs;
-      const recent = (rates.get(key) ?? []).filter(timestamp => timestamp > cutoff);
+      const recent = (rates.get(key) ?? []).filter(time => time > now() - windowMs);
       if (recent.length >= rateLimit) return false;
-      recent.push(now());
-      rates.set(key, recent);
-      return true;
+      recent.push(now()); rates.set(key, recent); return true;
     },
-    claimSubmission(fingerprint) {
-      const current = now();
-      const expiresAt = submissions.get(fingerprint) ?? 0;
-      if (expiresAt > current) return false;
-      submissions.set(fingerprint, current + duplicateWindowMs);
-      return true;
+    claimSubmission(key) {
+      if ((submissions.get(key) ?? 0) > now()) return false;
+      submissions.set(key, now() + duplicateWindowMs); return true;
     }
   };
 }
 
 export function requestClientKey(request) {
-  return request.headers.get('cf-connecting-ip')
-    || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || 'unknown';
+  return request.headers.get('cf-connecting-ip') || 'unknown';
 }

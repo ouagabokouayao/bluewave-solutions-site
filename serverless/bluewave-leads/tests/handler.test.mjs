@@ -85,14 +85,29 @@ test('newsletter false : seule la liste Leads est transmise', async () => {
   const brevo = mockBrevo();
   await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: false }));
   assert.deepEqual(brevo.calls[0].body.listIds, [11]);
-  assert.equal(brevo.calls[0].body.attributes.BW_CONSENT_VEILLE, false);
+  assert.equal('BW_CONSENT_VEILLE' in brevo.calls[0].body.attributes, false);
 });
 
 test('newsletter true : la liste Newsletter est ajoutée indépendamment', async () => {
   const brevo = mockBrevo();
-  await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: true }));
+  await createLeadHandler({ environment: {...environment, NEWSLETTER_ENABLED: 'true'}, fetchImpl: brevo.fetchImpl, guard: createMemoryGuard() })(request({ ...validPayload, newsletter_consent: true }));
   assert.deepEqual(brevo.calls[0].body.listIds, [11, 22]);
   assert.equal(brevo.calls[0].body.attributes.BW_CONSENT_VEILLE, true);
+});
+
+test('la liste newsletter n’est pas nécessaire lorsque le canal reste fermé', async () => {
+  const brevo = mockBrevo();
+  const environmentSansListe = { ...environment };
+  delete environmentSansListe.BREVO_NEWSLETTER_LIST_ID;
+  const response = await createLeadHandler({environment: environmentSansListe, fetchImpl: brevo.fetchImpl, guard:createMemoryGuard()})(request());
+  assert.equal(response.status,201);
+});
+
+test('newsletter forgée et désactivée rejetée avant Brevo', async () => {
+  const brevo = mockBrevo();
+  const response = await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: true }));
+  assert.equal(response.status, 400);
+  assert.equal(brevo.calls.length, 0);
 });
 
 test('contact existant : updateEnabled évite la création d’un doublon', async () => {
@@ -109,6 +124,33 @@ test('API Brevo indisponible : erreur générique sans réponse brute', async ()
   const body = await response.json();
   assert.deepEqual(body, { success: false, message: ERROR_MESSAGE });
   assert.equal(JSON.stringify(body).includes('private-upstream-detail'), false);
+});
+
+test('échec accusé après contact : pas de notification et rapprochement nécessaire', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    calls.push({url, body:JSON.parse(options.body)});
+    return new Response(null,{status:calls.length===2?503:201});
+  };
+  const response = await handler(fetchImpl)(request());
+  assert.equal(response.status,502);
+  assert.equal(calls.length,2);
+  assert.equal(calls[0].url,'https://api.brevo.com/v3/contacts');
+  assert.equal(calls[1].body.templateId,33);
+  assert.deepEqual(await response.json(),{success:false,message:ERROR_MESSAGE});
+});
+
+test('échec notification après contact et accusé : réponse neutre et aucune reprise automatique', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    calls.push({url, body:JSON.parse(options.body)});
+    return new Response(null,{status:calls.length===3?503:201});
+  };
+  const response = await handler(fetchImpl)(request());
+  assert.equal(response.status,502);
+  assert.equal(calls.length,3);
+  assert.equal(calls[2].body.templateId,44);
+  assert.deepEqual(await response.json(),{success:false,message:ERROR_MESSAGE});
 });
 
 test('double soumission rapprochée rejetée', async () => {
