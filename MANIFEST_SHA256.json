@@ -421,8 +421,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "d415d90b94911f778824af60658536da9b88a0f91747ae7605e1b286dc836aab",
-    "bytes": 11741
+    "sha256": "16e7ebfd178b44ace4559f4404a2962bf2d0c1e37ef5ff189c5a52646e1ead44",
+    "bytes": 11716
   },
   {
     "path": "quality/scripts/check_dist.py",
@@ -486,8 +486,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "571647b2da7c1e24f61097723f0d94ce889cb7d48b1f77a1afc7d211d8ef071e",
-    "bytes": 4325
+    "sha256": "0205b004e7029cb6908fab86f56bd9681a34bebe479fee91ca91e46f92e7f0cb",
+    "bytes": 4498
   },
   {
     "path": "robots.txt",
