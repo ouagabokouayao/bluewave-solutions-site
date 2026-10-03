@@ -33,6 +33,7 @@ CRITICAL_FILES = [
     "solutions.html",
     "robots.txt",
     "assets/css/activites-bluewave.css",
+    "assets/css/premium.css",
     "assets/css/style.css",
     "assets/js/actualites.js",
     "assets/js/activites-bluewave.js",
