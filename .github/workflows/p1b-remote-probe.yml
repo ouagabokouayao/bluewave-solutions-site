@@ -1,4 +1,4 @@
-# P1B_TRIGGER_STATE: events
+# P1B_TRIGGER_STATE: off
 name: P1-B remote probe
 
 # Sonde réseau indépendante sur la préproduction Cloudflare.
