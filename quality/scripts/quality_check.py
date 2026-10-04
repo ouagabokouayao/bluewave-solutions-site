@@ -208,17 +208,19 @@ def main():
       'serverless/bluewave-leads/handler.mjs','serverless/bluewave-leads/brevo-client.mjs',
       'serverless/bluewave-leads/validation.mjs','serverless/bluewave-leads/security.mjs',
       'serverless/bluewave-leads/.env.example','serverless/bluewave-leads/README.md',
-      'serverless/bluewave-leads/tests/handler.test.mjs','quality/scripts/check_secrets.py',
+      'serverless/bluewave-leads/tests/handler.test.mjs','serverless/bluewave-leads/tests/schema.test.mjs','quality/scripts/check_secrets.py',
     ]
     for relative in backend_files:
         if not (ROOT/relative).is_file():errors.append(f'automation: fichier backend absent {relative}')
     try:
         backend='\n'.join((ROOT/relative).read_text(encoding='utf-8') for relative in backend_files if (ROOT/relative).is_file())
-        for attribute in ['BW_TYPE','BW_GEO','BW_THEME','BW_ORGANISATION','BW_BESOIN','BW_DELAI','BW_SOURCE','BW_STATUT','BW_CONSENT_VEILLE']:
+        for attribute in ['BW_TYPE','BW_GEO','BW_THEME','BW_ORGANISATION','BW_BESOIN','BW_DELAI','BW_SOURCE','BW_STATUT']:
             if attribute not in backend:errors.append(f'automation: attribut Brevo absent {attribute}')
-        for variable in ['BREVO_API_KEY','BREVO_LEADS_LIST_ID','BREVO_NEWSLETTER_LIST_ID','BREVO_ACK_TEMPLATE_ID','BREVO_INTERNAL_TEMPLATE_ID','BLUEWAVE_INTERNAL_EMAIL','ALLOWED_ORIGIN']:
+        for variable in ['BREVO_API_KEY','BREVO_LEADS_LIST_ID','BREVO_ACK_TEMPLATE_ID','BREVO_INTERNAL_TEMPLATE_ID','BLUEWAVE_INTERNAL_EMAIL','ALLOWED_ORIGIN']:
             if variable not in backend:errors.append(f'automation: variable serveur absente {variable}')
         if 'updateEnabled: true' not in backend:errors.append('automation: mise à jour contact Brevo non activée')
+        brevo=(ROOT/'serverless/bluewave-leads/brevo-client.mjs').read_text(encoding='utf-8')
+        if 'listIds.push' in brevo or 'BW_CONSENT_VEILLE' in brevo:errors.append('newsletter: ajout direct Brevo encore présent')
     except OSError as exc:
         errors.append(f'automation: backend illisible {exc}')
     # Méthode publique canonique 6 étapes ; chaîne 8 étapes réservée aux documents internes
@@ -256,7 +258,7 @@ def main():
     qualifier_js=(ROOT/'assets/js/qualifier.js').read_text(encoding='utf-8')
     if q.count('fieldset data-step=')!=7:errors.append('qualifier: nombre étapes != 7')
     if 'diagnostic automatique définitif' in q.lower():warnings.append('qualifier: mention explicite interdiction présente')
-    for field in ['lead-name','lead-organisation','lead-email','lead-request-type','lead-description','lead-contact-preference','lead-newsletter','lead-consent','lead-website']:
+    for field in ['lead-firstname','lead-lastname','lead-organisation','lead-role','lead-email','lead-request-type','lead-description','lead-contact-preference','lead-newsletter','lead-consent','lead-website']:
         if f'id="{field}"' not in q:errors.append(f'qualifier: champ contact absent {field}')
     for field in ['firstname','lastname','email','organisation','type','geography','themes','need','deadline','contact_preference','source','newsletter_consent','privacy_acknowledged']:
         if re.search(rf'\b{field}\s*:',qualifier_js) is None:errors.append(f'qualifier: champ payload canonique absent {field}')
@@ -267,8 +269,38 @@ def main():
         if f"'{slug}'" not in qualifier_js:errors.append(f'qualifier.js: préremplissage offre absent {slug}')
     index=index_text
     for journey in ['projet','collaboration','formation']:
-        if f'?parcours={journey}' not in index:errors.append(f'index.html: parcours absent {journey}')
+        if f'href="{journey}.html"' not in index:errors.append(f'index.html: parcours dédié absent {journey}')
         if f'{journey}:' not in qualifier_js:errors.append(f'qualifier.js: parcours absent {journey}')
+    # P0 formulaires : pages distinctes, contrat partagé et provenance conservée.
+    schema=(ROOT/'assets/js/lead-schema.js').read_text(encoding='utf-8')
+    journey_js=(ROOT/'assets/js/journey-form.js').read_text(encoding='utf-8')
+    collaboration=(ROOT/'collaboration.html').read_text(encoding='utf-8')
+    formation=(ROOT/'formation.html').read_text(encoding='utf-8')
+    projet=(ROOT/'projet.html').read_text(encoding='utf-8')
+    for field in ['journey','source_offer','recommended_offer','lead_type','organisation_type','territory','need_category','stage','data_availability','desired_outcome']:
+        if field not in schema:errors.append(f'lead-schema.js: champ commun absent {field}')
+    if "import {LIMITS, validateLead} from '../../assets/js/lead-schema.js'" not in (ROOT/'serverless/bluewave-leads/validation.mjs').read_text(encoding='utf-8'):
+        errors.append('validation serveur: schéma partagé non importé')
+    if 'data-lead-type="collaboration-organisation"' not in collaboration or 'data-lead-type="expertise-offer"' not in collaboration:
+        errors.append('collaboration.html: bifurcation Organisation / Expertise absente')
+    if 'MOBILISABLE' in schema:errors.append('lead-schema.js: statut MOBILISABLE ajouté prématurément')
+    for value in ['oui','non','non-applicable','en-cours']:
+        if f'value="{value}"' not in collaboration:errors.append(f'collaboration.html: valeur RC Pro absente {value}')
+    for value in ['presentiel','distance','hybride','initiation','intermediaire','avance','mixte','a-preciser']:
+        if f'value="{value}"' not in formation:errors.append(f'formation.html: valeur structurée absente {value}')
+    if 'data-location-field' not in formation or "['presentiel', 'hybride']" not in journey_js:
+        errors.append('formation: condition localisation absente')
+    if 'data-project-start' not in projet or 'sourceOffer' not in journey_js:
+        errors.append('projet: conservation source_offer absente')
+    if q.count('<option value="">Sélectionner…</option>') < 7:
+        errors.append('qualifier: choix neutres structurants incomplets')
+    for marker in ['form.reset()','leadForm?.reset()','lastOrientation = null','applyPreset(journeyPreset)','applyPreset(offerPreset)']:
+        if marker not in qualifier_js:errors.append(f'qualifier: reset incomplet ({marker})')
+    if 'localStorage' in qualifier_js or 'localStorage' in journey_js:errors.append('formulaires: stockage local PII interdit')
+    trust=json.loads((ROOT/'data/trust-config.json').read_text(encoding='utf-8'))
+    if trust.get('enabled') is not False or trust.get('items') != []:errors.append('trust: configuration doit rester OFF et vide')
+    for page in [projet,collaboration,formation]:
+        if 'assets/js/automation.js' not in page or 'assets/js/lead-schema.js' not in page:errors.append('parcours P0: scripts partagés absents')
     workflow=(ROOT/'.github/workflows/update-actualites.yml').read_text(encoding='utf-8')
     for forbidden in ['schedule:','contents: write','ref: main','git commit','git push']:
         if forbidden in workflow:errors.append(f'workflow actualités: écriture automatique interdite {forbidden}')

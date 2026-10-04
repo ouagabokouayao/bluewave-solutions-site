@@ -1,3 +1,5 @@
+import {hasCanonicalOffer, hasJourney, validateLead} from './lead-schema.js';
+
 (() => {
   const form = document.getElementById('qualifier-form');
   if (!form) return;
@@ -50,9 +52,20 @@
     steps[current].querySelector('select')?.focus();
   }
   function markStarted() { if (!started) { started = true; window.BlueWaveAutomation?.track('qualifier_start'); } }
-  next.addEventListener('click', () => { markStarted(); show(current+1); });
+  next.addEventListener('click', () => {
+    markStarted();
+    const select = steps[current].querySelector('select');
+    if (!select?.reportValidity()) {
+      window.BlueWaveAutomation?.track('lead_validation_error', {journey: 'projet', status: 'invalid'});
+      return;
+    }
+    show(current+1);
+  });
   prev.addEventListener('click', () => show(current-1));
   form.addEventListener('change', markStarted);
+  leadForm?.addEventListener('focusin', () => {
+    window.BlueWaveAutomation?.track('lead_form_start', {journey: activeJourney, offer: lastOrientation?.offerId});
+  }, {once: true});
 
   const canonicalMethod = 'Qualifier → cadrer → analyser → cartographier → structurer → restituer.';
   function orient(v){
@@ -80,6 +93,10 @@
   form.addEventListener('submit', e => {
     e.preventDefault();
     markStarted();
+    if (!form.reportValidity()) {
+      window.BlueWaveAutomation?.track('lead_validation_error', {journey: 'projet', status: 'invalid'});
+      return;
+    }
     const v = {
       organisation: document.getElementById('q-organisation').value,
       territoire: document.getElementById('q-territoire').value,
@@ -101,8 +118,8 @@
     const subject = encodeURIComponent(`BlueWave — qualification d’un besoin — ${offer}`);
     const body = encodeURIComponent(`Bonjour,\n\nJe souhaite présenter le besoin suivant à BlueWave Solutions.\n\n${summary}\n\nOrientation indicative affichée : ${offer}.\n\nJe comprends que cette orientation ne constitue ni un diagnostic ni une proposition commerciale.\n\nCordialement,`);
     document.getElementById('result-mail').href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
-    window.BlueWaveAutomation?.track('qualifier_complete', { status: 'complete', offer: offerId });
-    window.BlueWaveAutomation?.track('lead_form_open', { offer: offerId });
+    window.BlueWaveAutomation?.track('qualifier_complete', { status: 'complete', offer: offerId, journey: activeJourney });
+    window.BlueWaveAutomation?.track('lead_form_open', { offer: offerId, journey: activeJourney });
     result.hidden = false;
     result.scrollIntoView({behavior:'smooth',block:'start'});
   });
@@ -110,8 +127,11 @@
     result.hidden = true;
     lastOrientation = null;
     started = false;
+    form.reset();
     leadForm?.reset();
     leadMessage.textContent = '';
+    applyPreset(journeyPreset);
+    applyPreset(offerPreset);
     show(0);
     form.scrollIntoView({behavior:'smooth',block:'start'});
   });
@@ -135,28 +155,53 @@
     leadSubmit.disabled = true;
     leadMessage.textContent = 'Transmission en cours…';
     const data = new FormData(leadForm);
-    const nameParts = String(data.get('name') || '').trim().split(/\s+/).filter(Boolean);
-    const payload = {
-      firstname: nameParts.shift() || '',
-      lastname: nameParts.join(' '),
+    const canonicalPayload = {
+      journey: activeJourney,
+      source_offer: sourceOffer,
+      recommended_offer: orientation.offerId || '',
+      lead_type: data.get('request_type'),
+      organisation_type: orientation.organisation,
+      territory: geographyTag[orientation.territoire],
+      need_category: orientation.problematique,
+      stage: orientation.stade,
+      data_availability: orientation.donnees,
+      desired_outcome: orientation.resultat,
+      firstname: data.get('firstname'),
+      lastname: data.get('lastname'),
       email: data.get('email'),
       organisation: data.get('organisation_name'),
-      type: data.get('request_type'),
-      geography: geographyTag[orientation.territoire],
-      themes: [problemToTheme[orientation.problematique]],
+      role: data.get('role'),
       need: data.get('description'),
       deadline: orientation.delai,
       contact_preference: data.get('contact_preference'),
-      source: 'SITE_QUALIFIER',
-      newsletter_consent: data.get('newsletter_consent') === 'yes',
+      newsletter_optin_request: false,
       privacy_acknowledged: data.get('consent') === 'yes',
-      website: data.get('website') || ''
+      website: data.get('website') || '',
+      captcha_token: ''
     };
-    const eventContext = { offer: orientation.offerId, journey: ({ 'projet-mission': 'projet', formation: 'formation', collaboration: 'collaboration', 'evenement-intervention': 'evenement' })[payload.type] };
+    const legacyPayload = {
+      firstname: canonicalPayload.firstname, lastname: canonicalPayload.lastname, email: canonicalPayload.email,
+      organisation: canonicalPayload.organisation, type: canonicalPayload.lead_type,
+      geography: canonicalPayload.territory, themes: [problemToTheme[orientation.problematique]],
+      need: canonicalPayload.need, deadline: canonicalPayload.deadline,
+      contact_preference: canonicalPayload.contact_preference, source: 'SITE_QUALIFIER',
+      newsletter_consent: false, privacy_acknowledged: canonicalPayload.privacy_acknowledged,
+      website: canonicalPayload.website, captcha_token: ''
+    };
+    const validation = activeJourney === 'projet' ? validateLead(canonicalPayload) : {ok: true, value: legacyPayload};
+    if (!validation.ok) {
+      submitting = false;
+      leadMessage.textContent = 'Certains champs doivent être vérifiés avant de préparer la demande.';
+      window.BlueWaveAutomation?.track('lead_validation_error', {journey: activeJourney, offer: orientation.offerId, status: 'invalid'});
+      return;
+    }
+    const payload = validation.value;
+    const eventContext = { offer: orientation.offerId, journey: activeJourney };
     window.BlueWaveAutomation?.track('lead_submit_attempt', eventContext);
     const prepareFallback = status => {
-      const subject = encodeURIComponent(`BlueWave — ${payload.type} — ${orientation.offer}`);
-      const body = encodeURIComponent(`Bonjour,\n\nNom : ${payload.firstname} ${payload.lastname}\nOrganisation : ${payload.organisation}\nE-mail : ${payload.email}\nType de demande : ${payload.type}\nPréférence de contact : ${payload.contact_preference}\n\n${orientation.summary}\n\nDescription :\n${payload.need}\n\nOrientation indicative : ${orientation.offer}.\n\nJe comprends que cette prise de contact ne constitue ni une acceptation de mission ni une proposition commerciale.\n\nCordialement,`);
+      const payloadType = payload.lead_type || payload.type;
+      const subject = encodeURIComponent(`BlueWave — ${payloadType} — ${orientation.offer}`);
+      const body = encodeURIComponent(`Bonjour,\n\nNom : ${payload.firstname} ${payload.lastname}\nOrganisation : ${payload.organisation}\nE-mail : ${payload.email}\nType de demande : ${payloadType}\nPréférence de contact : ${payload.contact_preference}\n\n${orientation.summary}\n\nDescription :\n${payload.need}\n\nOrientation indicative : ${orientation.offer}.\n\nJ’ai relu ces informations avant envoi.\n\nCordialement,`);
       const mail = document.getElementById('result-mail');
       mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
       window.BlueWaveAutomation?.track('lead_submit_fallback_email', { ...eventContext, status });
@@ -200,6 +245,8 @@
   const problemKey = params.get('problematique');
   const offerPreset = offerPresets[offerKey];
   const journeyPreset = journeyPresets[journeyKey];
+  const sourceOffer = hasCanonicalOffer(offerKey) ? offerKey : '';
+  const activeJourney = hasJourney(journeyKey) ? journeyKey : sourceOffer === 'formation-capacites' ? 'formation' : 'projet';
   applyPreset(journeyPreset);
   applyPreset(offerPreset);
   if (!offerPreset && problemKey) setSelect('q-problematique', problemKey);
@@ -211,5 +258,8 @@
       ? `Offre présélectionnée : ${offerPreset.label}. Vous pouvez modifier chaque réponse.`
       : journeyPreset.message;
   }
+  if (sourceOffer) window.addEventListener('load', () => {
+    window.BlueWaveAutomation?.track('offer_contact_transition', {journey: activeJourney, offer: sourceOffer});
+  }, {once: true});
   show(0);
 })();

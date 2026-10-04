@@ -5,9 +5,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 auto = json.loads((ROOT/'data/automation-config.json').read_text())
 analytics = json.loads((ROOT/'data/analytics-config.json').read_text())
+trust = json.loads((ROOT/'data/trust-config.json').read_text())
 worker = json.loads((ROOT/'serverless/cloudflare/wrangler.jsonc').read_text())
 assert auto['lead_endpoint'] is None and auto['chat_enabled'] is False and auto['newsletter_enabled'] is False and auto['meeting_url'] is None
 assert analytics == {'enabled':False,'endpoint':None,'traffic_token':None,'campaigns':[]}
+assert trust['enabled'] is False and trust['items'] == []
 assert all(worker['vars'][key]=='false' for key in ['LEADS_ENABLED','EVENTS_ENABLED','NEWSLETTER_ENABLED'])
 assert worker['workers_dev'] is False and worker['preview_urls'] is False
 assert 'routes' not in worker and 'route' not in worker

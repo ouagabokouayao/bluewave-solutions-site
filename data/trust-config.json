@@ -1,0 +1,20 @@
+{
+  "enabled": false,
+  "items": [],
+  "future_fields": [
+    "name",
+    "logo",
+    "relationship_type",
+    "public_url",
+    "approved_text",
+    "internal_evidence",
+    "display_authorization",
+    "validated_at"
+  ],
+  "unlock_conditions": [
+    "real_relationship",
+    "relationship_qualified",
+    "display_authorized",
+    "bluewave_validated"
+  ]
+}

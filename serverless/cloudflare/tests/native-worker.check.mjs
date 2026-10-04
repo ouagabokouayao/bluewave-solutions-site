@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
 import {Miniflare} from 'miniflare';
 import productionWorker from '../worker.mjs';
 
 const root=new URL('../../../',import.meta.url);
 const compiled=await readFile(new URL('../../../quality/reports/cloudflare-worker-build/worker-native.js',import.meta.url),'utf8');
 const schema=await readFile(new URL('../schema.sql',import.meta.url),'utf8');
-const assets=new URL('../../../dist/',import.meta.url).pathname;
+const assets=fileURLToPath(new URL('../../../dist/',import.meta.url));
 const origin='https://preview.example.invalid';
 const testEnvironment={
   ALLOWED_ORIGIN:origin, BREVO_API_KEY:'local-test-only', BREVO_LEADS_LIST_ID:'11',

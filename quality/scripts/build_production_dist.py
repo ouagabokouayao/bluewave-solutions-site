@@ -106,8 +106,8 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=()):
         shutil.rmtree(OUT)
     shutil.copytree(SOURCE, OUT)
     pages = sorted(OUT.glob('*.html'))
-    if len(pages) != 17:
-        raise ValueError(f'17 pages attendues, {len(pages)} trouvées')
+    if len(pages) != 20:
+        raise ValueError(f'20 pages attendues, {len(pages)} trouvées')
     for page in pages:
         document = page.read_text(encoding='utf-8')
         if document.count(OLD) < 2:

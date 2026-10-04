@@ -69,8 +69,8 @@
         const message = form.querySelector('[data-newsletter-message]');
         form.querySelectorAll('input, button').forEach(control => { control.disabled = true; });
         if (message) message.textContent = config.newsletter_enabled
-          ? 'L’inscription est proposée lors de la transmission d’une demande.'
-          : 'Inscription bientôt disponible.';
+          ? 'Une demande distincte sera confirmée par e-mail avant toute inscription.'
+          : 'Inscription désactivée. Le futur parcours exigera une confirmation par e-mail.';
       });
     } catch (error) {
       document.querySelectorAll('[data-newsletter-consent]').forEach(control => { control.disabled = true; });
@@ -82,6 +82,7 @@
     if (!link) return;
     if (link.matches('a[href^="mailto:"]')) track('contact_email_click');
     if (link.matches('[data-meeting-link]')) track('meeting_click');
+    if (link.matches('[data-journey-cta]')) track('journey_cta_click', { journey: link.dataset.journeyCta });
   });
 
   window.BlueWaveAutomation = { loadConfig, showMeeting, submit, track };

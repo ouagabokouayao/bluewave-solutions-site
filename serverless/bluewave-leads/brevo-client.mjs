@@ -19,7 +19,6 @@ export function validateEnvironment(environment) {
   const missing = required.filter(name => !String(environment[name] ?? '').trim());
   if (missing.length) throw new Error(`Configuration incomplète : ${missing.join(', ')}`);
   positiveInteger(environment.BREVO_LEADS_LIST_ID, 'BREVO_LEADS_LIST_ID');
-  if (environment.NEWSLETTER_ENABLED === 'true') positiveInteger(environment.BREVO_NEWSLETTER_LIST_ID, 'BREVO_NEWSLETTER_LIST_ID');
   positiveInteger(environment.BREVO_ACK_TEMPLATE_ID, 'BREVO_ACK_TEMPLATE_ID');
   positiveInteger(environment.BREVO_INTERNAL_TEMPLATE_ID, 'BREVO_INTERNAL_TEMPLATE_ID');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(environment.BLUEWAVE_INTERNAL_EMAIL)) {
@@ -61,9 +60,8 @@ export class BrevoClient {
 
   async upsertContact(lead) {
     const listIds = [positiveInteger(this.environment.BREVO_LEADS_LIST_ID, 'BREVO_LEADS_LIST_ID')];
-    if (lead.newsletter_consent && this.environment.NEWSLETTER_ENABLED === 'true') {
-      listIds.push(positiveInteger(this.environment.BREVO_NEWSLETTER_LIST_ID, 'BREVO_NEWSLETTER_LIST_ID'));
-    }
+    // Une demande commerciale n'ajoute jamais directement un contact à la
+    // newsletter. Le futur canal de veille utilisera un flux DOI séparé.
     return this.request('/contacts', {
       email: lead.email,
       attributes: {
@@ -76,8 +74,7 @@ export class BrevoClient {
         BW_BESOIN: lead.need,
         BW_DELAI: lead.deadline,
         BW_SOURCE: lead.source,
-        BW_STATUT: 'NOUVEAU',
-        ...(lead.newsletter_consent && this.environment.NEWSLETTER_ENABLED === 'true' ? { BW_CONSENT_VEILLE: true } : {})
+        BW_STATUT: 'NOUVEAU'
       },
       listIds,
       updateEnabled: true

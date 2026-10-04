@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "9446d4a5257133ab275441f1a36f44c906c4572b8cea7d50cf0f668fd7d9b33e",
-    "bytes": 2780
+    "sha256": "0191ce056e9378a04706d4a84c41ce20938d0cde8ec0f5cbec5146374c891e02",
+    "bytes": 2919
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -66,8 +66,8 @@
   },
   {
     "path": "assets/css/style.css",
-    "sha256": "a93695d3ee7d92ef813e9d1374194366e6de3b74de99e8becb59e4417a21f51e",
-    "bytes": 27664
+    "sha256": "433b108e7d18d95bd039c6e9664a5549acae41f833480679911c834e26c8e573",
+    "bytes": 28975
   },
   {
     "path": "assets/data/activites-bluewave.json",
@@ -226,13 +226,23 @@
   },
   {
     "path": "assets/js/analytics.js",
-    "sha256": "6c3bda1b20d930c9eb6e867a21b6ef2bf4acf5387d731e55558eade90e11d6ad",
-    "bytes": 4052
+    "sha256": "0c064c28178bb31b4a467f6c6e9b0f0e8e16301e49f4220dc245d5b68bfbaf48",
+    "bytes": 4215
   },
   {
     "path": "assets/js/automation.js",
-    "sha256": "5f9a1a34c8ae81a7471b5e289fccf6f594a16762dab120c67ffba556860a25a1",
-    "bytes": 3775
+    "sha256": "32efdfe0bd1e4797153f5b32e5a27d9cd01a29b481412bf4bd799888cca0b072",
+    "bytes": 3936
+  },
+  {
+    "path": "assets/js/journey-form.js",
+    "sha256": "3ffe5b28a07c3d8eb65cb91f2dd0d6a379e5a4df822cf53d7adaf38ed175da28",
+    "bytes": 9245
+  },
+  {
+    "path": "assets/js/lead-schema.js",
+    "sha256": "64051da4863a7b2863c83b3a0f3e193eb290554c335aed043976304e02bfc633",
+    "bytes": 11050
   },
   {
     "path": "assets/js/main.js",
@@ -246,8 +256,18 @@
   },
   {
     "path": "assets/js/qualifier.js",
-    "sha256": "50679d3e110d32917e524b866889b183b15f56d1b6e606d13cea632752bfea5c",
-    "bytes": 15814
+    "sha256": "24299b328368dab0b7cd4a486dee17c1e562005b2a5ea1691415d43bd2f6a76b",
+    "bytes": 18151
+  },
+  {
+    "path": "assets/js/trust.js",
+    "sha256": "ec570b4b39048ed9db62083a8f77dfbf41a7d791563ddd16de99b91d90776970",
+    "bytes": 799
+  },
+  {
+    "path": "collaboration.html",
+    "sha256": "c8a6d0ab7979cf0648c4ba00731d1426d5a275cd5328a90b299e2f6bb82f86dc",
+    "bytes": 18746
   },
   {
     "path": "contact.html",
@@ -285,14 +305,24 @@
     "bytes": 130
   },
   {
+    "path": "data/trust-config.json",
+    "sha256": "f9abe376669b77d86cf46a2b67edcdc1dbcc2db9fbd82965b8689ecfd91f244f",
+    "bytes": 361
+  },
+  {
     "path": "domaines.html",
     "sha256": "b46c3622d20035c5232576522422cf40455c7e2ff22ba5587aaa594832c2bbc9",
     "bytes": 3894
   },
   {
+    "path": "formation.html",
+    "sha256": "cb730774e44d9f8a96f5d670da54bcd9092f02135ca3015c9dcb940591d1fd65",
+    "bytes": 8215
+  },
+  {
     "path": "index.html",
-    "sha256": "a38250a24b390b7c20c6a4d050be37345d30b85c90a0f85b330a37e188452b84",
-    "bytes": 13716
+    "sha256": "587e852bb7b68b9e35ac13f9097d1d12a440f00065292481a1c58ae626b28335",
+    "bytes": 13801
   },
   {
     "path": "mediatheque-activites.html",
@@ -345,9 +375,14 @@
     "bytes": 9065
   },
   {
+    "path": "projet.html",
+    "sha256": "e981cf1df40a85da0610ea732717cf8fd804555de9b9f146664a0b0920a927be",
+    "bytes": 4597
+  },
+  {
     "path": "qualifier-un-besoin.html",
-    "sha256": "1078a6a028de101117d58ad0f5e36d750fb6c4d065993adef6bd39cba5ca47d6",
-    "bytes": 14050
+    "sha256": "853865eb6d883dcec600c3659b159d215ef45e1c1d744e8e18cfea777f942592",
+    "bytes": 14649
   },
   {
     "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
@@ -426,7 +461,7 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "16e7ebfd178b44ace4559f4404a2962bf2d0c1e37ef5ff189c5a52646e1ead44",
+    "sha256": "b1ace3956628c6e76c6ce798296209327db2c2af127d1aeccbc10644a5dab508",
     "bytes": 11716
   },
   {
@@ -441,8 +476,8 @@
   },
   {
     "path": "quality/scripts/check_preactivation.py",
-    "sha256": "5933a9e25b35beed363bc82a9f954619361f068ca3f247c2a0009704591943c0",
-    "bytes": 980
+    "sha256": "69b04f1c554d5e5164051f4ff0c711a2ba7c095b6810eb9030d6daf248381619",
+    "bytes": 1102
   },
   {
     "path": "quality/scripts/check_secrets.py",
@@ -456,8 +491,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "e08193adb5d8e1315d830336ec5336cef5d262dfe8fef3111796884bead76d37",
-    "bytes": 44862
+    "sha256": "b5410598a5669a41dc2d7563fcd3e44c990ab943503e41f881ded0cd7d389d4a",
+    "bytes": 48026
   },
   {
     "path": "quality/scripts/radar_check.py",
@@ -476,8 +511,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "fc1af817e00b5c5b17c2a9f5055687a419cf25071bc5db95221e38f27eb8eb50",
-    "bytes": 4741
+    "sha256": "d3c5218ee9f337366bb358c71315662704b267831fadb06c882377f45830a3ed",
+    "bytes": 4929
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -491,7 +526,7 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "0205b004e7029cb6908fab86f56bd9681a34bebe479fee91ca91e46f92e7f0cb",
+    "sha256": "b92cbcc066fc3d9d8387c48c7abf7065f4c6be59ab2bff62975cb5dcd980234e",
     "bytes": 4498
   },
   {
@@ -506,13 +541,13 @@
   },
   {
     "path": "serverless/bluewave-leads/README.md",
-    "sha256": "754e65622442262a726c369c23c62c6c33ac5e4882bf6248568cbeb9d0121940",
-    "bytes": 6721
+    "sha256": "a18dc18349d24d550920c31f8c846feecf2aa5f459616ce6906588f7d82033e5",
+    "bytes": 6849
   },
   {
     "path": "serverless/bluewave-leads/brevo-client.mjs",
-    "sha256": "5fa6a51085dc355e3440f55867f8a2b40a2296632276df7794feac34daae9801",
-    "bytes": 5287
+    "sha256": "93c13d5d8f5632c24195799f0e0f5a7cae11cbbf334f80b6c9637938672fb86a",
+    "bytes": 4985
   },
   {
     "path": "serverless/bluewave-leads/handler.mjs",
@@ -526,13 +561,18 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/handler.test.mjs",
-    "sha256": "161102d45905095328bdc7c71ca1450310585d433cad7bcb0731f988d628d637",
-    "bytes": 8048
+    "sha256": "9a94b241970392efa93262a8bf6722aa658c43b21564a81d33a9ed8215f6c86f",
+    "bytes": 8581
+  },
+  {
+    "path": "serverless/bluewave-leads/tests/schema.test.mjs",
+    "sha256": "9848a18925afd7f57a4c031e1099676e6b7f4134b64f72a6f86d0a1c0a4c0c16",
+    "bytes": 5661
   },
   {
     "path": "serverless/bluewave-leads/validation.mjs",
-    "sha256": "6862efe998d1e71ae793e12e280097716a921c00751ae4ee374c5a51b4de407d",
-    "bytes": 3774
+    "sha256": "8335f24a9c2e957268fefe94790b913491ad4c003073f71e48260cd94312ce02",
+    "bytes": 3866
   },
   {
     "path": "serverless/cloudflare/PRODUCTION.md",
@@ -561,13 +601,13 @@
   },
   {
     "path": "serverless/cloudflare/tests/native-worker.check.mjs",
-    "sha256": "6cc3c95969e0185edf696a1fe946e619122488cda2b1d743037efda8b357c094",
-    "bytes": 5818
+    "sha256": "90fc286856d506166100644155b712de57ecefd24c7d4590fb7f9cd7e5097f74",
+    "bytes": 5864
   },
   {
     "path": "serverless/cloudflare/tests/preactivation.test.mjs",
-    "sha256": "b3fbb24fe52da80194e6f191b34e7d68053156112b208ebc3a825e607e6e0bf1",
-    "bytes": 1305
+    "sha256": "352953a57128e1b8383db44393780fef3e1996e3617f69b9375563836955888f",
+    "bytes": 1895
   },
   {
     "path": "serverless/cloudflare/tests/production.test.mjs",
@@ -596,7 +636,7 @@
   },
   {
     "path": "solutions.html",
-    "sha256": "89667bd45053d30a9b00ba1b329401834c0a8d1269d13e81b8d6454fbb61afd6",
-    "bytes": 9328
+    "sha256": "ca854e29e981e3b2dfcffe1f4f39943231a2d2b9efa26a16a60928ae46d83e1f",
+    "bytes": 9324
   }
 ]

@@ -1,10 +1,10 @@
 // Restricted analytics vocabulary. No free text or identity data enters an event.
-export const EVENTS = Object.freeze(['page_view','qualifier_open','qualifier_start','qualifier_complete','solution_view','contact_email_click','lead_form_open','lead_submit_attempt','lead_submit_success','lead_submit_fallback_email','meeting_click']);
+export const EVENTS = Object.freeze(['page_view','qualifier_open','qualifier_start','qualifier_complete','solution_view','contact_email_click','lead_form_open','lead_form_start','lead_validation_error','lead_submit_attempt','lead_submit_success','lead_submit_fallback_email','meeting_click','journey_cta_click','newsletter_optin_request','offer_contact_transition']);
 export const OFFERS = Object.freeze(['diagnostic-strategique','vulnerabilite-cotiere','gouvernance-acteurs','structuration-projet','formation-capacites','note-strategique','atelier-cadrage']);
-export const PAGES = Object.freeze(['index','solutions','methode','preuves-demonstrateurs','mediatheque','mediatheque-activites','mediatheque-visualisations','actualites','a-propos','qualifier-un-besoin','contact','domaines','services','notes-demonstrateurs','mentions-legales','politique-confidentialite','404']);
+export const PAGES = Object.freeze(['index','solutions','methode','preuves-demonstrateurs','mediatheque','mediatheque-activites','mediatheque-visualisations','actualites','a-propos','qualifier-un-besoin','projet','collaboration','formation','contact','domaines','services','notes-demonstrateurs','mentions-legales','politique-confidentialite','404']);
 export const SOURCES = Object.freeze(['direct','referral','internal','linkedin','email','qr','event']);
 const JOURNEYS = ['projet','collaboration','formation','evenement'];
-const STATUSES = ['complete','success','not-configured','unavailable'];
+const STATUSES = ['complete','success','invalid','not-configured','unavailable'];
 export function sanitizeEvent(input,campaigns=[]) {
  const keys=['event_name','page','journey','offer','status','source','campaign'];
  if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(key=>!keys.includes(key))||!EVENTS.includes(input.event_name)||!PAGES.includes(input.page))return null;

@@ -88,11 +88,11 @@ test('newsletter false : seule la liste Leads est transmise', async () => {
   assert.equal('BW_CONSENT_VEILLE' in brevo.calls[0].body.attributes, false);
 });
 
-test('newsletter true : la liste Newsletter est ajoutée indépendamment', async () => {
+test('newsletter true : aucun ajout direct, même si un ancien drapeau serveur est activé', async () => {
   const brevo = mockBrevo();
-  await createLeadHandler({ environment: {...environment, NEWSLETTER_ENABLED: 'true'}, fetchImpl: brevo.fetchImpl, guard: createMemoryGuard() })(request({ ...validPayload, newsletter_consent: true }));
-  assert.deepEqual(brevo.calls[0].body.listIds, [11, 22]);
-  assert.equal(brevo.calls[0].body.attributes.BW_CONSENT_VEILLE, true);
+  const response = await createLeadHandler({ environment: {...environment, NEWSLETTER_ENABLED: 'true'}, fetchImpl: brevo.fetchImpl, guard: createMemoryGuard() })(request({ ...validPayload, newsletter_consent: true }));
+  assert.equal(response.status, 400);
+  assert.equal(brevo.calls.length, 0);
 });
 
 test('la liste newsletter n’est pas nécessaire lorsque le canal reste fermé', async () => {
@@ -192,4 +192,14 @@ test('limite de débit : les requêtes excédentaires sont rejetées', async () 
   const changed = { ...validPayload, need: 'Une autre demande littorale.' };
   assert.equal((await handle(request(changed))).status, 429);
   assert.equal(brevo.calls.length, 3);
+});
+
+test('hook captcha préservé : un jeton refusé bloque avant Brevo', async () => {
+  const brevo = mockBrevo();
+  let checked = false;
+  const captchaVerifier = async (token) => { checked = true; assert.equal(token, 'future-token'); return false; };
+  const response = await createLeadHandler({environment, fetchImpl:brevo.fetchImpl, guard:createMemoryGuard(), captchaVerifier})(request({...validPayload, captcha_token:'future-token'}));
+  assert.equal(response.status, 403);
+  assert.equal(checked, true);
+  assert.equal(brevo.calls.length, 0);
 });

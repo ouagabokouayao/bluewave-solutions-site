@@ -1,95 +1,85 @@
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import {LIMITS, validateLead} from '../../assets/js/lead-schema.js';
 
-const LIMITS = Object.freeze({
-  firstname: 80,
-  lastname: 80,
-  email: 254,
-  organisation: 160,
-  type: 80,
-  geography: 80,
-  theme: 100,
-  need: 2000,
-  deadline: 80,
-  contact_preference: 40,
-  source: 40,
-  honeypot: 200,
-  captcha_token: 2048
-});
-
-const REQUIRED_STRING_FIELDS = ['firstname', 'email', 'type', 'geography', 'need', 'contact_preference'];
-const OPTIONAL_STRING_FIELDS = ['lastname', 'organisation', 'deadline'];
-const ALLOWED_FIELDS = new Set([
-  ...REQUIRED_STRING_FIELDS,
-  ...OPTIONAL_STRING_FIELDS,
-  'themes', 'source', 'newsletter_consent', 'privacy_acknowledged',
-  'website', 'captcha_token'
+const LEGACY_FIELDS = new Set([
+  'firstname', 'lastname', 'email', 'organisation', 'type', 'geography', 'themes',
+  'need', 'deadline', 'contact_preference', 'source', 'newsletter_consent',
+  'privacy_acknowledged', 'website', 'captcha_token'
 ]);
-const ALLOWED_VALUES = Object.freeze({
-  type: new Set(['projet-mission', 'formation', 'collaboration', 'partenariat', 'recherche-expertise', 'presse-intervention', 'evenement-intervention', 'autre']),
-  geography: new Set(['france-mediterranee', 'cote-divoire', 'afrique-ouest', 'autre']),
-  theme: new Set(['littoral-adaptation', 'gouvernance-maritime', 'environnement-marin', 'economie-bleue', 'ports-maritime', 'droit-securite']),
-  deadline: new Set(['1m', '1-3m', '3-6m', '6-12m', 'plus', 'nondef']),
-  contact_preference: new Set(['email', 'telephone', 'visioconference'])
+
+const territoryMap = Object.freeze({
+  'france-mediterranee': 'france-mediterranee',
+  'cote-divoire': 'cote-divoire',
+  'afrique-ouest': 'afrique-ouest',
+  autre: 'autre'
+});
+const categoryMap = Object.freeze({
+  'littoral-adaptation': 'vulnerabilite',
+  'gouvernance-maritime': 'gouvernance',
+  'environnement-marin': 'sfn',
+  'economie-bleue': 'projet',
+  'ports-maritime': 'strategie',
+  'droit-securite': 'strategie'
 });
 
-function cleanString(value, limit) {
-  if (typeof value !== 'string') return null;
-  const clean = value.trim().replace(/\s+/g, ' ');
-  if (clean.length > limit) return null;
-  return clean;
+function legacyToCanonical(input) {
+  if (Object.keys(input).some(field => !LEGACY_FIELDS.has(field))) return null;
+  const leadType = input.type;
+  const journey = leadType === 'formation' ? 'formation'
+    : leadType === 'collaboration' ? 'collaboration'
+      : leadType === 'evenement-intervention' ? 'evenement' : 'projet';
+  const theme = Array.isArray(input.themes) ? input.themes[0] : '';
+  return {
+    journey,
+    source_offer: '',
+    recommended_offer: '',
+    lead_type: leadType,
+    organisation_type: 'autre',
+    territory: territoryMap[input.geography] || 'autre',
+    need_category: categoryMap[theme] || (journey === 'formation' ? 'formation' : journey === 'collaboration' ? 'collaboration' : 'indetermine'),
+    stage: journey === 'formation' ? 'formation' : 'a-preciser',
+    data_availability: 'incertain',
+    desired_outcome: journey === 'formation' ? 'former' : journey === 'collaboration' ? 'collaborer' : 'perimetre',
+    firstname: input.firstname,
+    lastname: input.lastname || 'À préciser',
+    email: input.email,
+    organisation: input.organisation || (journey === 'projet' ? 'À préciser' : ''),
+    contact_preference: input.contact_preference || 'email',
+    deadline: input.deadline || 'nondef',
+    need: input.need,
+    newsletter_optin_request: input.newsletter_consent === true,
+    privacy_acknowledged: input.privacy_acknowledged,
+    website: input.website || '',
+    captcha_token: input.captcha_token || '',
+    ...(journey === 'formation' ? {
+      audience: 'À préciser', training_subject: input.need, learning_objectives: input.need,
+      training_format: 'distance', period: input.deadline || 'À préciser'
+    } : {})
+  };
+}
+
+function downstreamCompatibility(value) {
+  const domains = value.domains?.length ? value.domains
+    : value.expertise_domains?.length ? value.expertise_domains
+      : [({vulnerabilite:'littoral-adaptation',strategie:'gouvernance-maritime',gouvernance:'gouvernance-maritime',sfn:'environnement-marin',projet:'economie-bleue',planification:'littoral-adaptation',formation:'formation-recherche',collaboration:'gouvernance-maritime',expertise:'formation-recherche',multiple:'gouvernance-maritime',indetermine:'gouvernance-maritime'})[value.need_category] || 'gouvernance-maritime'];
+  return {
+    ...value,
+    type: value.lead_type,
+    geography: value.territory,
+    themes: domains,
+    need: value.need || value.collaboration_expectation || value.motivation || value.learning_objectives || value.context,
+    deadline: value.deadline || value.period || 'nondef',
+    contact_preference: value.contact_preference || 'email',
+    source: 'SITE_FORMS',
+    newsletter_consent: false
+  };
 }
 
 export function validateLeadPayload(input) {
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return { ok: false, errors: ['payload'] };
-  }
-
-  const errors = [];
-  const value = {};
-  if (Object.keys(input).some(field => !ALLOWED_FIELDS.has(field))) errors.push('payload');
-  for (const field of REQUIRED_STRING_FIELDS) {
-    const clean = cleanString(input[field], LIMITS[field]);
-    if (!clean) errors.push(field);
-    else value[field] = clean;
-  }
-  for (const field of OPTIONAL_STRING_FIELDS) {
-    const clean = cleanString(input[field] ?? '', LIMITS[field]);
-    if (clean === null) errors.push(field);
-    else value[field] = clean;
-  }
-
-  const email = cleanString(input.email, LIMITS.email);
-  if (email && EMAIL_PATTERN.test(email)) value.email = email.toLowerCase();
-  else if (!errors.includes('email')) errors.push('email');
-
-  for (const field of ['type', 'geography', 'contact_preference']) {
-    if (value[field] && !ALLOWED_VALUES[field].has(value[field])) errors.push(field);
-  }
-  if (value.deadline && !ALLOWED_VALUES.deadline.has(value.deadline)) errors.push('deadline');
-
-  if (!Array.isArray(input.themes) || input.themes.length < 1 || input.themes.length > 5) {
-    errors.push('themes');
-  } else {
-    value.themes = input.themes.map(theme => cleanString(theme, LIMITS.theme));
-    if (value.themes.some(theme => !theme || !ALLOWED_VALUES.theme.has(theme))) errors.push('themes');
-    else value.themes = [...new Set(value.themes)];
-  }
-
-  if (input.source !== 'SITE_QUALIFIER') errors.push('source');
-  else value.source = input.source;
-  if (typeof input.newsletter_consent !== 'boolean') errors.push('newsletter_consent');
-  else value.newsletter_consent = input.newsletter_consent;
-  if (input.privacy_acknowledged !== true) errors.push('privacy_acknowledged');
-  else value.privacy_acknowledged = true;
-
-  const website = cleanString(input.website ?? '', LIMITS.honeypot);
-  if (website === null) errors.push('website');
-  value.website = website ?? '';
-  const captchaToken = cleanString(input.captcha_token ?? '', LIMITS.captcha_token);
-  if (captchaToken === null) errors.push('captcha_token');
-  value.captcha_token = captchaToken ?? '';
-
-  return errors.length ? { ok: false, errors: [...new Set(errors)] } : { ok: true, value };
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return {ok: false, errors: ['payload']};
+  const candidate = 'lead_type' in input ? input : legacyToCanonical(input);
+  if (!candidate) return {ok: false, errors: ['payload']};
+  const result = validateLead(candidate);
+  return result.ok ? {ok: true, value: downstreamCompatibility(result.value)} : result;
 }
 
-export { LIMITS };
+export {LIMITS};
