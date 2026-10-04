@@ -66,8 +66,8 @@
   },
   {
     "path": "assets/css/style.css",
-    "sha256": "433b108e7d18d95bd039c6e9664a5549acae41f833480679911c834e26c8e573",
-    "bytes": 28975
+    "sha256": "3158ad0a48078005209260f8e05ab217431ab99ebe72eead6974c37cec56802a",
+    "bytes": 29795
   },
   {
     "path": "assets/data/activites-bluewave.json",
@@ -266,8 +266,8 @@
   },
   {
     "path": "collaboration.html",
-    "sha256": "c8a6d0ab7979cf0648c4ba00731d1426d5a275cd5328a90b299e2f6bb82f86dc",
-    "bytes": 18746
+    "sha256": "83ba6f3458f8773e69490cd0941c50b22f072ca26d0f55fcb444e9042f7b6660",
+    "bytes": 18896
   },
   {
     "path": "contact.html",
@@ -316,8 +316,8 @@
   },
   {
     "path": "formation.html",
-    "sha256": "cb730774e44d9f8a96f5d670da54bcd9092f02135ca3015c9dcb940591d1fd65",
-    "bytes": 8215
+    "sha256": "09c3c9701c9836c9eaa0b6095e659d737a3cfe9f68ddd06518545b431ddf199a",
+    "bytes": 8227
   },
   {
     "path": "index.html",
@@ -381,8 +381,8 @@
   },
   {
     "path": "qualifier-un-besoin.html",
-    "sha256": "d012e483da31c67cae00d8ad21c823c0f1af934eddafd8d1b10d89f5efd9519d",
-    "bytes": 14160
+    "sha256": "94e03f44b599276c1181033f8310e516d3731283fc73c8eca2e00059c9e5a77c",
+    "bytes": 14184
   },
   {
     "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
@@ -491,8 +491,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "ce3bef1d5de9f71ddb118e2cb474e05c0a6d683370aab84784780ea960ae56ef",
-    "bytes": 48681
+    "sha256": "4f089a64a29748bd135cd9601fbfd14a0dfab45904c341a79e3b10e4acc9a448",
+    "bytes": 49537
   },
   {
     "path": "quality/scripts/radar_check.py",
@@ -566,8 +566,8 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/schema.test.mjs",
-    "sha256": "8d1b1c898ca431a13aef0833e36ef3a2c4b22c683551a897379983a3d25b82d6",
-    "bytes": 7340
+    "sha256": "d19a63c445e849dd52ba44db100d8248f66411435b18fab6082966c5a7412ac7",
+    "bytes": 7811
   },
   {
     "path": "serverless/bluewave-leads/validation.mjs",

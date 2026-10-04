@@ -291,6 +291,16 @@ def main():
         errors.append('validation serveur: schéma partagé non importé')
     if 'data-lead-type="collaboration-organisation"' not in collaboration or 'data-lead-type="expertise-offer"' not in collaboration:
         errors.append('collaboration.html: bifurcation Organisation / Expertise absente')
+    optional_expertise=re.search(r'<details class="optional-details">([\s\S]*?)</details>', collaboration)
+    if optional_expertise is None:
+        errors.append('collaboration.html: section facultative Expertise absente')
+    else:
+        optional_markup=optional_expertise.group(1)
+        if '<summary>Informations complémentaires facultatives</summary>' not in optional_markup:
+            errors.append('collaboration.html: libellé de la section facultative absent')
+        for field in ['phone','profile_url','website_url','orcid','portfolio','mobility','rate_range','rc_pro']:
+            if f'name="{field}"' not in optional_markup:errors.append(f'collaboration.html: champ facultatif hors regroupement {field}')
+        if re.search(r'\brequired\b', optional_markup):errors.append('collaboration.html: champ facultatif marqué obligatoire')
     if 'MOBILISABLE' in schema:errors.append('lead-schema.js: statut MOBILISABLE ajouté prématurément')
     for value in ['oui','non','non-applicable','en-cours']:
         if f'value="{value}"' not in collaboration:errors.append(f'collaboration.html: valeur RC Pro absente {value}')

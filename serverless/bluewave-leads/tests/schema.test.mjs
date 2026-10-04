@@ -97,6 +97,12 @@ test('Front : formulaires distincts, choix neutres et reset sans PII persistante
   assert.match(project, /qualifier-un-besoin\.html\?parcours=projet/);
   assert.match(collaboration, /data-lead-type="collaboration-organisation"/);
   assert.match(collaboration, /data-lead-type="expertise-offer"/);
+  const optionalExpertise = collaboration.match(/<details class="optional-details">[\s\S]*?<\/details>/)?.[0] || '';
+  assert.match(optionalExpertise, /<summary>Informations complémentaires facultatives<\/summary>/);
+  for (const field of ['phone', 'profile_url', 'website_url', 'orcid', 'portfolio', 'mobility', 'rate_range', 'rc_pro']) {
+    assert.match(optionalExpertise, new RegExp(`name="${field}"`));
+  }
+  assert.doesNotMatch(optionalExpertise, /\brequired\b/);
   assert.match(formation, /data-lead-type="formation"/);
   assert.equal((qualifier.match(/<option value="">Sélectionner…<\/option>/g) || []).length, 7);
   const projectLeadForm = qualifier.match(/<form id="lead-form"[\s\S]*?<\/form>/)?.[0] || '';
