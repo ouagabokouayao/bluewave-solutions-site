@@ -1,0 +1,84 @@
+{
+  "objet": "Verrou de publication des mentions de confidentialité générées par quality/scripts/build_production_dist.py.",
+  "regle": "Tant que approved vaut false, aucun artefact production indexable ne peut être construit sans --privacy-simulation. Une simulation produit un artefact de test, jamais un artefact publiable.",
+  "approved": false,
+  "approved_by": "",
+  "approved_at": "",
+  "statements_version": "p1a-2026-10-04",
+  "note": "Ce fichier n'est pas un avis juridique. Il sépare ce que le code prouve de ce qui reste à faire valider, et empêche une publication tant que la seconde catégorie n'est pas tranchée.",
+  "faits_techniques_prouves": [
+    {
+      "rubrique": "Données concernées",
+      "fait": "La liste des champs collectés est dérivable du schéma P0 (assets/js/lead-schema.js) et du schéma de stockage (serverless/cloudflare/leads-schema.sql).",
+      "preuve": "ALLOWED_FIELDS et les colonnes de lead_records."
+    },
+    {
+      "rubrique": "Données concernées",
+      "fait": "Aucune adresse IP brute n'est conservée par BlueWave : seule une empreinte HMAC transite par la garde anti-abus, en mémoire d'objet durable, sur des fenêtres d'environ vingt minutes.",
+      "preuve": "serverless/cloudflare/guard.mjs, tests d'absence d'IP en base."
+    },
+    {
+      "rubrique": "Cookies et traceurs",
+      "fait": "Les événements de conversion sont bornés à un vocabulaire fermé et agrégés par jour, sans identité ni texte libre.",
+      "preuve": "assets/js/analytics.js (sanitizeEvent) et serverless/cloudflare/schema.sql."
+    },
+    {
+      "rubrique": "Cookies et traceurs",
+      "fait": "Les agrégats de conversion sont purgés après treize mois glissants.",
+      "preuve": "worker.scheduled et son test dans production.test.mjs."
+    },
+    {
+      "rubrique": "Hébergement et transferts",
+      "fait": "Le site public est servi par Cloudflare Workers et Static Assets.",
+      "preuve": "serverless/cloudflare/wrangler.production.jsonc."
+    },
+    {
+      "rubrique": "Comment votre message est transmis",
+      "fait": "La demande validée est enregistrée dans LEADS_DB avant tout appel à Brevo ; un échec de diffusion est consigné et n'efface pas la demande.",
+      "preuve": "serverless/bluewave-leads/handler.mjs et tests d'échec partiel."
+    },
+    {
+      "rubrique": "Lettre de veille",
+      "fait": "Aucune demande de contact ne produit d'inscription : le canal est fermé et le code refuse l'opt-in forgé.",
+      "preuve": "serverless/bluewave-leads/newsletter.mjs et le rejet newsletter du handler."
+    }
+  ],
+  "affirmations_a_valider": [
+    {
+      "rubrique": "Bases juridiques",
+      "affirmation": "Qualification en mesures précontractuelles, intérêt légitime documenté et consentement distinct pour la veille.",
+      "pourquoi": "Qualification juridique. Le code ne la démontre pas et ne peut pas la démontrer.",
+      "statut": "A_VALIDER"
+    },
+    {
+      "rubrique": "Durées de conservation",
+      "affirmation": "Demandes sans suite conservées jusqu'à trois ans après le dernier contact.",
+      "pourquoi": "Durée non arrêtée. LEAD_RETENTION_DAYS reste vide côté configuration : aucune purge n'est programmée tant que la durée n'est pas validée.",
+      "statut": "A_VALIDER"
+    },
+    {
+      "rubrique": "Destinataires",
+      "affirmation": "« Le responsable BlueWave et ses personnes habilitées ».",
+      "pourquoi": "Suppose une organisation interne et des habilitations qui ne sont pas établies dans le dépôt.",
+      "statut": "A_VALIDER"
+    },
+    {
+      "rubrique": "Hébergement et transferts",
+      "affirmation": "Portée des traitements et transferts hors Union européenne par Cloudflare et Brevo.",
+      "pourquoi": "Dépend des contrats et paramètres réels souscrits auprès de chaque prestataire.",
+      "statut": "A_VALIDER"
+    },
+    {
+      "rubrique": "Cookies et traceurs",
+      "affirmation": "« La base juridique et les conditions de dispense de consentement pour la mesure d'audience sont documentées par le responsable ».",
+      "pourquoi": "Affirme l'existence d'une documentation que le dépôt ne contient pas.",
+      "statut": "A_VALIDER"
+    },
+    {
+      "rubrique": "Évolution",
+      "affirmation": "Suppression effective des données chez les prestataires sur demande.",
+      "pourquoi": "Engagement opérationnel qui dépend des procédures réelles, non d'un code.",
+      "statut": "A_VALIDER"
+    }
+  ]
+}

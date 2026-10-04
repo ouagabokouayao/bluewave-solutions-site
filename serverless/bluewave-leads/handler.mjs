@@ -1,4 +1,6 @@
 import { BrevoClient, validateEnvironment } from './brevo-client.mjs';
+import { buildLeadRecord, markDelivery, storeLead } from './lead-store.mjs';
+import { createLogger, newCorrelationId } from './observability.mjs';
 import { createMemoryGuard, requestClientKey, submissionFingerprint } from './security.mjs';
 import { validateLeadPayload } from './validation.mjs';
 
@@ -35,7 +37,12 @@ export function createLeadHandler({
   environment = globalThis.process?.env ?? {},
   fetchImpl = globalThis.fetch,
   guard = defaultGuard,
-  captchaVerifier = null
+  captchaVerifier = null,
+  // Base métier. Absente, le pipeline garde le comportement antérieur :
+  // Brevo fait foi, et son échec est une erreur.
+  leadStore = null,
+  logger = createLogger(),
+  now = () => new Date()
 } = {}) {
   return async function handleLead(request) {
     let allowedOrigin;
@@ -86,7 +93,11 @@ export function createLeadHandler({
       return responseJson(400, { success: false, message: ERROR_MESSAGE }, origin);
     }
     const validated = validateLeadPayload(input);
-    if (!validated.ok) return responseJson(400, { success: false, message: ERROR_MESSAGE }, origin);
+    if (!validated.ok) {
+      // Seul le nom du champ fautif est journalisé, jamais sa valeur.
+      logger.log('lead_rejected', { reason: 'validation' });
+      return responseJson(400, { success: false, message: ERROR_MESSAGE }, origin);
+    }
     const lead = validated.value;
 
     // A forged client cannot opt in to a channel disabled in this environment.
@@ -102,15 +113,90 @@ export function createLeadHandler({
       return responseJson(409, { success: false, message: ERROR_MESSAGE }, origin);
     }
 
+    const correlationId = newCorrelationId();
+
+    // Sans base métier, le comportement reste celui du P0 : la demande ne
+    // survit pas à une panne Brevo, et l'échec est signalé comme tel.
+    if (!leadStore) {
+      try {
+        const brevo = new BrevoClient({ environment, fetchImpl });
+        await brevo.upsertContact(lead);
+        await brevo.sendAcknowledgement(lead);
+        await brevo.sendInternalNotification(lead);
+        return responseJson(201, { success: true, message: SUCCESS_MESSAGE }, origin);
+      } catch {
+        logger.log('brevo_contact_failed', { correlation_id: correlationId, reason: 'no_store', journey: lead.journey });
+        return responseJson(502, { success: false, message: ERROR_MESSAGE }, origin);
+      }
+    }
+
+    // La demande validée est enregistrée AVANT toute dépendance externe.
+    let record;
+    try {
+      record = await buildLeadRecord(lead, { now: now(), correlationId });
+      const stored = await storeLead(leadStore, record);
+      if (!stored.stored) {
+        // Même demande, même jour : déjà enregistrée et déjà accusée.
+        // On renvoie un succès sans réexpédier quoi que ce soit.
+        logger.log('lead_duplicate', { correlation_id: correlationId, journey: lead.journey, lead_type: lead.lead_type });
+        return responseJson(200, { success: true, message: SUCCESS_MESSAGE }, origin);
+      }
+      logger.log('lead_stored', { correlation_id: correlationId, journey: lead.journey, lead_type: lead.lead_type });
+    } catch {
+      // Le stockage est la garantie de non-perte : s'il échoue, mieux vaut
+      // inviter à réessayer que d'expédier un accusé sans trace.
+      logger.log('lead_rejected', { correlation_id: correlationId, reason: 'storage_failed' });
+      return responseJson(503, { success: false, message: ERROR_MESSAGE }, origin);
+    }
+
+    const steps = { brevo_contact_status: 'PENDING', ack_status: 'PENDING', notification_status: 'PENDING' };
+    let firstFailure = '';
     try {
       const brevo = new BrevoClient({ environment, fetchImpl });
-      await brevo.upsertContact(lead);
-      await brevo.sendAcknowledgement(lead);
-      await brevo.sendInternalNotification(lead);
-      return responseJson(201, { success: true, message: SUCCESS_MESSAGE }, origin);
+      try {
+        await brevo.upsertContact(lead);
+        steps.brevo_contact_status = 'OK';
+      } catch {
+        steps.brevo_contact_status = 'FAILED';
+        firstFailure = firstFailure || 'brevo_contact';
+        logger.log('brevo_contact_failed', { correlation_id: correlationId, journey: lead.journey });
+      }
+      try {
+        await brevo.sendAcknowledgement(lead);
+        steps.ack_status = 'OK';
+      } catch {
+        steps.ack_status = 'FAILED';
+        firstFailure = firstFailure || 'ack';
+        logger.log('ack_failed', { correlation_id: correlationId, journey: lead.journey });
+      }
+      try {
+        await brevo.sendInternalNotification(lead);
+        steps.notification_status = 'OK';
+      } catch {
+        steps.notification_status = 'FAILED';
+        firstFailure = firstFailure || 'internal_notification';
+        logger.log('internal_notification_failed', { correlation_id: correlationId, journey: lead.journey });
+      }
     } catch {
-      return responseJson(502, { success: false, message: ERROR_MESSAGE }, origin);
+      // Client Brevo inconstructible : les trois étapes restent à reprendre.
+      steps.brevo_contact_status = 'FAILED';
+      steps.ack_status = 'FAILED';
+      steps.notification_status = 'FAILED';
+      firstFailure = 'brevo_client';
+      logger.log('brevo_contact_failed', { correlation_id: correlationId, reason: 'client_unavailable' });
     }
+
+    const delivered = Object.values(steps).every(status => status === 'OK');
+    const deliveryStatus = delivered ? 'DELIVERED'
+      : Object.values(steps).some(status => status === 'OK') ? 'PARTIAL_FAILURE' : 'FAILED';
+    // Le statut est consigné pour que la reprise sache exactement quoi rejouer.
+    try {
+      await markDelivery(leadStore, record.id, { ...steps, delivery_status: deliveryStatus, last_error_code: firstFailure, now: now() });
+    } catch { /* la ligne reste lisible même si la mise à jour échoue */ }
+
+    // La demande est enregistrée : elle n'est pas perdue, donc la réponse est
+    // un succès même si la diffusion reste à reprendre.
+    return responseJson(201, { success: true, message: SUCCESS_MESSAGE }, origin);
   };
 }
 

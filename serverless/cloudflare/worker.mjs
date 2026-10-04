@@ -1,5 +1,7 @@
 import {createLeadHandler} from '../bluewave-leads/handler.mjs';
+import {purgeExpiredLeads} from '../bluewave-leads/lead-store.mjs';
 import {createDistributedGuard, LeadGuard} from './guard.mjs';
+import {createTurnstileVerifier} from './turnstile.mjs';
 import {sanitizeEvent} from '../../assets/js/analytics.js';
 export {LeadGuard};
 
@@ -46,13 +48,19 @@ async function conversion(request, env, url) {
 
 export default {
  async scheduled(_event, env) {
-  if (!env.CONVERSION_DB) return;
   const now = new Date();
-  const year = now.getUTCFullYear();
-  const month = now.getUTCMonth() - 13;
-  const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-  const cutoff = new Date(Date.UTC(year, month, Math.min(now.getUTCDate(), lastDay))).toISOString().slice(0,10);
-  await env.CONVERSION_DB.prepare('DELETE FROM conversion_counts WHERE day < ?').bind(cutoff).run();
+  if (env.CONVERSION_DB) {
+   const year = now.getUTCFullYear();
+   const month = now.getUTCMonth() - 13;
+   const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+   const cutoff = new Date(Date.UTC(year, month, Math.min(now.getUTCDate(), lastDay))).toISOString().slice(0,10);
+   await env.CONVERSION_DB.prepare('DELETE FROM conversion_counts WHERE day < ?').bind(cutoff).run();
+  }
+  // Purge des demandes : uniquement si une durée est explicitement configurée.
+  // Aucune valeur par défaut n'est choisie ici.
+  if (env.LEADS_DB && env.LEAD_RETENTION_DAYS) {
+   await purgeExpiredLeads(env.LEADS_DB, env.LEAD_RETENTION_DAYS, now);
+  }
  },
  async fetch(request, env) {
   const url=new URL(request.url);
@@ -60,10 +68,18 @@ export default {
    if (env.LEADS_ENABLED!=='true') return off();
    try {
     const guard=createDistributedGuard(env,request);
-    return await createLeadHandler({environment:env,guard})(request);
+    const captchaVerifier=createTurnstileVerifier(env);
+    return await createLeadHandler({environment:env,guard,captchaVerifier,leadStore:env.LEADS_DB ?? null})(request);
    } catch {return off();}
   }
   if (url.pathname==='/api/events') return conversion(request,env,url);
+  // Diagnostic d'exploitation : disponibilité seule. Ni binding, ni
+  // identifiant de base, ni secret, ni version n'y transparaissent.
+  if (url.pathname==='/api/health') {
+   if (request.method!=='GET'&&request.method!=='HEAD') return new Response(null,{status:405,headers:noStore});
+   const ready=Boolean(env.ASSETS)&&(env.LEADS_ENABLED!=='true'||Boolean(env.LEADS_DB))&&(env.EVENTS_ENABLED!=='true'||Boolean(env.CONVERSION_DB));
+   return Response.json({status:ready?'available':'unavailable'},{status:ready?200:503,headers:noStore});
+  }
   if (url.pathname.startsWith('/api/')) return new Response(null,{status:404,headers:noStore});
   if (url.pathname.startsWith('/bluewave-solutions-site/')) {
    const destination=new URL(url.href);

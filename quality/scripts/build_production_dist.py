@@ -12,8 +12,31 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'dist'
 OUT = ROOT / 'dist-production'
+APPROVAL = ROOT / 'quality/privacy-approval.json'
 ORIGIN = 'https://www.bluewavesolutions.fr'
 OLD = 'https://ouagabokouayao.github.io/bluewave-solutions-site/'
+
+
+def privacy_gate(indexable, simulation):
+    """Interdit un artefact publiable tant que les mentions ne sont pas validées.
+
+    Le profil non indexable et les simulations restent libres : la CI doit
+    pouvoir exercer le profil complet. Seul un artefact destiné à être indexé
+    exige une validation explicite des affirmations juridiques recensées dans
+    quality/privacy-approval.json.
+    """
+    if not indexable or simulation:
+        return
+    if not APPROVAL.is_file():
+        raise ValueError('Verrou confidentialité : quality/privacy-approval.json absent')
+    approval = json.loads(APPROVAL.read_text(encoding='utf-8'))
+    pending = [item['rubrique'] for item in approval.get('affirmations_a_valider', [])
+               if item.get('statut') != 'VALIDE']
+    if approval.get('approved') is not True or pending:
+        raise ValueError(
+            'Verrou confidentialité : artefact indexable refusé. '
+            f'Affirmations non validées : {", ".join(sorted(set(pending))) or "approbation absente"}. '
+            'Utiliser --privacy-simulation pour un artefact de test.')
 
 
 def article(document, heading, body):
@@ -95,7 +118,8 @@ def privacy(document, leads, events, traffic):
     return document
 
 
-def build(indexable=False, leads=False, events=False, token=None, campaigns=()):
+def build(indexable=False, leads=False, events=False, token=None, campaigns=(), privacy_simulation=False):
+    privacy_gate(indexable, privacy_simulation)
     if not SOURCE.is_dir():
         raise ValueError('Construire et vérifier dist/ avant le profil production')
     if token is not None and not re.fullmatch(r'[a-f0-9]{32}', token):
@@ -160,6 +184,12 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=()):
     reports = ROOT / 'quality/reports'
     reports.mkdir(parents=True, exist_ok=True)
     (reports / 'production-dist-manifest.json').write_text(json.dumps(entries,ensure_ascii=False,indent=2) + '\n')
+    # Un artefact de simulation est marqué comme tel : il sert aux contrôles,
+    # jamais à une publication.
+    (reports / 'production-build-mode.json').write_text(json.dumps({
+        'indexable': bool(indexable), 'privacy_simulation': bool(privacy_simulation),
+        'publishable': bool(indexable) and not privacy_simulation
+    }, ensure_ascii=False) + '\n')
     return len(entries) + 1
 
 
@@ -170,5 +200,7 @@ if __name__ == '__main__':
     parser.add_argument('--events', action='store_true')
     parser.add_argument('--traffic-token')
     parser.add_argument('--campaign', action='append', default=[])
+    parser.add_argument('--privacy-simulation', action='store_true',
+        help='Artefact de test : contourne le verrou de validation des mentions, sans produire un artefact publiable.')
     opts = parser.parse_args()
-    print(f'PASS: {build(opts.indexable,opts.leads,opts.events,opts.traffic_token,opts.campaign)} fichiers de production dérivés')
+    print(f'PASS: {build(opts.indexable,opts.leads,opts.events,opts.traffic_token,opts.campaign,opts.privacy_simulation)} fichiers de production dérivés')

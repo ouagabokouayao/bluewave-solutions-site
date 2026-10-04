@@ -16,10 +16,12 @@
     "LEADS_ENABLED": "false",
     "EVENTS_ENABLED": "false",
     "NEWSLETTER_ENABLED": "false",
+    "TURNSTILE_ENABLED": "false",
     "PUBLIC_INDEXABLE": "false",
     "ALLOWED_ORIGIN": "https://www.bluewavesolutions.fr",
     "BLUEWAVE_SITE_URL": "https://www.bluewavesolutions.fr",
-    "ALLOWED_CAMPAIGNS": ""
+    "ALLOWED_CAMPAIGNS": "",
+    "LEAD_RETENTION_DAYS": ""
   },
   "durable_objects": {
     "bindings": [{"name":"LEAD_GUARD","class_name":"LeadGuard"}]

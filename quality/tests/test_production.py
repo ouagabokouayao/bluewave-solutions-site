@@ -38,7 +38,7 @@ class ProductionProfile(unittest.TestCase):
         self.assertIn('noindex, nofollow', (out / 'index.html').read_text())
 
     def test_open_profile_is_canonical_and_minimal(self):
-        module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'])
+        module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'], privacy_simulation=True)
         out = module.OUT
         self.assertEqual(len(list(out.glob('*.html'))), 20)
         for page in out.glob('*.html'):
@@ -64,18 +64,47 @@ class ProductionProfile(unittest.TestCase):
             self.assertEqual(hashlib.sha256((out / entry['path']).read_bytes()).hexdigest(), entry['sha256'])
 
     def test_config_requires_real_d1_binding_and_route_is_explicit(self):
+        real = '11111111-1111-1111-1111-111111111111'
+        leads = '22222222-2222-2222-2222-222222222222'
         with self.assertRaises(ValueError):
-            config.render('00000000-0000-0000-0000-000000000000')
-        target = config.render('11111111-1111-1111-1111-111111111111')
+            config.render('00000000-0000-0000-0000-000000000000', leads)
+        with self.assertRaises(ValueError):
+            config.render(real, '00000000-0000-0000-0000-000000000000')
+        # Les deux bases ne peuvent pas être la même : analytics et demandes
+        # ne se mélangent pas.
+        with self.assertRaises(ValueError):
+            config.render(real, real)
+        with self.assertRaises(TypeError):
+            config.render(real)
+        target = config.render(real, leads)
         closed = json.loads(target.read_text())
         self.assertFalse(closed['workers_dev'])
         self.assertNotIn('routes', closed)
         self.assertEqual(closed['vars']['LEADS_ENABLED'], 'false')
-        config.render('11111111-1111-1111-1111-111111111111',indexable=True,leads=True,events=True,route=True)
+        self.assertEqual(closed['vars']['TURNSTILE_ENABLED'], 'false')
+        self.assertEqual(closed['vars']['LEAD_RETENTION_DAYS'], '')
+        bindings = {entry['binding']: entry['database_id'] for entry in closed['d1_databases']}
+        self.assertEqual(bindings['CONVERSION_DB'], real)
+        self.assertEqual(bindings['LEADS_DB'], leads)
+        config.render(real, leads, indexable=True, leads=True, events=True, route=True, retention_days=30)
         opened = json.loads(target.read_text())
         self.assertEqual(opened['routes'][0]['pattern'], 'www.bluewavesolutions.fr')
-        self.assertEqual(opened['d1_databases'][0]['binding'], 'CONVERSION_DB')
         self.assertEqual(opened['vars']['NEWSLETTER_ENABLED'], 'false')
+        self.assertEqual(opened['vars']['LEAD_RETENTION_DAYS'], '30')
+
+    def test_privacy_gate_blocks_publishable_artifact(self):
+        approval = json.loads((ROOT / 'quality/privacy-approval.json').read_text(encoding='utf-8'))
+        self.assertFalse(approval['approved'])
+        self.assertTrue(approval['affirmations_a_valider'])
+        # Un artefact indexable non simulé est refusé tant que les mentions ne
+        # sont pas validées.
+        with self.assertRaises(ValueError):
+            module.build(indexable=True, leads=True, events=True)
+        # Le profil fermé et la simulation restent constructibles.
+        module.build()
+        module.build(indexable=True, leads=True, events=True, privacy_simulation=True)
+        mode = json.loads((ROOT / 'quality/reports/production-build-mode.json').read_text())
+        self.assertFalse(mode['publishable'])
 
 if __name__ == '__main__':
     unittest.main()

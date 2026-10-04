@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
-  "name": "bluewave-site-preview",
+  "name": "bluewave-site-preproduction",
   "main": "./worker.mjs",
   "compatibility_date": "2026-08-06",
   "workers_dev": false,
@@ -16,7 +16,10 @@
     "LEADS_ENABLED": "false",
     "EVENTS_ENABLED": "false",
     "NEWSLETTER_ENABLED": "false",
-    "TURNSTILE_ENABLED": "false"
+    "TURNSTILE_ENABLED": "false",
+    "PUBLIC_INDEXABLE": "false",
+    "ALLOWED_CAMPAIGNS": "",
+    "LEAD_RETENTION_DAYS": ""
   },
   "durable_objects": {
     "bindings": [{"name":"LEAD_GUARD","class_name":"LeadGuard"}]

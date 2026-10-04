@@ -69,6 +69,7 @@ CRITICAL_FILES = [
     "quality/media-provenance-activites-bluewave.json",
     "quality/sources-candidates-afrique-ouest.md",
     "quality/scripts/build_dist.py",
+    "quality/privacy-approval.json",
     "quality/scripts/build_production_dist.py",
     "quality/scripts/render_production_wrangler.py",
     "quality/tests/test_production.py",
