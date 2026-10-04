@@ -1,4 +1,4 @@
-import {hasCanonicalOffer, hasJourney, validateLead} from './lead-schema.js';
+import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} from './lead-schema.js';
 
 (() => {
   const form = document.getElementById('qualifier-form');
@@ -159,7 +159,7 @@ import {hasCanonicalOffer, hasJourney, validateLead} from './lead-schema.js';
       journey: activeJourney,
       source_offer: sourceOffer,
       recommended_offer: orientation.offerId || '',
-      lead_type: data.get('request_type'),
+      lead_type: resolveQualifierLeadType(activeJourney, data.get('request_type')),
       organisation_type: orientation.organisation,
       territory: geographyTag[orientation.territoire],
       need_category: orientation.problematique,
@@ -228,8 +228,11 @@ import {hasCanonicalOffer, hasJourney, validateLead} from './lead-schema.js';
   });
 
   const setSelect = (id, value) => {
-    const select = document.getElementById(id);
-    if (select && value && [...select.options].some(option => option.value === value)) select.value = value;
+    const control = document.getElementById(id);
+    if (!control || !value) return;
+    if (control.matches('select')) {
+      if ([...control.options].some(option => option.value === value)) control.value = value;
+    } else control.value = value;
   };
   const applyPreset = preset => {
     if (!preset) return;

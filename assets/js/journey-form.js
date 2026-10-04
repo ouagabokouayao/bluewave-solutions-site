@@ -1,6 +1,6 @@
 import {hasCanonicalOffer, validateLead} from './lead-schema.js';
 
-const params = new URLSearchParams(location.search);
+const params = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
 const sourceOffer = hasCanonicalOffer(params.get('offre')) ? params.get('offre') : '';
 const formState = new WeakMap();
 
@@ -12,6 +12,16 @@ function formValue(form, name) {
 
 function formValues(form, name) {
   return new FormData(form).getAll(name).map(value => String(value).trim()).filter(Boolean);
+}
+
+export const SPECIFIC_FIELDS_BY_LEAD_TYPE = Object.freeze({
+  'collaboration-organisation': Object.freeze(['collaboration_subject', 'domains', 'collaboration_expectation', 'collaboration_form', 'public_reference', 'organisation_website']),
+  'expertise-offer': Object.freeze(['professional_status', 'expertise_domains', 'intervention_types', 'work_languages', 'availability', 'expertise_evidence', 'motivation', 'phone', 'linkedin', 'website_url', 'orcid', 'portfolio', 'mobility', 'rate_range', 'rc_pro']),
+  formation: Object.freeze(['audience', 'training_subject', 'learning_objectives', 'training_format', 'period', 'participant_count', 'training_level', 'location', 'duration', 'customization', 'context'])
+});
+
+export function specificFieldsForLeadType(leadType) {
+  return SPECIFIC_FIELDS_BY_LEAD_TYPE[leadType] || [];
 }
 
 function payloadFor(form) {
@@ -41,11 +51,7 @@ function payloadFor(form) {
     website: formValue(form, 'website'),
     captcha_token: '',
   };
-  const specific = leadType === 'collaboration-organisation'
-    ? ['collaboration_subject', 'domains', 'collaboration_expectation', 'collaboration_form', 'public_reference', 'organisation_website']
-    : leadType === 'expertise-offer'
-      ? ['professional_status', 'expertise_domains', 'intervention_types', 'work_languages', 'availability', 'expertise_evidence', 'motivation', 'phone', 'linkedin', 'website_url', 'orcid', 'portfolio', 'mobility', 'rate_range', 'rc_pro']
-      : ['audience', 'training_subject', 'learning_objectives', 'training_format', 'period', 'participant_count', 'training_level', 'location', 'duration', 'customization', 'context'];
+  const specific = specificFieldsForLeadType(leadType);
   for (const field of specific) payload[field] = formValue(form, field);
   if (leadType === 'expertise-offer') payload.linkedin = formValue(form, 'profile_url');
   for (const field of ['domains', 'expertise_domains', 'intervention_types', 'work_languages']) {
@@ -171,15 +177,17 @@ function wireTrainingLocation() {
   update();
 }
 
-document.querySelectorAll('[data-lead-form]').forEach(wireForm);
-wireCollaborationChoice();
-wireTrainingLocation();
-document.querySelectorAll('[data-project-start]').forEach(link => {
-  const query = new URLSearchParams({parcours: 'projet'});
-  if (sourceOffer) query.set('offre', sourceOffer);
-  link.href = `qualifier-un-besoin.html?${query}`;
-});
-if (sourceOffer) {
-  document.querySelectorAll('[data-source-offer]').forEach(node => { node.hidden = false; node.textContent = `Offre d’origine conservée : ${sourceOffer}.`; });
-  window.BlueWaveAutomation?.track('offer_contact_transition', {journey: document.body.dataset.journey, offer: sourceOffer});
+if (typeof document !== 'undefined') {
+  document.querySelectorAll('[data-lead-form]').forEach(wireForm);
+  wireCollaborationChoice();
+  wireTrainingLocation();
+  document.querySelectorAll('[data-project-start]').forEach(link => {
+    const query = new URLSearchParams({parcours: 'projet'});
+    if (sourceOffer) query.set('offre', sourceOffer);
+    link.href = `qualifier-un-besoin.html?${query}`;
+  });
+  if (sourceOffer) {
+    document.querySelectorAll('[data-source-offer]').forEach(node => { node.hidden = false; node.textContent = `Offre d’origine conservée : ${sourceOffer}.`; });
+    window.BlueWaveAutomation?.track('offer_contact_transition', {journey: document.body.dataset.journey, offer: sourceOffer});
+  }
 }

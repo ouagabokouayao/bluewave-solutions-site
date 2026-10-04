@@ -260,6 +260,10 @@ def main():
     if 'diagnostic automatique définitif' in q.lower():warnings.append('qualifier: mention explicite interdiction présente')
     for field in ['lead-firstname','lead-lastname','lead-organisation','lead-role','lead-email','lead-request-type','lead-description','lead-contact-preference','lead-newsletter','lead-consent','lead-website']:
         if f'id="{field}"' not in q:errors.append(f'qualifier: champ contact absent {field}')
+    if '<input id="lead-request-type" name="request_type" type="hidden" value="projet-mission">' not in q:
+        errors.append('qualifier: lead_type Projet fixe absent')
+    if '<select id="lead-request-type"' in q:
+        errors.append('qualifier: sélection générique lead_type encore exposée')
     for field in ['firstname','lastname','email','organisation','type','geography','themes','need','deadline','contact_preference','source','newsletter_consent','privacy_acknowledged']:
         if re.search(rf'\b{field}\s*:',qualifier_js) is None:errors.append(f'qualifier: champ payload canonique absent {field}')
     if re.search(r'<input[^>]+(?:newsletter|marketing)[^>]+checked',q,re.I):errors.append('qualifier: consentement marketing précoché')
@@ -279,6 +283,10 @@ def main():
     projet=(ROOT/'projet.html').read_text(encoding='utf-8')
     for field in ['journey','source_offer','recommended_offer','lead_type','organisation_type','territory','need_category','stage','data_availability','desired_outcome']:
         if field not in schema:errors.append(f'lead-schema.js: champ commun absent {field}')
+    if 'resolveQualifierLeadType(activeJourney' not in qualifier_js:
+        errors.append('qualifier: résolution forcée du lead_type Projet absente')
+    if 'SPECIFIC_FIELDS_BY_LEAD_TYPE' not in journey_js or 'specificFieldsForLeadType(leadType)' not in journey_js:
+        errors.append('journey-form.js: routage explicite des champs spécifiques absent')
     if "import {LIMITS, validateLead} from '../../assets/js/lead-schema.js'" not in (ROOT/'serverless/bluewave-leads/validation.mjs').read_text(encoding='utf-8'):
         errors.append('validation serveur: schéma partagé non importé')
     if 'data-lead-type="collaboration-organisation"' not in collaboration or 'data-lead-type="expertise-offer"' not in collaboration:
@@ -516,7 +524,7 @@ def main():
     if 'Inviter ou rencontrer BlueWave' not in home:errors.append('index.html: entrée « Inviter ou rencontrer BlueWave » absente')
     if 'qualifier-un-besoin.html?parcours=evenement' not in home:errors.append('index.html: CTA événement absent ou mal ciblé')
     if "evenement: {" not in qualifier_js:errors.append('qualifier.js: parcours evenement absent')
-    if 'value="evenement-intervention"' not in qualifier:errors.append('qualifier-un-besoin.html: type de demande événement absent')
+    if "'evenement-intervention'" not in schema:errors.append('lead-schema.js: compatibilité historique événement absente')
     if home.count('<form')!=0:errors.append('index.html: formulaire concurrent sur l’accueil')
 
     # Collaboration élargie à l’écosystème réel.

@@ -161,6 +161,9 @@ export function validateLead(input) {
 
 export function hasCanonicalOffer(value) { return OFFERS.includes(value); }
 export function hasJourney(value) { return JOURNEYS.includes(value); }
+export function resolveQualifierLeadType(journey, historicalType = 'projet-mission') {
+  return journey === 'projet' ? 'projet-mission' : historicalType;
+}
 
 export const LEAD_SCHEMA = Object.freeze({
   version: 'p0-2026-10-04',

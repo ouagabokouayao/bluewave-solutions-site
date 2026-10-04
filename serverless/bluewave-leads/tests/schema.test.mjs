@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 
-import {EXPERT_POOL_STATUSES, OFFERS, validateLead} from '../../../assets/js/lead-schema.js';
+import {EXPERT_POOL_STATUSES, OFFERS, resolveQualifierLeadType, validateLead} from '../../../assets/js/lead-schema.js';
+import {SPECIFIC_FIELDS_BY_LEAD_TYPE, specificFieldsForLeadType} from '../../../assets/js/journey-form.js';
 import {shouldRenderTrust} from '../../../assets/js/trust.js';
 import {validateLeadPayload} from '../validation.mjs';
 
@@ -21,6 +22,13 @@ test('Projet : source_offer et recommended_offer restent deux valeurs distinctes
   assert.equal(result.value.source_offer, 'diagnostic-strategique');
   assert.equal(result.value.recommended_offer, 'atelier-cadrage');
   assert.equal(OFFERS.length, 7);
+});
+
+test('Projet : journey=projet impose toujours lead_type=projet-mission', () => {
+  assert.equal(resolveQualifierLeadType('projet', 'formation'), 'projet-mission');
+  assert.equal(resolveQualifierLeadType('projet', 'collaboration'), 'projet-mission');
+  assert.equal(resolveQualifierLeadType('projet', 'recherche-expertise'), 'projet-mission');
+  assert.equal(resolveQualifierLeadType('formation', 'formation'), 'formation');
 });
 
 test('Projet : champ inconnu, enum inconnu et longueur excessive sont rejetés', () => {
@@ -48,6 +56,16 @@ test('Formation : localisation obligatoire en présentiel ou hybride', () => {
   assert.equal(validateLead(base).ok, true);
   assert.equal(validateLead({...base, training_format:'presentiel'}).ok, false);
   assert.equal(validateLead({...base, training_format:'hybride', location:'Marseille'}).ok, true);
+});
+
+test('Journey form : chaque lead_type reçoit uniquement son schéma explicite', () => {
+  assert.deepEqual(specificFieldsForLeadType('collaboration-organisation'), SPECIFIC_FIELDS_BY_LEAD_TYPE['collaboration-organisation']);
+  assert.deepEqual(specificFieldsForLeadType('expertise-offer'), SPECIFIC_FIELDS_BY_LEAD_TYPE['expertise-offer']);
+  assert.deepEqual(specificFieldsForLeadType('formation'), SPECIFIC_FIELDS_BY_LEAD_TYPE.formation);
+  assert.equal(specificFieldsForLeadType('collaboration-organisation').includes('training_subject'), false);
+  assert.equal(specificFieldsForLeadType('expertise-offer').includes('training_subject'), false);
+  assert.equal(specificFieldsForLeadType('formation').includes('professional_status'), false);
+  assert.deepEqual(specificFieldsForLeadType('type-futur-inattendu'), []);
 });
 
 test('Serveur : le contrat canonique produit les alias internes sans opt-in direct', () => {
@@ -81,6 +99,9 @@ test('Front : formulaires distincts, choix neutres et reset sans PII persistante
   assert.match(collaboration, /data-lead-type="expertise-offer"/);
   assert.match(formation, /data-lead-type="formation"/);
   assert.equal((qualifier.match(/<option value="">Sélectionner…<\/option>/g) || []).length, 7);
+  const projectLeadForm = qualifier.match(/<form id="lead-form"[\s\S]*?<\/form>/)?.[0] || '';
+  assert.match(projectLeadForm, /<input id="lead-request-type" name="request_type" type="hidden" value="projet-mission">/);
+  assert.doesNotMatch(projectLeadForm, /<select id="lead-request-type"/);
   for (const marker of ['form.reset()', 'leadForm?.reset()', 'lastOrientation = null', 'applyPreset(journeyPreset)', 'applyPreset(offerPreset)']) assert.match(qualifierJs, new RegExp(marker.replace(/[?.()]/g, '\\$&')));
   assert.equal(qualifierJs.includes('localStorage'), false);
 });
