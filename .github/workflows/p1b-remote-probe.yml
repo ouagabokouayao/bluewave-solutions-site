@@ -1,0 +1,90 @@
+name: P1-B remote probe
+
+# Sonde réseau indépendante. Elle n'écrit rien, ne porte aucun secret et
+# n'atteint que l'URL technique de préproduction Cloudflare.
+# Les résultats sont émis en annotations, lisibles par l'API.
+
+on:
+  push:
+    branches: [diag-p1b-workersdev-2026-10-04]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  BASE_URL: https://bluewave-site-preproduction.bluewave-solutions.workers.dev
+  UA: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Racine
+        if: always()
+        run: |
+          code=$(curl -s -o /tmp/root.html -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL/")
+          echo "::notice title=GET /::code=$code"
+          head -c 120 /tmp/root.html | tr -d '\n' | sed 's/^/body: /'
+          [ "$code" = "200" ] || { echo "::error title=GET /::attendu 200, obtenu $code"; exit 1; }
+
+      - name: Health
+        if: always()
+        run: |
+          body=$(curl -s -A "$UA" --max-time 30 "$BASE_URL/api/health")
+          code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL/api/health")
+          echo "::notice title=GET /api/health::code=$code body=$body"
+          [ "$code" = "200" ] || { echo "::error title=health::attendu 200, obtenu $code"; exit 1; }
+          echo "$body" | grep -q '"status":"available"' || { echo "::error title=health::statut inattendu"; exit 1; }
+
+      - name: Robots
+        if: always()
+        run: |
+          body=$(curl -s -A "$UA" --max-time 30 "$BASE_URL/robots.txt")
+          code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL/robots.txt")
+          clean=$(echo "$body" | tr '\n' ' ')
+          echo "::notice title=GET /robots.txt::code=$code contenu=$clean"
+          [ "$code" = "200" ] || { echo "::error title=robots::attendu 200, obtenu $code"; exit 1; }
+          echo "$body" | grep -q 'Disallow: /' || { echo "::error title=robots::indexation non fermée"; exit 1; }
+
+      - name: Entetes de securite
+        if: always()
+        run: |
+          curl -s -D /tmp/h.txt -o /dev/null -A "$UA" --max-time 30 "$BASE_URL/"
+          get() { grep -i "^$1:" /tmp/h.txt | head -1 | cut -d: -f2- | tr -d '\r' | sed 's/^ *//'; }
+          robots=$(get x-robots-tag); csp=$(get content-security-policy)
+          ref=$(get referrer-policy); perm=$(get permissions-policy); nosniff=$(get x-content-type-options)
+          echo "::notice title=X-Robots-Tag::$robots"
+          echo "::notice title=Referrer-Policy / Permissions-Policy / X-Content-Type-Options::$ref | $perm | $nosniff"
+          echo "::notice title=CSP::${csp:0:180}"
+          [ -n "$robots" ] && [ -n "$csp" ] && [ -n "$ref" ] && [ -n "$perm" ] && [ -n "$nosniff" ] \
+            || { echo "::error title=entetes::un en-tete de securite est absent"; exit 1; }
+          echo "$robots" | grep -qi 'noindex' || { echo "::error title=entetes::X-Robots-Tag n'interdit pas l'indexation"; exit 1; }
+
+      - name: API leads fermee
+        if: always()
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 -X POST \
+            -H 'content-type: application/json' -H "origin: $BASE_URL" \
+            --data '{}' "$BASE_URL/api/leads")
+          echo "::notice title=POST /api/leads::code=$code"
+          [ "$code" = "503" ] || { echo "::error title=leads::attendu 503, obtenu $code"; exit 1; }
+
+      - name: API events fermee
+        if: always()
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 -X POST \
+            -H 'content-type: application/json' -H "origin: $BASE_URL" \
+            --data '{"event_name":"journey_cta_click","page":"index","journey":"projet"}' \
+            "$BASE_URL/api/events")
+          echo "::notice title=POST /api/events (EVENTS_ENABLED=false)::code=$code"
+          [ "$code" = "503" ] || { echo "::error title=events::attendu 503, obtenu $code"; exit 1; }
+
+      - name: API inconnue
+        if: always()
+        run: |
+          code=$(curl -s -o /tmp/u.txt -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL/api/route-inconnue")
+          size=$(wc -c < /tmp/u.txt)
+          echo "::notice title=GET /api/route-inconnue::code=$code octets=$size"
+          [ "$code" = "404" ] || { echo "::error title=api inconnue::attendu 404, obtenu $code"; exit 1; }
+          [ "$size" = "0" ] || { echo "::error title=api inconnue::un corps a ete servi"; exit 1; }
