@@ -118,8 +118,13 @@ def privacy(document, leads, events, traffic):
     return document
 
 
-def build(indexable=False, leads=False, events=False, token=None, campaigns=(), privacy_simulation=False):
+def build(indexable=False, leads=False, events=False, token=None, campaigns=(), privacy_simulation=False,
+          turnstile_site_key=None):
     privacy_gate(indexable, privacy_simulation)
+    # Turnstile ne s'active pas à moitié : sans clé publique, le navigateur ne
+    # peut obtenir aucun jeton et toute demande serait refusée côté serveur.
+    if turnstile_site_key is not None and not re.fullmatch(r'[A-Za-z0-9_-]{8,64}', turnstile_site_key):
+        raise ValueError('Clé publique Turnstile invalide')
     if not SOURCE.is_dir():
         raise ValueError('Construire et vérifier dist/ avant le profil production')
     if token is not None and not re.fullmatch(r'[a-f0-9]{32}', token):
@@ -168,7 +173,10 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + links + '</urlset>', encoding='utf-8')
     (OUT / 'data/automation-config.json').write_text(json.dumps({
         'provider':'brevo', 'lead_endpoint':'/api/leads' if leads else None,
-        'chat_enabled':False, 'newsletter_enabled':False, 'meeting_url':None
+        'chat_enabled':False, 'newsletter_enabled':False, 'meeting_url':None,
+        # Seule la clé publique entre dans le build. La clé secrète reste un
+        # secret de runtime et n'a aucune raison d'exister ici.
+        'turnstile':{'enabled':bool(turnstile_site_key), 'site_key':turnstile_site_key}
     }, ensure_ascii=False) + '\n', encoding='utf-8')
     (OUT / 'data/analytics-config.json').write_text(json.dumps({
         'enabled':bool(events or token), 'endpoint':'/api/events' if events else None,
@@ -202,5 +210,7 @@ if __name__ == '__main__':
     parser.add_argument('--campaign', action='append', default=[])
     parser.add_argument('--privacy-simulation', action='store_true',
         help='Artefact de test : contourne le verrou de validation des mentions, sans produire un artefact publiable.')
+    parser.add_argument('--turnstile-site-key',
+        help='Clé PUBLIQUE Turnstile. Son absence laisse le canal fermé ; la clé secrète ne passe jamais par ici.')
     opts = parser.parse_args()
-    print(f'PASS: {build(opts.indexable,opts.leads,opts.events,opts.traffic_token,opts.campaign,opts.privacy_simulation)} fichiers de production dérivés')
+    print(f'PASS: {build(opts.indexable,opts.leads,opts.events,opts.traffic_token,opts.campaign,opts.privacy_simulation,opts.turnstile_site_key)} fichiers de production dérivés')

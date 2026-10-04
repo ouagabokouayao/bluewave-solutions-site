@@ -106,6 +106,11 @@ function wireForm(form) {
   formState.set(form, {started: false, submitting: false});
   form.addEventListener('focusin', () => markStarted(form), {once: true});
   form.addEventListener('input', () => markStarted(form), {once: true});
+  // Rendu anticipé du défi dès la première interaction : le jeton est prêt
+  // avant la validation, et rien n'apparaît si le service est fermé.
+  form.addEventListener('focusin', () => {
+    window.BlueWaveAutomation?.turnstile?.().then(guard => guard.prepare?.(form)).catch(() => {});
+  }, {once: true});
   form.addEventListener('submit', async event => {
     event.preventDefault();
     const state = formState.get(form);
@@ -124,7 +129,12 @@ function wireForm(form) {
     button.disabled = true;
     message.textContent = 'Préparation de la transmission…';
     window.BlueWaveAutomation?.track('lead_submit_attempt', {journey: payload.journey, offer: payload.source_offer || undefined});
+    const guard = await window.BlueWaveAutomation?.turnstile?.().catch(() => null);
     try {
+      // Un jeton est à usage unique : il est demandé au moment de l'envoi, puis
+      // le défi est réarmé, que la transmission ait abouti ou non. Les réponses
+      // déjà saisies ne sont jamais perdues par ce renouvellement.
+      if (guard?.enabled) payload.captcha_token = await guard.token(form);
       const response = await window.BlueWaveAutomation.submit('lead', payload);
       if (response.configured && response.ok) {
         form.reset();
@@ -139,6 +149,8 @@ function wireForm(form) {
       fallbackMail(form, payload, 'unavailable');
       message.textContent = 'La transmission est indisponible. Relisez le courriel préparé avant de l’envoyer.';
     } finally {
+      if (guard?.enabled) guard.reset(form);
+      payload.captcha_token = '';
       state.submitting = false;
       button.disabled = false;
     }

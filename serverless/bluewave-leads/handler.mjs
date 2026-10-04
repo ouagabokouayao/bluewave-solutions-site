@@ -107,6 +107,7 @@ export function createLeadHandler({
 
     if (lead.website) return responseJson(200, { success: true, message: SUCCESS_MESSAGE }, origin);
     if (captchaVerifier && !(await captchaVerifier(lead.captcha_token, request))) {
+      logger.log('turnstile_failed', { journey: lead.journey });
       return responseJson(403, { success: false, message: ERROR_MESSAGE }, origin);
     }
     if (!(await guard.claimSubmission(await submissionFingerprint(lead)))) {
@@ -144,8 +145,9 @@ export function createLeadHandler({
       logger.log('lead_stored', { correlation_id: correlationId, journey: lead.journey, lead_type: lead.lead_type });
     } catch {
       // Le stockage est la garantie de non-perte : s'il échoue, mieux vaut
-      // inviter à réessayer que d'expédier un accusé sans trace.
-      logger.log('lead_rejected', { correlation_id: correlationId, reason: 'storage_failed' });
+      // inviter à réessayer que d'expédier un accusé sans trace. C'est une
+      // panne de notre côté, pas un rejet de la demande.
+      logger.log('lead_storage_failed', { correlation_id: correlationId });
       return responseJson(503, { success: false, message: ERROR_MESSAGE }, origin);
     }
 
@@ -192,7 +194,13 @@ export function createLeadHandler({
     // Le statut est consigné pour que la reprise sache exactement quoi rejouer.
     try {
       await markDelivery(leadStore, record.id, { ...steps, delivery_status: deliveryStatus, last_error_code: firstFailure, now: now() });
-    } catch { /* la ligne reste lisible même si la mise à jour échoue */ }
+    } catch {
+      // La demande reste en base, mais ses statuts ne reflètent plus la
+      // diffusion réelle : la ligne apparaîtra en STORED/PENDING alors que des
+      // envois ont pu aboutir. L'exploitation doit le savoir pour ne pas
+      // rejouer à l'aveugle.
+      logger.log('delivery_status_write_failed', { correlation_id: correlationId, status: deliveryStatus });
+    }
 
     // La demande est enregistrée : elle n'est pas perdue, donc la réponse est
     // un succès même si la diffusion reste à reprendre.

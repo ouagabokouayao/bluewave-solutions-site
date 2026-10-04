@@ -42,6 +42,15 @@ export function createD1Double({ failOn = null } = {}) {
 
   const all = (sql, values) => {
     statements.push(sql);
+    if (sql.startsWith('SELECT * FROM lead_records WHERE id =')) {
+      const row = rows.get(values[0]);
+      return { results: row ? [{ ...row }] : [] };
+    }
+
+    if (sql.startsWith('SELECT * FROM lead_records WHERE email =')) {
+      return { results: [...rows.values()].filter(row => row.email === values[0]).map(row => ({ ...row })) };
+    }
+
     if (sql.startsWith('SELECT id FROM lead_records WHERE created_at <')) {
       const cutoff = values[0];
       return { results: [...rows.values()].filter(row => row.created_at < cutoff).map(row => ({ id: row.id })) };

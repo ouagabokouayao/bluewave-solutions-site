@@ -199,7 +199,7 @@ def main():
     try:
         auto_text=(ROOT/'data/automation-config.json').read_text(encoding='utf-8')
         automation=json.loads(auto_text)
-        expected_automation={'provider':'brevo','lead_endpoint':None,'chat_enabled':False,'newsletter_enabled':False,'meeting_url':None}
+        expected_automation={'provider':'brevo','lead_endpoint':None,'chat_enabled':False,'newsletter_enabled':False,'meeting_url':None,'turnstile':{'enabled':False,'site_key':None}}
         if automation!=expected_automation:errors.append('automation: configuration publique non canonique ou activation prématurée')
         if SECRET.search(auto_text):errors.append('automation: secret potentiel détecté')
     except (OSError,ValueError,KeyError,TypeError) as exc:

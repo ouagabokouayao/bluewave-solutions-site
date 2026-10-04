@@ -15,21 +15,37 @@ NAVIGATEUR
   │     1. validation stricte (schéma P0 partagé front/serveur)      │
   │     2. piège à robots (honeypot)                                 │
   │     3. Turnstile — si TURNSTILE_ENABLED=true                     │
-  │     4. limite de débit et anti-doublon (Durable Object)          │
-  │     5. ENREGISTREMENT dans LEADS_DB  ← la demande est acquise    │
-  │     6. contact Brevo                                             │
-  │     7. accusé de réception                                       │
-  │     8. notification interne                                      │
-  │     9. consignation des statuts de diffusion                     │
-  │                                                                  │
+  │     4. limite de débit                                           │
+  │     5. anti-doublon court (Durable Object)                       │
+  │     6. ENREGISTREMENT dans LEADS_DB  ← la demande est acquise    │
+  │     7. contact Brevo                                             │
+  │     8. accusé de réception                                       │
+  │     9. notification interne                                      │
+  │    10. consignation des statuts de diffusion                     │
   ├─ POST /api/events ──► CONVERSION_DB : compteurs agrégés, sans donnée
   │                        personnelle, vocabulaire fermé
   │
   └─ GET  /api/health ──► disponibilité seule
 ```
 
-Les étapes 6 à 8 sont des effets externes. Elles peuvent échouer sans faire
-perdre la demande : celle-ci est déjà en base à l'étape 5.
+Les étapes 7 à 9 sont des effets externes. Elles peuvent échouer sans faire
+perdre la demande : celle-ci est déjà en base à l'étape 6.
+
+### Limite de débit et idempotence : deux choses différentes
+
+La **limite de débit** borne le nombre d'envois d'un même client sur une
+fenêtre glissante. Elle protège le service, ne regarde pas le contenu, et
+répond 429.
+
+L'**anti-doublon court** empêche deux envois identiques rapprochés et répond
+409 : la première demande a bien été reçue, la seconde est écartée.
+
+L'**idempotence métier** est la seconde défense, en base. L'empreinte couvre
+toute la demande validée — qualification, identité et charge propre au
+parcours — plus le jour UTC. Deux demandes réellement différentes ne se
+confondent donc jamais, même déposées la même journée par la même personne ;
+une reprise strictement identique, elle, retombe sur la ligne existante sans
+produire de seconde ligne ni de second accusé.
 
 **Brevo n'est pas la base métier.** C'est un carnet de contacts opérationnel et
 un expéditeur transactionnel. La source de vérité est `LEADS_DB`.
@@ -37,6 +53,15 @@ un expéditeur transactionnel. La source de vérité est `LEADS_DB`.
 **Les deux bases ne se mélangent jamais.** `CONVERSION_DB` ne contient aucune
 donnée personnelle ; `LEADS_DB` ne contient aucun agrégat d'audience. Aucune
 jointure, aucun binding partagé.
+
+### Turnstile : deux moitiés indissociables
+
+La vérification serveur (`TURNSTILE_ENABLED` + `TURNSTILE_SECRET_KEY`) et la
+clé publique du navigateur (`turnstile.site_key` dans l'artefact) s'activent
+ensemble. Le générateur de configuration refuse l'une sans l'autre, et
+`quality/scripts/check_turnstile_profile.py` le vérifie dans les deux sens.
+La politique de sécurité du contenu n'ouvre `challenges.cloudflare.com` que
+lorsque le service est activé.
 
 ### Ce qui n'est jamais stocké
 
@@ -173,6 +198,41 @@ complet, non implémenté.
 
 ---
 
+## 8 bis. Reprise d'une diffusion incomplète
+
+`serverless/bluewave-leads/replay.mjs` rejoue **uniquement** les étapes dont le
+statut n'est pas `OK`. Une étape déjà aboutie n'est jamais réexpédiée : aucun
+demandeur ne reçoit deux accusés. Une demande `DELIVERED` n'est pas rejouée.
+
+Le mode par défaut est l'annonce : la reprise dit ce qu'elle ferait sans rien
+envoyer. Un envoi réel demande `dryRun: false`, un appel explicite
+d'exploitation. Aucune route ne mène à ce module.
+
+Identifier les demandes à reprendre :
+
+```sql
+SELECT id, created_at, delivery_status, brevo_contact_status, ack_status,
+       notification_status, last_error_code
+FROM lead_records
+WHERE delivery_status IN ('PARTIAL_FAILURE','FAILED')
+ORDER BY created_at DESC;
+```
+
+Un `delivery_status_write_failed` au journal signale le cas particulier où les
+envois ont pu aboutir sans que les statuts aient pu être écrits : la ligne
+paraît alors moins avancée qu'elle ne l'est. Vérifier côté Brevo avant de
+rejouer, pour ne pas provoquer un second accusé.
+
+## 8 ter. Opérations sur les données
+
+`serverless/bluewave-leads/data-rights.mjs` fournit les opérations internes :
+retrouver les demandes d'une adresse, exporter une demande (charge métier
+désérialisée, sans empreinte technique ni identifiant de corrélation),
+anonymiser une demande. L'anonymisation retire l'identité et la matière libre
+et conserve la qualification et les statuts, pour que la ligne reste
+comptable d'un traitement. Chaque opération est journalisée sans donnée
+personnelle. Aucune route publique n'y mène.
+
 ## 9. Ordre de repli
 
 | Niveau | Action | Effet |
@@ -186,36 +246,66 @@ complet, non implémenté.
 Les enregistrements `MX`, `SPF`, `DKIM` et `DMARC` ne sont **jamais** modifiés
 pendant un repli : ils relèvent d'un mandat distinct concernant la messagerie.
 
+### Pendant et après un incident
+
+- Les demandes déjà enregistrées **restent en base** : un repli ferme l'entrée,
+  il ne supprime rien. Aucune purge n'est déclenchée par un repli.
+- Les demandes en `PARTIAL_FAILURE` ou `FAILED` restent à reprendre et le
+  demeurent après le repli : la liste ci-dessus les retrouve.
+- Reprendre **après** rétablissement, pas pendant : rejouer vers un service
+  encore instable produirait de nouveaux échecs partiels. Commencer par
+  l'annonce (mode par défaut), contrôler la liste des étapes, puis exécuter.
+- Si `LEADS_ENABLED` est refermé, les demandes déjà stockées peuvent toujours
+  être rejouées : la reprise ne dépend pas de l'ouverture du formulaire.
+
 ---
 
 ## 10. Points nécessitant une décision
 
 | Sujet | État | Décision attendue |
 | --- | --- | --- |
-| Durée de conservation des demandes | `LEAD_RETENTION_DAYS` vide | fixer la durée, puis ajuster les mentions |
+| Durée de conservation des demandes | `LEAD_RETENTION_DAYS` vide ; sélection, purge, compteur et journal prêts et testés | fixer la durée, puis ajuster les mentions |
 | Affirmations juridiques | recensées, non validées | valider ou réécrire, puis passer `approved` à `true` |
-| Lettre de veille | contrat posé, séquence non implémentée | choisir le fournisseur et le modèle de courriel |
+| Lettre de veille | jeton signé, expiration, anti-rejeu, confirmation et révocation implémentés et testés ; interface fournisseur sans implémentation | choisir le fournisseur d'envoi et le modèle de courriel de confirmation |
 | Objets Brevo | inventoriés, non créés | créer et fournir les identifiants |
 | Ressources Cloudflare | aucune | créer bases, secrets, Turnstile, route |
 | Immatriculation | « SASU en cours de constitution » | compléter les mentions sur justificatifs |
 
 ---
 
-## 11. Observabilité
+## 11. Messagerie — contrôles avant mise en service
+
+Préparation à faire, hors de ce dépôt. Aucun enregistrement DNS n'est modifié
+ici et aucune valeur n'est inventée.
+
+| Point | État | À fournir |
+| --- | --- | --- |
+| Expéditeur vérifié chez Brevo | non fait | adresse d'envoi validée |
+| Reply-to | non fait | adresse de réponse |
+| Domaine d'expédition | non fait | domaine retenu |
+| SPF | non vérifié | enregistrement du domaine d'envoi |
+| DKIM | non vérifié | clé publiée par le prestataire |
+| DMARC | non vérifié | politique choisie |
+| Test de délivrabilité | non fait | envoi de contrôle vers plusieurs messageries |
+| Modèle d'accusé | non créé | identifiant de modèle |
+| Modèle de notification interne | non créé | identifiant de modèle |
+
+Ces points relèvent d'un mandat messagerie distinct du site. Ils ne sont pas
+touchés par un repli web.
+
+## 12. Observabilité
 
 Le journal distingue : `lead_rejected`, `lead_stored`, `lead_duplicate`,
-`brevo_contact_failed`, `ack_failed`, `internal_notification_failed`,
-`event_storage_failed`, `lead_purged`. Chaque ligne porte un `correlation_id`
+`lead_storage_failed`, `turnstile_failed`, `brevo_contact_failed`,
+`ack_failed`, `internal_notification_failed`, `delivery_status_write_failed`,
+`event_storage_failed`, `lead_purged`, `lead_purge_failed`, `replay_started`,
+`replay_failed`, `data_rights_operation`. Chaque ligne porte un `correlation_id`
 tiré au hasard, sans lien avec une personne. Aucune identité, aucun texte libre,
 aucun jeton, aucune clé n'y figure : les clés interdites sont écartées à la
 construction, et les valeurs non fermées ne sont pas écrites.
 
-Pour reprendre une diffusion incomplète, interroger `LEADS_DB` :
-
-```sql
-SELECT id, created_at, delivery_status, brevo_contact_status, ack_status,
-       notification_status, last_error_code
-FROM lead_records
-WHERE delivery_status IN ('PARTIAL_FAILURE','FAILED')
-ORDER BY created_at DESC;
-```
+Le contrôle de disponibilité `/api/health` ne répond que `available` ou
+`unavailable`. Il calcule la disponibilité réelle des services **activés** :
+un service fermé n'a rien à prouver, un service ouvert doit avoir sa base, sa
+garde, son origine et sa configuration d'envoi. Les motifs restent internes et
+ne sont jamais servis.

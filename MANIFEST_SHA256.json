@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "6e969da41f223c3fc9b4e13f940c6ea6e7760611e0e526d529ef67146e621730",
-    "bytes": 2997
+    "sha256": "31101cd53033af4245de09f8d0336d1cbfb93982cb55887baa4bca4e4f32342e",
+    "bytes": 3777
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -231,13 +231,13 @@
   },
   {
     "path": "assets/js/automation.js",
-    "sha256": "32efdfe0bd1e4797153f5b32e5a27d9cd01a29b481412bf4bd799888cca0b072",
-    "bytes": 3936
+    "sha256": "cb55cd7f267effe6313bf686d34501d29dba65510d6a01f6afd1f26c4b945a5c",
+    "bytes": 4536
   },
   {
     "path": "assets/js/journey-form.js",
-    "sha256": "d7914104f7725c402f87ff2c558312744fa89f0179e57059547a2c53ff381fb1",
-    "bytes": 9574
+    "sha256": "0a6a54343d9090d6c6a17705afd6a870809f7abf639dcb49173af2936f5625f9",
+    "bytes": 10365
   },
   {
     "path": "assets/js/lead-schema.js",
@@ -256,8 +256,8 @@
   },
   {
     "path": "assets/js/qualifier.js",
-    "sha256": "2d2bbc977d1faf38d3de6e77f26099f498c1cdc339ae1f04305a73270d01c2a2",
-    "bytes": 18311
+    "sha256": "c2f901562e2b2ecf47d7f4e4edf657625859f167327dba1fdb935db950bdf1b4",
+    "bytes": 18634
   },
   {
     "path": "assets/js/trust.js",
@@ -301,8 +301,8 @@
   },
   {
     "path": "data/automation-config.json",
-    "sha256": "3312a79e70704dcf78f9101700b849f93e0810c484b120aa41476d49c17be388",
-    "bytes": 130
+    "sha256": "b8a83d67434ed95773b7ee92524ae622527fe5114d97d7666055a0d56378710d",
+    "bytes": 195
   },
   {
     "path": "data/trust-config.json",
@@ -466,8 +466,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "0150b6ec070bbd9e4e92ca420e1c143610ff2477d7f512b270220551f6afc9dc",
-    "bytes": 13529
+    "sha256": "cda8b74214ddfc8d60bddab1b1459f569383e7bbd8b3c399a19799c32cdaa859",
+    "bytes": 14316
   },
   {
     "path": "quality/scripts/check_dist.py",
@@ -481,8 +481,8 @@
   },
   {
     "path": "quality/scripts/check_preactivation.py",
-    "sha256": "69b04f1c554d5e5164051f4ff0c711a2ba7c095b6810eb9030d6daf248381619",
-    "bytes": 1102
+    "sha256": "f76e7f75902630398b76c0874a3799f076f8e45ee3aa8e192881bc3e40a5a058",
+    "bytes": 1187
   },
   {
     "path": "quality/scripts/check_secrets.py",
@@ -496,8 +496,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "4f089a64a29748bd135cd9601fbfd14a0dfab45904c341a79e3b10e4acc9a448",
-    "bytes": 49537
+    "sha256": "d3b287a4aadf8786646a8d0673150730f154b9a888e11475415cb24ff68aab10",
+    "bytes": 49583
   },
   {
     "path": "quality/scripts/radar_check.py",
@@ -506,8 +506,8 @@
   },
   {
     "path": "quality/scripts/render_production_wrangler.py",
-    "sha256": "daab1f81a30d33f19124f13db551698cb93826196812e623719ff37b017cd0ea",
-    "bytes": 3815
+    "sha256": "6c9d43f597977b4045ab9c3efb4052457c444675758e05a5743c3b79dd0a099b",
+    "bytes": 4556
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -541,13 +541,13 @@
   },
   {
     "path": "serverless/OPERATIONS.md",
-    "sha256": "1acb77f9b7087b2ab56cdd54e4ef3b2ad05dc7541e4d855ac7381d5b553aa977",
-    "bytes": 9123
+    "sha256": "9a813d14d7fcb01b52118e142410297b06321fb529468b4f74c0f6d80cbccd7a",
+    "bytes": 13987
   },
   {
     "path": "serverless/bluewave-leads/.env.example",
-    "sha256": "e0257f041b4b9921f2e13d97ba4b457b57050b6ad7080d39a732b0841a324497",
-    "bytes": 577
+    "sha256": "91484f475b9663a28cc6d3bbc3db8dd8dd3f692659344953c72cb35a58e4f195",
+    "bytes": 1412
   },
   {
     "path": "serverless/bluewave-leads/BREVO-EXTERNAL.md",
@@ -565,24 +565,34 @@
     "bytes": 4985
   },
   {
+    "path": "serverless/bluewave-leads/data-rights.mjs",
+    "sha256": "e1cf604dc938abefcb373258347d8f07dc0d7efc555636e18552163f0a012380",
+    "bytes": 2442
+  },
+  {
     "path": "serverless/bluewave-leads/handler.mjs",
-    "sha256": "d82d89f2ffad39838cfeb39aaa562412a93b5ac6f032c5489f7f6c4679fded2c",
-    "bytes": 9297
+    "sha256": "f4293a04fb352e5c828c808540d5a8005e3778da147fd55dd02ab0ee6d827ccc",
+    "bytes": 9724
   },
   {
     "path": "serverless/bluewave-leads/lead-store.mjs",
-    "sha256": "858200799be9a79b0f360fbba17866fe5e9d8f8dbf130c167e4a3ee98da35ca9",
-    "bytes": 7555
+    "sha256": "8b3731e9877c24cf15be34e1c845316ce76a367577f37addca6d1e6b90d01199",
+    "bytes": 9160
   },
   {
     "path": "serverless/bluewave-leads/newsletter.mjs",
-    "sha256": "9b75904b2f820e9909e8dd2d07d99ec57870de8cd9168821ce06d1997fe36346",
-    "bytes": 2048
+    "sha256": "ba72bf7fad1732d2d295e10e92cce89244166a9e6a413cfd39ddd638e2dd7894",
+    "bytes": 6280
   },
   {
     "path": "serverless/bluewave-leads/observability.mjs",
-    "sha256": "6f7329a722efaa2b2bdaa95d6f1a35a218611e4fb164ae12ce67cbd0c03f8dec",
-    "bytes": 2337
+    "sha256": "514e1be0888bd4b59e88f9462724adad02de1a201f583262e2222c095401c710",
+    "bytes": 2520
+  },
+  {
+    "path": "serverless/bluewave-leads/replay.mjs",
+    "sha256": "897c6865984ff1611a4c331009168187a99f943e1253d33825d3f4d79be6e74a",
+    "bytes": 4600
   },
   {
     "path": "serverless/bluewave-leads/security.mjs",
@@ -591,8 +601,8 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/d1-double.mjs",
-    "sha256": "22fe32ae4801a0871f9d5e83069a61cadd1803a0574a18f1a1557bd13736bd7e",
-    "bytes": 2421
+    "sha256": "f750bc3c1b5095f5d668a4fc66623c15f05996354a84db0d8f1a222eb54b703f",
+    "bytes": 2772
   },
   {
     "path": "serverless/bluewave-leads/tests/handler.test.mjs",
@@ -601,18 +611,23 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/lead-store.test.mjs",
-    "sha256": "00d8e506fea163817a8ab2ffd3f56f726a5fe5c392006ef908516df9fd64453e",
-    "bytes": 5311
+    "sha256": "79f7f74f767bc248115d024b378ef77fcf59f89191baa9c0c734a6e71db15b28",
+    "bytes": 9365
   },
   {
     "path": "serverless/bluewave-leads/tests/newsletter.test.mjs",
-    "sha256": "c49fd334a1ac67b3d6b00416720bcbed0a897a97969b123b887c3baea0ea300b",
-    "bytes": 1628
+    "sha256": "f0d90cd8d0ab046e84650c58804547b71d3e32e4d9ec96199cd329243e46bb1c",
+    "bytes": 4658
   },
   {
     "path": "serverless/bluewave-leads/tests/pipeline.test.mjs",
     "sha256": "e16f24179501bdbfe66093b17d33e02b2adb284b280e8df88d9aceded8b10ed7",
     "bytes": 7053
+  },
+  {
+    "path": "serverless/bluewave-leads/tests/replay.test.mjs",
+    "sha256": "bbde98493ca8819a194abb826dd74b12873b627362d55fc4533f0bd8e0f3f9b2",
+    "bytes": 6881
   },
   {
     "path": "serverless/bluewave-leads/tests/schema.test.mjs",
@@ -645,6 +660,11 @@
     "bytes": 2961
   },
   {
+    "path": "serverless/cloudflare/readiness.mjs",
+    "sha256": "976a4edef1de4d94188b49b8298812afacd76bbdc7af6506f34a051f56591a8c",
+    "bytes": 3090
+  },
+  {
     "path": "serverless/cloudflare/report.sql",
     "sha256": "fe373f51a30d8dbb5204f5d1a99a244677d6ff1d91319c888cfb1a165801dbfb",
     "bytes": 217
@@ -655,14 +675,24 @@
     "bytes": 391
   },
   {
+    "path": "serverless/cloudflare/tests/d1-native.test.mjs",
+    "sha256": "55847a53eb9d0c04087ef0ff852baa79d6ff7a7832819ad85437e6aeb5b92793",
+    "bytes": 5636
+  },
+  {
+    "path": "serverless/cloudflare/tests/guard.test.mjs",
+    "sha256": "2a6006c0321986bc43b6c1d2f03ea3b344a6892921f9e6ea5358b113464e7355",
+    "bytes": 4442
+  },
+  {
     "path": "serverless/cloudflare/tests/native-worker.check.mjs",
     "sha256": "90fc286856d506166100644155b712de57ecefd24c7d4590fb7f9cd7e5097f74",
     "bytes": 5864
   },
   {
     "path": "serverless/cloudflare/tests/operations.test.mjs",
-    "sha256": "7f12b4fcf383083ca0fa5d734c53342160d9055b60e2dccc49aebec78ca7aab8",
-    "bytes": 4755
+    "sha256": "00eb247b9d6b304a38446a8bd55d969d3c7ec1c14ad42e1e12dff10fbeda695f",
+    "bytes": 5331
   },
   {
     "path": "serverless/cloudflare/tests/preactivation.test.mjs",
@@ -673,6 +703,16 @@
     "path": "serverless/cloudflare/tests/production.test.mjs",
     "sha256": "232868d9b32f7b234f637d13348832fc086a61f1c96ee01127be5da1abbccb60",
     "bytes": 1989
+  },
+  {
+    "path": "serverless/cloudflare/tests/readiness.test.mjs",
+    "sha256": "6303ed4480af72117a05dde6b11774c1fbe0cfbcef50545ee3d43ceb1e1c0069",
+    "bytes": 7946
+  },
+  {
+    "path": "serverless/cloudflare/tests/turnstile-front.test.mjs",
+    "sha256": "3bf7f4267611d143346346a6421061393772376d6e502f5e20ccb7cea1601ed3",
+    "bytes": 4335
   },
   {
     "path": "serverless/cloudflare/tests/turnstile.test.mjs",
@@ -686,8 +726,8 @@
   },
   {
     "path": "serverless/cloudflare/worker.mjs",
-    "sha256": "8ce4b8e02ed78beb54f51d24e0d53954346d080b7a2580a7bb966274a09c6744",
-    "bytes": 5889
+    "sha256": "4d0361b2b4f9c45df9898b3ce3db6e571a247f2c6422cb03e7afc0e2fce86b60",
+    "bytes": 6871
   },
   {
     "path": "serverless/cloudflare/wrangler.jsonc",

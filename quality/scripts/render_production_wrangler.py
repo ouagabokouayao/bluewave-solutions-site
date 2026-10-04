@@ -20,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE = ROOT / 'serverless/cloudflare/wrangler.production.jsonc'
 TARGET = ROOT / 'serverless/cloudflare/.wrangler-production.generated.json'
+PUBLIC_AUTOMATION = ROOT / 'dist-production/data/automation-config.json'
 
 UUID = re.compile(r'[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}')
 PLACEHOLDER = '00000000-0000-0000-0000-000000000000'
@@ -41,6 +42,15 @@ def render(database_id, leads_database_id, *, indexable=False, leads=False, even
         raise ValueError('CONVERSION_DB et LEADS_DB doivent être deux bases distinctes')
     if any(not re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,39}', code) for code in campaigns):
         raise ValueError('Code campagne invalide')
+    if turnstile:
+        # Activer la vérification côté serveur sans clé publique dans
+        # l'artefact revient à refuser toutes les demandes : le navigateur
+        # n'aurait aucun moyen d'obtenir un jeton.
+        if not PUBLIC_AUTOMATION.is_file():
+            raise ValueError('Turnstile activé sans artefact production : construire dist-production d\'abord')
+        public = json.loads(PUBLIC_AUTOMATION.read_text(encoding='utf-8')).get('turnstile') or {}
+        if public.get('enabled') is not True or not public.get('site_key'):
+            raise ValueError('Turnstile activé sans clé publique dans dist-production/data/automation-config.json')
     if retention_days is not None:
         days = int(retention_days)
         if days <= 0:

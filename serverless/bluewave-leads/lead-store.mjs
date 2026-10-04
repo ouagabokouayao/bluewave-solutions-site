@@ -65,14 +65,40 @@ export function journeyPayload(lead) {
   return payload;
 }
 
-// Deux envois identiques le même jour UTC retombent sur la même clé : l'insert
-// est alors ignoré et aucun second accusé n'est expédié. Une demande déposée un
-// autre jour reste une demande distincte.
+// Champs de qualification et d'identité entrant dans l'empreinte. Deux demandes
+// qui diffèrent sur l'un d'eux sont deux demandes distinctes.
+const IDENTITY_FIELDS = Object.freeze([
+  'journey', 'source_offer', 'recommended_offer', 'lead_type', 'organisation_type',
+  'territory', 'need_category', 'stage', 'data_availability', 'desired_outcome',
+  'deadline', 'contact_preference',
+  'firstname', 'lastname', 'email', 'organisation', 'role'
+]);
+
+// Représentation canonique déterministe de la demande validée.
+//
+// Clés triées, tableaux triés et dédoublonnés, valeurs déjà nettoyées par la
+// validation. Rien d'invisible n'y est ajouté : ni horodatage, ni identifiant
+// de corrélation, ni statut, ni jeton, ni honeypot. La même demande produit
+// donc toujours la même représentation, et deux demandes qui diffèrent sur
+// n'importe quel champ métier produisent des représentations différentes.
+export function canonicalRepresentation(lead) {
+  const canonical = {};
+  for (const field of IDENTITY_FIELDS) canonical[field] = text(lead[field]);
+  const payload = journeyPayload(lead);
+  const ordered = {};
+  for (const field of Object.keys(payload).sort()) {
+    const value = payload[field];
+    ordered[field] = Array.isArray(value) ? [...new Set(value.map(String))].sort() : String(value);
+  }
+  canonical.journey_payload = ordered;
+  return canonical;
+}
+
+// La fenêtre reste le jour UTC : elle n'est plus qu'une seconde défense, car
+// deux demandes métier différentes ne partagent plus la même empreinte.
 export async function idempotencyKey(lead, now = new Date()) {
   const day = new Date(now).toISOString().slice(0, 10);
-  const body = text(lead.need) || text(lead.collaboration_expectation) || text(lead.motivation) ||
-    text(lead.learning_objectives) || text(lead.context);
-  return sha256Hex([text(lead.email), text(lead.journey), text(lead.lead_type), body, day].join('|'));
+  return sha256Hex(JSON.stringify({ day, request: canonicalRepresentation(lead) }));
 }
 
 export async function buildLeadRecord(lead, { now = new Date(), correlationId = '' } = {}) {
@@ -123,6 +149,16 @@ export async function storeLead(database, record) {
   const result = await statement.run();
   const changes = result?.meta?.changes ?? result?.changes ?? 0;
   return changes > 0 ? { stored: true, id: record.id } : { stored: false, duplicate: true, id: record.id };
+}
+
+export async function getLeadRecord(database, id) {
+  const result = await database.prepare('SELECT * FROM lead_records WHERE id = ?').bind(id).all();
+  return (result?.results ?? [])[0] ?? null;
+}
+
+export async function findLeadsByEmail(database, email) {
+  const result = await database.prepare('SELECT * FROM lead_records WHERE email = ? ORDER BY created_at DESC').bind(String(email ?? '').toLowerCase()).all();
+  return result?.results ?? [];
 }
 
 export async function markDelivery(database, id, patch = {}) {

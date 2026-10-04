@@ -2,6 +2,8 @@ import {createLeadHandler} from '../bluewave-leads/handler.mjs';
 import {purgeExpiredLeads} from '../bluewave-leads/lead-store.mjs';
 import {createDistributedGuard, LeadGuard} from './guard.mjs';
 import {createTurnstileVerifier} from './turnstile.mjs';
+import {isReady} from './readiness.mjs';
+import {createLogger} from '../bluewave-leads/observability.mjs';
 import {sanitizeEvent} from '../../assets/js/analytics.js';
 export {LeadGuard};
 
@@ -43,23 +45,38 @@ async function conversion(request, env, url) {
   const day=new Date().toISOString().slice(0,10);
   await env.CONVERSION_DB.prepare(`INSERT INTO conversion_counts (day,event_name,page,journey,offer,status,source,campaign,count) VALUES (?,?,?,?,?,?,?,?,1) ON CONFLICT(day,event_name,page,journey,offer,status,source,campaign) DO UPDATE SET count=count+1`).bind(day,clean.event_name,clean.page,clean.journey||'',clean.offer||'',clean.status||'',clean.source||'',clean.campaign||'').run();
   return new Response(null,{status:204,headers:noStore});
- } catch {return new Response(null,{status:503,headers:noStore});}
+ } catch {
+  createLogger().log('event_storage_failed',{});
+  return new Response(null,{status:503,headers:noStore});
+ }
 }
 
 export default {
  async scheduled(_event, env) {
   const now = new Date();
+  const logger = createLogger();
+  // Les deux purges sont indépendantes : l'indisponibilité d'une base ne doit
+  // pas empêcher l'autre de s'exécuter, ni échouer en silence.
   if (env.CONVERSION_DB) {
-   const year = now.getUTCFullYear();
-   const month = now.getUTCMonth() - 13;
-   const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-   const cutoff = new Date(Date.UTC(year, month, Math.min(now.getUTCDate(), lastDay))).toISOString().slice(0,10);
-   await env.CONVERSION_DB.prepare('DELETE FROM conversion_counts WHERE day < ?').bind(cutoff).run();
+   try {
+    const year = now.getUTCFullYear();
+    const month = now.getUTCMonth() - 13;
+    const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    const cutoff = new Date(Date.UTC(year, month, Math.min(now.getUTCDate(), lastDay))).toISOString().slice(0,10);
+    await env.CONVERSION_DB.prepare('DELETE FROM conversion_counts WHERE day < ?').bind(cutoff).run();
+   } catch {
+    logger.log('event_storage_failed',{reason:'purge'});
+   }
   }
   // Purge des demandes : uniquement si une durée est explicitement configurée.
   // Aucune valeur par défaut n'est choisie ici.
   if (env.LEADS_DB && env.LEAD_RETENTION_DAYS) {
-   await purgeExpiredLeads(env.LEADS_DB, env.LEAD_RETENTION_DAYS, now);
+   try {
+    const result = await purgeExpiredLeads(env.LEADS_DB, env.LEAD_RETENTION_DAYS, now);
+    if (!result.skipped) logger.log('lead_purged',{count:result.purged});
+   } catch {
+    logger.log('lead_purge_failed',{});
+   }
   }
  },
  async fetch(request, env) {
@@ -77,7 +94,7 @@ export default {
   // identifiant de base, ni secret, ni version n'y transparaissent.
   if (url.pathname==='/api/health') {
    if (request.method!=='GET'&&request.method!=='HEAD') return new Response(null,{status:405,headers:noStore});
-   const ready=Boolean(env.ASSETS)&&(env.LEADS_ENABLED!=='true'||Boolean(env.LEADS_DB))&&(env.EVENTS_ENABLED!=='true'||Boolean(env.CONVERSION_DB));
+   const ready=isReady(env);
    return Response.json({status:ready?'available':'unavailable'},{status:ready?200:503,headers:noStore});
   }
   if (url.pathname.startsWith('/api/')) return new Response(null,{status:404,headers:noStore});
@@ -91,7 +108,13 @@ export default {
   const headers=new Headers(response.headers);
   Object.entries(noStore).forEach(([name,value])=>{if(name!=='cache-control'&&name!=='x-robots-tag')headers.set(name,value);});
   headers.set('x-robots-tag',env.PUBLIC_INDEXABLE==='true'&&url.pathname!=='/404.html'&&response.status<400?'index, follow':'noindex, nofollow');
-  headers.set('content-security-policy', "default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com");
+  // Turnstile charge son script et rend son défi dans une iframe servie par
+  // challenges.cloudflare.com. L'origine n'est ouverte que lorsque le service
+  // est réellement activé : fermé, la politique reste aussi étroite qu'avant.
+  const turnstileOn = env.TURNSTILE_ENABLED === 'true';
+  const scriptSrc = "script-src 'self' https://static.cloudflareinsights.com" + (turnstileOn ? ' https://challenges.cloudflare.com' : '');
+  const frameSrc = turnstileOn ? "; frame-src https://challenges.cloudflare.com" : "; frame-src 'none'";
+  headers.set('content-security-policy', "default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; " + scriptSrc + "; connect-src 'self' https://cloudflareinsights.com" + frameSrc);
   headers.set('referrer-policy','strict-origin-when-cross-origin');
   headers.set('permissions-policy','camera=(), microphone=(), geolocation=()');
   return new Response(response.body,{status:response.status,statusText:response.statusText,headers});

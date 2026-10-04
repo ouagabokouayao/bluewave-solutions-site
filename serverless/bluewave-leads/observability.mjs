@@ -6,14 +6,17 @@
 // corrélation tiré au hasard, sans lien avec une personne.
 
 export const LOG_EVENTS = Object.freeze([
-  'lead_rejected', 'lead_stored', 'lead_duplicate',
+  'lead_rejected', 'lead_stored', 'lead_duplicate', 'lead_storage_failed',
+  'turnstile_failed',
   'brevo_contact_failed', 'ack_failed', 'internal_notification_failed',
-  'event_storage_failed', 'lead_purged'
+  'delivery_status_write_failed',
+  'event_storage_failed', 'lead_purged', 'lead_purge_failed',
+  'replay_started', 'replay_failed', 'data_rights_operation'
 ]);
 
 // Seules ces clés peuvent accompagner un événement, et seules des valeurs
 // fermées y sont admises.
-const ALLOWED_KEYS = Object.freeze(['correlation_id', 'reason', 'journey', 'lead_type', 'status', 'count']);
+const ALLOWED_KEYS = Object.freeze(['correlation_id', 'reason', 'journey', 'lead_type', 'status', 'count', 'step', 'operation']);
 
 const FORBIDDEN_KEYS = Object.freeze([
   'email', 'firstname', 'lastname', 'name', 'organisation', 'role', 'phone',

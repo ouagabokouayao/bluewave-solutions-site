@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import {
   buildLeadRecord, idempotencyKey, journeyPayload, markDelivery,
-  purgeExpiredLeads, retentionCutoff, selectExpiredLeads, storeLead,
+  purgeExpiredLeads, retentionCutoff, selectExpiredLeads, storeLead, canonicalRepresentation,
   DELIVERY_STATUSES, EXPERTISE_STATUSES
 } from '../lead-store.mjs';
 import { createD1Double } from './d1-double.mjs';
@@ -106,4 +106,83 @@ test('purge configurable : seules les demandes expirées disparaissent', async (
   assert.equal(purge.skipped, false);
   assert.equal(database.size, 1);
   assert.equal(database.first().email, 'recent@example.invalid');
+});
+
+// Canon d'idempotence : deux demandes métier différentes ne doivent jamais
+// partager une empreinte, même déposées le même jour par la même personne.
+const DAY = new Date('2026-10-04T08:00:00Z');
+const NEXT = new Date('2026-10-05T08:00:00Z');
+const keyFor = (overrides = {}, when = DAY) => idempotencyKey({ ...lead, ...overrides }, when);
+
+const expertise = Object.freeze({
+  ...lead, journey: 'collaboration', lead_type: 'expertise-offer',
+  professional_status: 'independant', expertise_domains: ['littoral-adaptation'],
+  intervention_types: ['etude'], work_languages: ['francais'], availability: 'immediate',
+  expertise_evidence: 'Références publiques.', motivation: 'Travailler sur le littoral.',
+  mobility: 'Méditerranée', rate_range: '600-800'
+});
+
+const formation = Object.freeze({
+  ...lead, journey: 'formation', lead_type: 'formation',
+  audience: 'Agents de collectivité', training_subject: 'Gouvernance littorale',
+  learning_objectives: 'Comprendre les cadres applicables.', training_format: 'distance',
+  period: 'Premier trimestre', location: '', duration: '2 jours'
+});
+
+test('A — demande identique le même jour : même clé', async () => {
+  assert.equal(await keyFor(), await keyFor());
+});
+
+test('B — demande identique le jour suivant : clé différente', async () => {
+  assert.notEqual(await keyFor(), await keyFor({}, NEXT));
+});
+
+test('C — même e-mail et même besoin, territoire différent : clé différente', async () => {
+  assert.notEqual(await keyFor(), await keyFor({ territory: 'france-mediterranee' }));
+});
+
+test('D — source_offer différente : clé différente', async () => {
+  assert.notEqual(await keyFor(), await keyFor({ source_offer: 'atelier-cadrage' }));
+});
+
+test('E — recommended_offer différente : clé différente', async () => {
+  assert.notEqual(await keyFor(), await keyFor({ recommended_offer: 'gouvernance-acteurs' }));
+});
+
+test('F — organisation différente : clé différente', async () => {
+  assert.notEqual(await keyFor(), await keyFor({ organisation: 'Autre organisation' }));
+});
+
+test('G — expertise : même motivation, domaines différents : clé différente', async () => {
+  const base = await idempotencyKey(expertise, DAY);
+  const other = await idempotencyKey({ ...expertise, expertise_domains: ['gouvernance-maritime'] }, DAY);
+  assert.notEqual(base, other);
+});
+
+test('H — expertise : mobilité ou tarif différent : clé différente', async () => {
+  const base = await idempotencyKey(expertise, DAY);
+  assert.notEqual(base, await idempotencyKey({ ...expertise, mobility: 'Golfe de Guinée' }, DAY));
+  assert.notEqual(base, await idempotencyKey({ ...expertise, rate_range: '900-1100' }, DAY));
+});
+
+test('I — formation : mêmes objectifs, format différent : clé différente', async () => {
+  const base = await idempotencyKey(formation, DAY);
+  assert.notEqual(base, await idempotencyKey({ ...formation, training_format: 'presentiel' }, DAY));
+});
+
+test('J — formation : public ou période différent : clé différente', async () => {
+  const base = await idempotencyKey(formation, DAY);
+  assert.notEqual(base, await idempotencyKey({ ...formation, audience: 'Élus' }, DAY));
+  assert.notEqual(base, await idempotencyKey({ ...formation, period: 'Automne' }, DAY));
+});
+
+test('la représentation canonique est stable et n’emporte rien d’invisible', () => {
+  const a = canonicalRepresentation({ ...expertise, expertise_domains: ['gouvernance-maritime', 'littoral-adaptation'] });
+  const b = canonicalRepresentation({ ...expertise, expertise_domains: ['littoral-adaptation', 'gouvernance-maritime', 'littoral-adaptation'] });
+  // Ordre d'origine et doublons sans effet.
+  assert.equal(JSON.stringify(a), JSON.stringify(b));
+  const serialised = JSON.stringify(canonicalRepresentation(lead));
+  for (const forbidden of ['captcha_token', 'website', 'correlation_id', 'created_at', 'delivery_status', 'qualification_status', 'valeur de test']) {
+    assert.equal(serialised.includes(forbidden), false);
+  }
 });

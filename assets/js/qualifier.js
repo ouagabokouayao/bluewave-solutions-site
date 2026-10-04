@@ -207,7 +207,10 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
       window.BlueWaveAutomation?.track('lead_submit_fallback_email', { ...eventContext, status });
       mail.focus();
     };
+    const guard = await window.BlueWaveAutomation?.turnstile?.().catch(() => null);
     try {
+      // Jeton à usage unique, demandé au moment de l'envoi puis réarmé.
+      if (guard?.enabled) payload.captcha_token = await guard.token(leadForm);
       const response = await window.BlueWaveAutomation.submit('lead', payload);
       if (response.configured && response.ok) {
         leadForm.reset();
@@ -222,6 +225,8 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
       prepareFallback('unavailable');
       leadMessage.textContent = 'La transmission n’a pas pu aboutir. Votre courriel est prêt dans le bouton de messagerie ; relisez-le avant de l’envoyer. Si vous avez déjà reçu une confirmation, évitez un second envoi.';
     } finally {
+      if (guard?.enabled) guard.reset(leadForm);
+      payload.captcha_token = '';
       submitting = false;
       leadSubmit.disabled = false;
     }

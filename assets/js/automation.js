@@ -12,6 +12,20 @@
     return configPromise;
   };
 
+  // Turnstile : instancié à partir de la configuration publique. Fermé, le
+  // module ne charge rien et rend un jeton vide.
+  const TURNSTILE_MODULE = 'assets/js/turnstile.js';
+  let turnstilePromise;
+  const turnstile = () => {
+    if (!turnstilePromise) {
+      turnstilePromise = loadConfig()
+        .then(config => import(new URL(TURNSTILE_MODULE, location.href).href)
+          .then(module => module.createTurnstile({ config })))
+        .catch(() => ({ enabled: false, async token() { return ''; }, reset() {}, async prepare() {} }));
+    }
+    return turnstilePromise;
+  };
+
   const ANALYTICS_MODULE = 'assets/js/analytics.js';
   const analyticsReady = import(new URL(ANALYTICS_MODULE, location.href).href)
     .then(module => module.createAnalytics(window, document, window.fetch.bind(window)))
@@ -85,6 +99,6 @@
     if (link.matches('[data-journey-cta]')) track('journey_cta_click', { journey: link.dataset.journeyCta });
   });
 
-  window.BlueWaveAutomation = { loadConfig, showMeeting, submit, track };
+  window.BlueWaveAutomation = { loadConfig, showMeeting, submit, track, turnstile };
   wireNewsletter();
 })();

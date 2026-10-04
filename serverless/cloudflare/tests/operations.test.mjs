@@ -19,11 +19,23 @@ test('/api/health ne révèle ni binding, ni identifiant de base, ni secret', as
   }
 });
 
-test('/api/health signale l’indisponibilité quand une base annoncée manque', async () => {
-  const missing = await worker.fetch(new Request('https://example.invalid/api/health'), { ASSETS: assets, LEADS_ENABLED: 'true' }, {});
-  assert.equal(missing.status, 503);
-  assert.deepEqual(await missing.json(), { status: 'unavailable' });
-  const ok = await worker.fetch(new Request('https://example.invalid/api/health'), { ASSETS: assets, LEADS_ENABLED: 'true', LEADS_DB: {} }, {});
+test('/api/health signale l’indisponibilité quand une dépendance annoncée manque', async () => {
+  // La base seule ne suffit pas : ouvrir le formulaire engage aussi la garde,
+  // l'origine autorisée et la configuration d'envoi.
+  for (const partial of [{}, { LEADS_DB: {} }, { LEADS_DB: {}, LEAD_GUARD: {} }]) {
+    const response = await worker.fetch(new Request('https://example.invalid/api/health'),
+      { ASSETS: assets, LEADS_ENABLED: 'true', ...partial }, {});
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { status: 'unavailable' });
+  }
+  const complete = {
+    ASSETS: assets, LEADS_ENABLED: 'true', LEADS_DB: {}, LEAD_GUARD: {},
+    GUARD_HMAC_KEY: 'g'.repeat(40), ALLOWED_ORIGIN: 'https://www.example.invalid',
+    BREVO_API_KEY: 'clé de test', BREVO_LEADS_LIST_ID: '11',
+    BREVO_ACK_TEMPLATE_ID: '33', BREVO_INTERNAL_TEMPLATE_ID: '44',
+    BLUEWAVE_INTERNAL_EMAIL: 'bluewave@example.invalid'
+  };
+  const ok = await worker.fetch(new Request('https://example.invalid/api/health'), complete, {});
   assert.equal(ok.status, 200);
 });
 
