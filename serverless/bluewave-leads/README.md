@@ -68,42 +68,32 @@ Les attributs à créer dans le compte Brevo sont :
 | `BW_SOURCE` | `SITE_FORMS` (adaptateur serveur) |
 | `BW_STATUT` | `NOUVEAU` |
 
-`FIRSTNAME` et `LASTNAME` utilisent les attributs standards du contact. Une demande commerciale
+`PRENOM` et `NOM` utilisent les attributs standards de ce compte Brevo ; aucun attribut
+`FIRSTNAME` ou `LASTNAME` n'est créé. Une demande commerciale
 n’ajoute jamais directement le contact à une liste newsletter. Le futur parcours de veille sera
 séparé : demande d’inscription, validation de l’adresse, double opt-in, puis inscription après confirmation.
 
 ## Modèles transactionnels à configurer dans Brevo
 
-Accusé — objet : **Votre demande a bien été reçue — BlueWave Solutions**.
+Accusé — objet : **Votre demande a bien été reçue — BlueWave Solutions**. Contenu sobre
+confirmant la réception et indiquant qu'un contact pourra être pris si des précisions sont
+nécessaires ; aucun délai de réponse n'est annoncé. Le client transmet des paramètres
+transactionnels supplémentaires, mais ce modèle ne les affiche pas.
 
-> Bonjour {{params.firstname}},
->
-> Merci pour votre message adressé à BlueWave Solutions.
->
-> Votre demande concernant {{params.theme}} a bien été reçue. Elle sera examinée afin d’identifier
-> le format d’échange ou d’accompagnement le plus pertinent.
->
-> BlueWave Solutions est un bureau d’études, de conseil et de recherche appliquée spécialisé dans
-> les enjeux de mer, de littoral et de gouvernance maritime.
->
-> Vous pouvez répondre directement à cet email si vous souhaitez apporter un complément utile.
->
-> Bien cordialement,
->
-> BlueWave Solutions
-> Conseil · Études · Recherche · Innovation
+Notification interne — objet de base : **Nouveau lead BlueWave**. Le client fournit à l'envoi
+un objet plus détaillé contenant le type, l'organisation et la géographie. Le contenu du modèle
+signale la réception d'une demande et demande de vérifier le suivi avant de répondre ; il ne
+reprend pas les données personnelles du lead. Les paramètres transmis par le client restent
+disponibles pour une évolution distincte du modèle.
 
-Le modèle reçoit aussi `type`, `organisation`, `solutions_url`, `method_url` et `evidence_url`.
-Configurer son expéditeur vérifié et son adresse de réponse dans Brevo.
-
-Notification interne — objet :
-`Nouveau lead BlueWave — {{type}} — {{organisation}} — {{geography}}`.
-Le modèle reçoit uniquement : nom, organisation, e-mail, type, géographie, thématiques, besoin,
-délai, préférence de contact, consentement veille et source.
+Les deux modèles utilisent l'expéditeur vérifié `BlueWave Solutions`
+`bluewavesolutions3399@gmail.com`. Brevo avertit que ce domaine freemail n'est pas authentifié
+et peut réécrire le domaine d'envoi en `brevosend.com`. Aucun envoi réel n'a été effectué pendant
+leur préparation.
 
 ## Automatisations externes à préparer
 
-1. **A — arrivée d’un lead.** Déclencheur : ajout à `BLUEWAVE — Leads site`. État initial :
+1. **A — arrivée d'un lead.** Déclencheur envisagé : ajout à `BlueWave — Leads préproduction`. État initial :
    `BW_STATUT=NOUVEAU`.
 2. **B — relance mesurée.** Après un délai J+3/J+5 configurable, uniquement si le statut est encore
    `NOUVEAU` ou `A_QUALIFIER`. Stopper dès `QUALIFIE`, `RDV`, `PROPOSITION`, `MISSION` ou `CLOS`.

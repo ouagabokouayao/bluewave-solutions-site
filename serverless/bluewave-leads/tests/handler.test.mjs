@@ -62,6 +62,10 @@ test('cas valide : contact, accusé et notification, sans donnée brute en répo
   assert.deepEqual(await response.json(), { success: true, message: SUCCESS_MESSAGE });
   assert.equal(brevo.calls.length, 3);
   assert.equal(brevo.calls[0].body.email, 'awa.kone@example.invalid');
+  assert.equal(brevo.calls[0].body.attributes.PRENOM, 'Awa');
+  assert.equal(brevo.calls[0].body.attributes.NOM, 'Koné');
+  assert.equal('FIRSTNAME' in brevo.calls[0].body.attributes, false);
+  assert.equal('LASTNAME' in brevo.calls[0].body.attributes, false);
   assert.equal(brevo.calls[0].body.attributes.BW_STATUT, 'NOUVEAU');
 });
 

@@ -1,25 +1,25 @@
-# Objets Brevo à créer — inventaire
+# Objets Brevo de préproduction — inventaire
 
-Document interne. Aucun identifiant n'est inventé : chaque valeur attendue est
-notée `<À FOURNIR PAR ENVIRONNEMENT>`. Une valeur qui ressemblerait à une vraie
-donnée de production ne doit jamais apparaître ici.
+Document interne. Les identifiants ci-dessous ont été relevés dans le compte Brevo
+BlueWave Solutions le 6 octobre 2026. Ils correspondent à la préproduction et ne
+constituent pas une configuration de production.
 
 Brevo reste un carnet de contacts opérationnel et un expéditeur transactionnel.
 La source de vérité des demandes est `LEADS_DB`, pas Brevo.
 
 ---
 
-## 1. Objets à créer
+## 1. Objets présents et configuration de préproduction
 
 | Objet | Rôle | Valeur à fournir |
 | --- | --- | --- |
-| Liste « Leads » | reçoit les contacts issus du formulaire | `BREVO_LEADS_LIST_ID` = `<À FOURNIR PAR ENVIRONNEMENT>` |
-| Modèle « accusé de réception » | courriel au demandeur | `BREVO_ACK_TEMPLATE_ID` = `<À FOURNIR PAR ENVIRONNEMENT>` |
-| Modèle « notification interne » | courriel à BlueWave | `BREVO_INTERNAL_TEMPLATE_ID` = `<À FOURNIR PAR ENVIRONNEMENT>` |
-| Adresse interne | destinataire et reply-to | `BLUEWAVE_INTERNAL_EMAIL` = `<À FOURNIR PAR ENVIRONNEMENT>` |
-| Expéditeur vérifié | adresse d'envoi validée chez Brevo | `<À FOURNIR PAR ENVIRONNEMENT>` |
-| Clé d'API | secret runtime | `BREVO_API_KEY` = `<À FOURNIR PAR ENVIRONNEMENT>` |
-| Domaine d'expédition | authentification des courriels | `<À FOURNIR PAR ENVIRONNEMENT>` |
+| Liste « BlueWave — Leads préproduction » | reçoit les contacts issus du formulaire ; 0 contact au contrôle | `BREVO_LEADS_LIST_ID` = `3` |
+| Modèle « BlueWave — Accusé réception demande » | courriel au demandeur ; actif | `BREVO_ACK_TEMPLATE_ID` = `1` |
+| Modèle « BlueWave — Notification interne lead » | courriel à BlueWave ; actif | `BREVO_INTERNAL_TEMPLATE_ID` = `2` |
+| Adresse interne | destinataire et reply-to | `BLUEWAVE_INTERNAL_EMAIL` = `bluewavesolutions3399@gmail.com` |
+| Expéditeur vérifié | identité configurée dans les deux modèles | `BlueWave Solutions <bluewavesolutions3399@gmail.com>` |
+| Clé d'API dédiée | secret runtime, valeur jamais stockée ici | `BREVO_API_KEY` à déposer uniquement dans le secret Worker après autorisation |
+| Domaine d'expédition | Gmail freemail non authentifié ; réécriture `brevosend.com` annoncée par Brevo | à traiter séparément avant usage public |
 
 Les trois identifiants numériques sont contrôlés au démarrage : un entier
 positif est exigé, sinon la configuration est refusée.
@@ -33,13 +33,15 @@ Il n'est pas traité par ce lot et ne doit pas être modifié pendant un repli.
 
 ### Conservés tels quels
 
-`FIRSTNAME`, `LASTNAME`, `BW_TYPE`, `BW_GEO`, `BW_THEME`, `BW_ORGANISATION`,
+`PRENOM`, `NOM`, `EMAIL`, `BW_TYPE`, `BW_GEO`, `BW_THEME`, `BW_ORGANISATION`,
 `BW_DELAI`, `BW_SOURCE`, `BW_STATUT`, `BW_BESOIN`.
 
 ### Correspondance avec le schéma P0
 
 | Champ métier | Attribut Brevo | Remarque |
 | --- | --- | --- |
+| `firstname` | `PRENOM` | attribut standard texte du compte |
+| `lastname` | `NOM` | attribut standard texte du compte |
 | `lead_type` | `BW_TYPE` | déjà en place |
 | `territory` | `BW_GEO` | déjà en place |
 | `domains` | `BW_THEME` | déjà en place, valeurs jointes |

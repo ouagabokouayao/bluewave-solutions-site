@@ -65,8 +65,8 @@ export class BrevoClient {
     return this.request('/contacts', {
       email: lead.email,
       attributes: {
-        FIRSTNAME: lead.firstname,
-        LASTNAME: lead.lastname,
+        PRENOM: lead.firstname,
+        NOM: lead.lastname,
         BW_TYPE: lead.type,
         BW_GEO: lead.geography,
         BW_THEME: lead.themes.join(' | '),
