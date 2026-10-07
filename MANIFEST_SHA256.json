@@ -236,8 +236,8 @@
   },
   {
     "path": "assets/js/journey-form.js",
-    "sha256": "0a6a54343d9090d6c6a17705afd6a870809f7abf639dcb49173af2936f5625f9",
-    "bytes": 10365
+    "sha256": "2351da97d81beee4aa2d69b833cda445c85bb51ccd8b8ee9a96286e8cacaddbe",
+    "bytes": 11829
   },
   {
     "path": "assets/js/lead-schema.js",
@@ -266,8 +266,8 @@
   },
   {
     "path": "collaboration.html",
-    "sha256": "83ba6f3458f8773e69490cd0941c50b22f072ca26d0f55fcb444e9042f7b6660",
-    "bytes": 18896
+    "sha256": "d3e922804bc183df2a477cd9a35e357aac459d773c836d0536f296a9d726adfa",
+    "bytes": 18930
   },
   {
     "path": "contact.html",
@@ -316,8 +316,8 @@
   },
   {
     "path": "formation.html",
-    "sha256": "09c3c9701c9836c9eaa0b6095e659d737a3cfe9f68ddd06518545b431ddf199a",
-    "bytes": 8227
+    "sha256": "3e4eb4be278bf16361a8a2c4c3e716b866268a3b593157039e35bab45f8b6148",
+    "bytes": 8172
   },
   {
     "path": "index.html",
@@ -631,8 +631,8 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/schema.test.mjs",
-    "sha256": "d19a63c445e849dd52ba44db100d8248f66411435b18fab6082966c5a7412ac7",
-    "bytes": 7811
+    "sha256": "2937febaf8910da05808c7581db4732f51818ad98ffc7b5e1634af5c8c496656",
+    "bytes": 13555
   },
   {
     "path": "serverless/bluewave-leads/validation.mjs",

@@ -60,24 +60,34 @@ function payloadFor(form) {
   return payload;
 }
 
-function fallbackMail(form, payload, status) {
-  const safeLines = [
+export function fallbackMailBody(payload) {
+  return [
     `Prénom : ${payload.firstname}`,
     `Nom : ${payload.lastname}`,
     `E-mail : ${payload.email}`,
     payload.organisation ? `Organisation : ${payload.organisation}` : '',
     payload.role ? `Fonction : ${payload.role}` : '',
+    payload.territory ? `Territoire : ${payload.territory}` : '',
     payload.collaboration_subject ? `Objet de la collaboration : ${payload.collaboration_subject}` : '',
     payload.collaboration_expectation ? `Recherche : ${payload.collaboration_expectation}` : '',
+    payload.collaboration_form ? `Forme envisagée : ${payload.collaboration_form}` : '',
     payload.expertise_evidence ? `Références publiques / capacités : ${payload.expertise_evidence}` : '',
     payload.motivation ? `Motivation : ${payload.motivation}` : '',
     payload.training_subject ? `Sujet : ${payload.training_subject}` : '',
     payload.learning_objectives ? `Objectifs pédagogiques : ${payload.learning_objectives}` : '',
     payload.audience ? `Public concerné : ${payload.audience}` : '',
+    payload.training_format ? `Format : ${payload.training_format}` : '',
+    payload.location ? `Lieu envisagé : ${payload.location}` : '',
+    payload.period ? `Période : ${payload.period}` : '',
+    payload.participant_count ? `Participants estimés : ${payload.participant_count}` : '',
     payload.need ? `Contexte / besoin : ${payload.need}` : '',
     '',
     'J’ai relu ces informations avant envoi.'
   ].filter(line => line !== '').join('\n');
+}
+
+function fallbackMail(form, payload, status) {
+  const safeLines = fallbackMailBody(payload);
   const subject = encodeURIComponent(`BlueWave — ${form.dataset.mailSubject}`);
   const body = encodeURIComponent(`Bonjour,\n\n${safeLines}\n\nCordialement,`);
   const mail = form.querySelector('[data-mail-fallback]');
@@ -95,15 +105,22 @@ function markStarted(form) {
 }
 
 function showSchemaError(form, errors) {
-  const field = errors.find(name => form.elements.namedItem(name));
-  const control = field ? form.elements.namedItem(field) : null;
-  if (control?.focus) control.focus();
+  const field = errors.find(name => [...form.elements].some(control => control.name === name && !control.disabled && control.type !== 'hidden'));
+  const control = field ? [...form.elements].find(item => item.name === field && !item.disabled && item.type !== 'hidden') : null;
+  if (control) { control.setAttribute('aria-invalid', 'true'); control.focus(); }
   form.querySelector('[data-form-message]').textContent = 'Certains champs obligatoires ou structurés doivent être vérifiés.';
   window.BlueWaveAutomation?.track('lead_validation_error', {journey: form.dataset.journey, offer: sourceOffer || undefined, status: 'invalid'});
 }
 
 function wireForm(form) {
   formState.set(form, {started: false, submitting: false});
+  const clearFeedback = event => {
+    event.target.removeAttribute?.('aria-invalid');
+    form.querySelector('[data-mail-fallback]').hidden = true;
+    form.querySelector('[data-form-message]').textContent = '';
+  };
+  form.addEventListener('input', clearFeedback);
+  form.addEventListener('change', clearFeedback);
   form.addEventListener('focusin', () => markStarted(form), {once: true});
   form.addEventListener('input', () => markStarted(form), {once: true});
   // Rendu anticipé du défi dès la première interaction : le jeton est prêt
@@ -116,7 +133,9 @@ function wireForm(form) {
     const state = formState.get(form);
     if (state.submitting) return;
     markStarted(form);
+    form.querySelector('[data-mail-fallback]').hidden = true;
     if (!form.reportValidity()) {
+      form.querySelector('[data-form-message]').textContent = 'Vérifiez les champs obligatoires ou le format de votre réponse.';
       window.BlueWaveAutomation?.track('lead_validation_error', {journey: form.dataset.journey, offer: sourceOffer || undefined, status: 'invalid'});
       return;
     }
@@ -138,6 +157,8 @@ function wireForm(form) {
       const response = await window.BlueWaveAutomation.submit('lead', payload);
       if (response.configured && response.ok) {
         form.reset();
+        form.querySelectorAll('[aria-invalid="true"]').forEach(control => control.removeAttribute('aria-invalid'));
+        form.elements.namedItem('training_format')?.dispatchEvent(new Event('change', {bubbles: true}));
         message.textContent = 'Votre demande a bien été transmise à BlueWave Solutions.';
         window.BlueWaveAutomation.track('lead_submit_success', {journey: payload.journey, offer: payload.source_offer || undefined, status: 'success'});
         await window.BlueWaveAutomation.showMeeting();
@@ -157,7 +178,7 @@ function wireForm(form) {
   });
 }
 
-function wireCollaborationChoice() {
+export function wireCollaborationChoice() {
   const chooser = document.querySelector('[data-collaboration-choice]');
   if (!chooser) return;
   const panels = [...document.querySelectorAll('[data-collaboration-panel]')];
@@ -173,7 +194,7 @@ function wireCollaborationChoice() {
   panels.forEach(panel => { panel.hidden = true; panel.querySelectorAll('input, select, textarea, button').forEach(control => { control.disabled = true; }); });
 }
 
-function wireTrainingLocation() {
+export function wireTrainingLocation() {
   const form = document.querySelector('form[data-lead-type="formation"]');
   const format = form?.elements.namedItem('training_format');
   const wrap = form?.querySelector('[data-location-field]');
