@@ -40,7 +40,8 @@ export class BrevoClient {
     validateEnvironment(environment);
     if (typeof fetchImpl !== 'function') throw new Error('Client HTTP indisponible');
     this.environment = environment;
-    this.fetchImpl = fetchImpl;
+    // Cloudflare Workers requires the host fetch function's global receiver.
+    this.fetchImpl = fetchImpl === globalThis.fetch ? fetchImpl.bind(globalThis) : fetchImpl;
   }
 
   async request(path, body) {

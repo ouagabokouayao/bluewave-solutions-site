@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { createLeadHandler, ERROR_MESSAGE, SUCCESS_MESSAGE } from '../handler.mjs';
+import { BrevoClient } from '../brevo-client.mjs';
 import { createMemoryGuard } from '../security.mjs';
 
 const environment = Object.freeze({
@@ -54,6 +55,20 @@ function mockBrevo({ status = 201 } = {}) {
 function handler(fetchImpl, guard = createMemoryGuard({ rateLimit: 20 })) {
   return createLeadHandler({ environment, fetchImpl, guard });
 }
+
+test('le fetch natif conserve son receveur dans le client Brevo', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = function (_url, _options) {
+    if (this !== globalThis) throw new TypeError('Illegal invocation');
+    return Promise.resolve(new Response('{}', { status: 201 }));
+  };
+  try {
+    const response = await new BrevoClient({ environment }).request('/contacts', {});
+    assert.equal(response.status, 201);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
 
 test('cas valide : contact, accusé et notification, sans donnée brute en réponse', async () => {
   const brevo = mockBrevo();
