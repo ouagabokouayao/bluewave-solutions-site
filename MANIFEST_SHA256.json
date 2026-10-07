@@ -561,8 +561,8 @@
   },
   {
     "path": "serverless/bluewave-leads/brevo-client.mjs",
-    "sha256": "9a23712d3d6510eada57cf906ac057b701702e7e9eb8971f66da21e822bb77ab",
-    "bytes": 4977
+    "sha256": "84db85e01308199b5e5035585e17b8421c2140702fd02b538f197af63b8952c6",
+    "bytes": 5117
   },
   {
     "path": "serverless/bluewave-leads/data-rights.mjs",
@@ -606,8 +606,8 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/handler.test.mjs",
-    "sha256": "e1bbc4c113c9f8fef34375ff2d98340bd4f7dd4055dfe81313257162fa704412",
-    "bytes": 8843
+    "sha256": "02cc908bc9c64d6d9d4077e338324be9d7ec500f2e97edbac8482df743101dc6",
+    "bytes": 9402
   },
   {
     "path": "serverless/bluewave-leads/tests/lead-store.test.mjs",
