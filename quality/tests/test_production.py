@@ -34,13 +34,13 @@ class ProductionProfile(unittest.TestCase):
         self.assertNotIn('sitemap.xml', [p.name for p in out.iterdir()])
         self.assertEqual(json.loads((out / 'data/automation-config.json').read_text())['lead_endpoint'], None)
         self.assertFalse(json.loads((out / 'data/analytics-config.json').read_text())['enabled'])
-        self.assertEqual(len(list(out.glob('*.html'))), 20)
+        self.assertEqual(len(list(out.glob('*.html'))), 21)
         self.assertIn('noindex, nofollow', (out / 'index.html').read_text())
 
     def test_open_profile_is_canonical_and_minimal(self):
         module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'], privacy_simulation=True)
         out = module.OUT
-        self.assertEqual(len(list(out.glob('*.html'))), 20)
+        self.assertEqual(len(list(out.glob('*.html'))), 21)
         for page in out.glob('*.html'):
             body = page.read_text()
             source = (module.SOURCE / page.name).read_text()

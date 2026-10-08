@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "31101cd53033af4245de09f8d0336d1cbfb93982cb55887baa4bca4e4f32342e",
-    "bytes": 3777
+    "sha256": "5b93cbf5997269ea2d4b0d40c6b74ab60620cc876f9508320eb27725b7cbeebd",
+    "bytes": 4473
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -26,8 +26,8 @@
   },
   {
     "path": ".gitignore",
-    "sha256": "ba7860533b8bc2ed7dcb7ebf74e9cd9e306e4adb862adb18c32395d48b5cf680",
-    "bytes": 1019
+    "sha256": "f4d2a42b70d978d45e4942aeee2de90858200410ce88bbe13d0badef42fcf76a",
+    "bytes": 1020
   },
   {
     "path": ".nojekyll",
@@ -46,8 +46,8 @@
   },
   {
     "path": "a-propos.html",
-    "sha256": "671aa5538c05f24de8af61414c384eced725e6963f86890b3c19ac7f13d796e9",
-    "bytes": 7176
+    "sha256": "1befc8cacdb0e08725e7c1d0cd3e889d800a215b2f969be758aa10b95c71726c",
+    "bytes": 7287
   },
   {
     "path": "actualites.html",
@@ -321,8 +321,13 @@
   },
   {
     "path": "index.html",
-    "sha256": "587e852bb7b68b9e35ac13f9097d1d12a440f00065292481a1c58ae626b28335",
-    "bytes": 13801
+    "sha256": "62bf2a993c62beea4781fb925e22d403dc4fb27a7f74bc225a995f696ace1cdf",
+    "bytes": 14002
+  },
+  {
+    "path": "media-intervention.html",
+    "sha256": "1fc365bc2fbc8c1d6961c29746687c75d71218158fa8e0f73c948b89863e1965",
+    "bytes": 11702
   },
   {
     "path": "mediatheque-activites.html",
@@ -461,18 +466,23 @@
   },
   {
     "path": "quality/scripts/build_dist.py",
-    "sha256": "6c248dc210c985ea30630a80fa7c6f0abcb42ce493aec002efcce54a6f809c44",
-    "bytes": 6996
+    "sha256": "de5911ea3cb80e26a7447c65b6297e894c78a50b97ef56e704b1dbdf25536704",
+    "bytes": 7012
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "cda8b74214ddfc8d60bddab1b1459f569383e7bbd8b3c399a19799c32cdaa859",
+    "sha256": "f775f2723e0605463f5e3726e82ea2650660ccaa459fe48118752c7cad3d8b62",
     "bytes": 14316
   },
   {
+    "path": "quality/scripts/check_brand_assets.py",
+    "sha256": "6e389a0ea327f6943dca4798f354ab296425df0703af8432dfd55517a8111240",
+    "bytes": 11708
+  },
+  {
     "path": "quality/scripts/check_dist.py",
-    "sha256": "fd0873fdcd44b9d0802510dee3a0a5d7fdbe440ba64f441268a50019fbf847f1",
-    "bytes": 4526
+    "sha256": "ecd31701a92f31df1f56b1f84a422fa4a44cf6d2534b3d423cef8ac51df3a7cf",
+    "bytes": 5195
   },
   {
     "path": "quality/scripts/check_external_links.py",
@@ -516,8 +526,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "c7e21e6ee7238742aceedfc1a288ef705571b6f20e155bd18ce72d4ed1130eb9",
-    "bytes": 4966
+    "sha256": "8d36a5cb73ec611f34552b5e51d55e40540871d1bb7ac2384b8eb8e62f82e364",
+    "bytes": 5084
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -530,8 +540,13 @@
     "bytes": 4167
   },
   {
+    "path": "quality/tests/test_brand_assets.py",
+    "sha256": "a31a73533fa0a5dab28b373f5f54d4aedfdef01cffc3362e24e13509bf5a667a",
+    "bytes": 9515
+  },
+  {
     "path": "quality/tests/test_production.py",
-    "sha256": "b9bb442f79b8d8af6fd0e3f80f4a2ccd7c2799db4096736dace1add14b8e969a",
+    "sha256": "8b5eae0dbb61a8e15f4b6679ba4d88a3239b5d62ff6214002c891b91147dcd72",
     "bytes": 6136
   },
   {

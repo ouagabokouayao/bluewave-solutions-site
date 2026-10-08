@@ -58,6 +58,25 @@ jobs:
 
       - name: Secret values scan
         run: python quality/scripts/check_secrets.py
+
+      - name: Integrity manifest
+        run: python quality/scripts/update_manifest.py --check
+
+      - name: Brand asset prepublication gate
+        run: python quality/scripts/check_brand_assets.py
+
+      - name: Brand asset system tests
+        run: python -m unittest quality.tests.test_brand_assets
+
+      - name: Public build and served content control
+        run: |
+          python quality/scripts/build_dist.py
+          python quality/scripts/check_dist.py
+          python quality/scripts/dist_manifest.py
+          python quality/scripts/dist_manifest.py --check
+
+      - name: Prepublication tightness of the public build
+        run: python quality/scripts/check_brand_assets.py
       - name: Integrity manifest
         run: python quality/scripts/verify_manifest.py
       - name: Public build and manifest

@@ -41,6 +41,7 @@ FORBIDDEN_PREFIXES = (
     "supports/",
     "exports/",
     "captures/",
+    "private/",
     "brand/",
     "assets/img/brand/boards/",
     "assets/img/brand/libraries/",

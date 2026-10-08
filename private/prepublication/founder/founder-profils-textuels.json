@@ -1,0 +1,67 @@
+{
+  "version": "founder-profils-v1-2026-10-08",
+  "objet": "Trois variantes textuelles du profil du fondateur, destinées aux supports. Elles n'ajoutent aucun fait : elles recomposent, à longueur contrainte, des éléments déjà publiés et validés sur le site.",
+  "statut_global": "PREPUBLICATION",
+  "source_unique_autorisee": {
+    "fichier": "a-propos.html",
+    "section": "Fondateur",
+    "elements_valides": [
+      "Bokoua Yao OUAGA",
+      "Juriste et géographe du littoral",
+      "droit de la mer et gouvernance maritime",
+      "lecture géographique des littoraux et de leurs usages",
+      "conduite de projets là où la décision se prépare — concertation, médiation, structuration",
+      "Deux géographies structurent le développement de BlueWave : la Méditerranée et le golfe de Guinée"
+    ]
+  },
+  "interdits": [
+    "statut doctoral",
+    "affiliation universitaire",
+    "fonction non exercée",
+    "titre non détenu",
+    "distinction, prix, label",
+    "mission, client, partenaire, mandat",
+    "intervention média ou conférence non réalisée",
+    "réécriture ou enrichissement du parcours"
+  ],
+  "variantes": [
+    {
+      "variante_id": "FONDATEUR_COURT",
+      "status": "TEMP",
+      "public_allowed": false,
+      "approved_by": null,
+      "approved_at": null,
+      "calibrage": "40 mots maximum",
+      "cible": "signature de courriel, fiche, annuaire professionnel",
+      "mots": 29,
+      "texte": "Bokoua Yao OUAGA, juriste et géographe du littoral, fondateur de BlueWave Solutions, bureau d’études, de conseil et de recherche appliquée sur la mer, le littoral et la gouvernance maritime."
+    },
+    {
+      "variante_id": "FONDATEUR_INSTITUTIONNEL",
+      "status": "TEMP",
+      "public_allowed": false,
+      "approved_by": null,
+      "approved_at": null,
+      "calibrage": "120 mots maximum",
+      "cible": "dossier, candidature, support institutionnel",
+      "mots": 96,
+      "texte": "Bokoua Yao OUAGA est juriste et géographe du littoral, fondateur de BlueWave Solutions, bureau d’études, de conseil et de recherche appliquée dédié aux enjeux maritimes, littoraux et côtiers. Il conduit BlueWave à l’intersection de trois pratiques qui se répondent rarement : le droit de la mer et la gouvernance maritime, la lecture géographique des littoraux et de leurs usages, et la conduite de projets là où la décision se prépare — concertation, médiation, structuration. C’est ce croisement qui fait la méthode BlueWave : qualifier un problème avant de proposer une réponse, puis restituer dans un format qui permet de décider. Deux géographies structurent le développement de BlueWave : la Méditerranée et le golfe de Guinée."
+    },
+    {
+      "variante_id": "FONDATEUR_CONFERENCE_MEDIA",
+      "status": "TEMP",
+      "public_allowed": false,
+      "approved_by": null,
+      "approved_at": null,
+      "calibrage": "80 mots maximum",
+      "cible": "programme d’événement, présentation d’intervenant, sollicitation presse",
+      "mots": 66,
+      "texte": "Bokoua Yao OUAGA est juriste et géographe du littoral, fondateur de BlueWave Solutions. Il travaille à l’articulation du droit de la mer et de la gouvernance maritime, de la lecture géographique des littoraux et de leurs usages, et de la conduite de projets là où la décision se prépare. Il intervient sur la Méditerranée et le golfe de Guinée, deux géographies qui structurent le développement de BlueWave."
+    }
+  ],
+  "a_arbitrer_par_le_fondateur": [
+    "Formulation du nom public : la page À propos emploie « Bokoua Yao OUAGA » et la provenance canonique du portrait emploie le même ordre. Aucune autre forme n'est introduite ici.",
+    "Mention éventuelle d'une fonction affichée autre que « fondateur ».",
+    "Passage de ces trois variantes du statut TEMP au statut REVIEW puis APPROVED."
+  ]
+}
