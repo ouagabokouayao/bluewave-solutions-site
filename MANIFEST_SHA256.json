@@ -616,8 +616,8 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/newsletter.test.mjs",
-    "sha256": "f0d90cd8d0ab046e84650c58804547b71d3e32e4d9ec96199cd329243e46bb1c",
-    "bytes": 4658
+    "sha256": "667040840772762ec61f40c00a8fc4488ad4c20df108cbe343baf5dc102a011c",
+    "bytes": 4756
   },
   {
     "path": "serverless/bluewave-leads/tests/pipeline.test.mjs",

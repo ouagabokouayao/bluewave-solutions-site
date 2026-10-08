@@ -56,7 +56,9 @@ test('jeton falsifié ou signé d’un autre secret : refusé', async () => {
   const now = Date.UTC(2026, 9, 4, 8, 0, 0);
   const token = await createConfirmationToken('a@example.invalid', SECRET, { now });
   assert.equal((await verifyConfirmationToken(token, 'x'.repeat(40), { now })).reason, 'signature');
-  assert.equal((await verifyConfirmationToken(token.replace(/.$/, 'A'), SECRET, { now })).reason, 'signature');
+  const tampered = `${token.slice(0, -1)}${token.endsWith('A') ? 'B' : 'A'}`;
+  assert.notEqual(tampered, token);
+  assert.equal((await verifyConfirmationToken(tampered, SECRET, { now })).reason, 'signature');
   assert.equal((await verifyConfirmationToken('sans-point', SECRET, { now })).reason, 'malformed');
 });
 
