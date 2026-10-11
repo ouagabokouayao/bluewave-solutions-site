@@ -43,6 +43,7 @@ CRITICAL_FILES = [
     "assets/js/activites-bluewave.js",
     "assets/js/automation.js",
     "assets/js/analytics.js",
+    "assets/js/provenance.js",
     "assets/js/journey-form.js",
     "assets/js/lead-schema.js",
     "assets/js/main.js",

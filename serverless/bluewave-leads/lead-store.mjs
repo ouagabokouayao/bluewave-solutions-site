@@ -125,7 +125,11 @@ export async function buildLeadRecord(lead, { now = new Date(), correlationId = 
     email: text(lead.email),
     organisation: text(lead.organisation),
     role: text(lead.role),
-    journey_payload: JSON.stringify(journeyPayload(lead)),
+    // Extension JSON compatible avec les bases existantes : aucune migration.
+    // Hors empreinte métier : changer d'UTM ne crée pas une nouvelle demande.
+    journey_payload: JSON.stringify({...journeyPayload(lead),
+      acquisition_source: text(lead.acquisition_source), campaign_code: text(lead.campaign_code),
+      landing_page: text(lead.landing_page)}),
     delivery_status: 'STORED',
     // Seul le vivier d'expertise entre dans un cycle de qualification, au
     // premier échelon. Rien n'est promu automatiquement.

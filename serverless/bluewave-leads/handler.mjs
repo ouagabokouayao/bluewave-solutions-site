@@ -92,7 +92,7 @@ export function createLeadHandler({
     } catch {
       return responseJson(400, { success: false, message: ERROR_MESSAGE }, origin);
     }
-    const validated = validateLeadPayload(input);
+    const validated = validateLeadPayload(input, {campaigns: environment.ALLOWED_CAMPAIGNS || ''});
     if (!validated.ok) {
       // Seul le nom du champ fautif est journalisé, jamais sa valeur.
       logger.log('lead_rejected', { reason: 'validation' });

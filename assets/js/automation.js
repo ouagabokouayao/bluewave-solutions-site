@@ -44,13 +44,26 @@
       credentials: 'omit',
       referrerPolicy: 'no-referrer',
       signal: AbortSignal.timeout(25000),
-      body: JSON.stringify(payload)
+      body: JSON.stringify({...payload, ...await provenanceReady})
     });
     let result = {};
     try { result = await response.json(); } catch (error) { result = {}; }
     if (!response.ok || result.success !== true) throw new Error('Transmission indisponible');
     return { configured: true, ok: true, message: result.message };
   };
+
+  const PROVENANCE_MODULE = 'assets/js/provenance.js';
+  const provenanceReady = Promise.all([
+    import(new URL(PROVENANCE_MODULE, location.href).href),
+    fetch('data/analytics-config.json', {cache:'no-store'}).then(response => response.ok ? response.json() : {})
+  ]).then(([module, config]) => {
+    const provenance = module.provenanceFromLocation(location, config.campaigns, document.referrer);
+    document.addEventListener('click', event => {
+      const link = event.target.closest('a');
+      if (link && (provenance.campaign_code || new URLSearchParams(location.search).has('utm_source'))) link.href = module.campaignLink(link.href, location.origin, provenance);
+    });
+    return provenance;
+  }).catch(() => ({}));
 
   const showMeeting = async () => {
     const target = document.querySelector('[data-meeting-placeholder]');

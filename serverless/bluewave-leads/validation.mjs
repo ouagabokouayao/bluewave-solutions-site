@@ -3,7 +3,8 @@ import {LIMITS, validateLead} from '../../assets/js/lead-schema.js';
 const LEGACY_FIELDS = new Set([
   'firstname', 'lastname', 'email', 'organisation', 'type', 'geography', 'themes',
   'need', 'deadline', 'contact_preference', 'source', 'newsletter_consent',
-  'privacy_acknowledged', 'website', 'captcha_token'
+  'privacy_acknowledged', 'website', 'captcha_token',
+  'acquisition_source', 'campaign_code', 'landing_page'
 ]);
 
 const territoryMap = Object.freeze({
@@ -50,6 +51,9 @@ function legacyToCanonical(input) {
     privacy_acknowledged: input.privacy_acknowledged,
     website: input.website || '',
     captcha_token: input.captcha_token || '',
+    acquisition_source: input.acquisition_source,
+    campaign_code: input.campaign_code,
+    landing_page: input.landing_page,
     ...(journey === 'formation' ? {
       audience: 'À préciser', training_subject: input.need, learning_objectives: input.need,
       training_format: 'distance', period: input.deadline || 'À préciser'
@@ -74,11 +78,11 @@ function downstreamCompatibility(value) {
   };
 }
 
-export function validateLeadPayload(input) {
+export function validateLeadPayload(input, options = {}) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return {ok: false, errors: ['payload']};
   const candidate = 'lead_type' in input ? input : legacyToCanonical(input);
   if (!candidate) return {ok: false, errors: ['payload']};
-  const result = validateLead(candidate);
+  const result = validateLead(candidate, options);
   return result.ok ? {ok: true, value: downstreamCompatibility(result.value)} : result;
 }
 

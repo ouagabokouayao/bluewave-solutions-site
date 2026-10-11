@@ -1,5 +1,6 @@
 // Contrat P0 unique pour le front, /api/leads et les tests.
 // Il ne contient ni secret, ni règle d'activation d'un service externe.
+import {cleanProvenance} from './provenance.js';
 export const OFFERS = Object.freeze([
   'diagnostic-strategique', 'vulnerabilite-cotiere', 'gouvernance-acteurs',
   'structuration-projet', 'formation-capacites', 'note-strategique', 'atelier-cadrage'
@@ -55,7 +56,7 @@ const COMMON_FIELDS = [
   'territory', 'need_category', 'stage', 'data_availability', 'desired_outcome',
   'firstname', 'lastname', 'email', 'organisation', 'role', 'contact_preference',
   'deadline', 'need', 'newsletter_optin_request', 'privacy_acknowledged',
-  'website', 'captcha_token'
+  'website', 'captcha_token', 'acquisition_source', 'campaign_code', 'landing_page'
 ];
 const ORGANISATION_FIELDS = ['collaboration_subject', 'domains', 'collaboration_expectation', 'collaboration_form', 'public_reference', 'organisation_website'];
 const EXPERTISE_FIELDS = ['professional_status', 'expertise_domains', 'intervention_types', 'work_languages', 'availability', 'expertise_evidence', 'motivation', 'phone', 'linkedin', 'website_url', 'orcid', 'portfolio', 'mobility', 'rate_range', 'rc_pro'];
@@ -82,7 +83,7 @@ function pushError(errors, field) {
   if (!errors.includes(field)) errors.push(field);
 }
 
-export function validateLead(input) {
+export function validateLead(input, {campaigns = []} = {}) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return {ok: false, errors: ['payload']};
   const errors = [];
   const value = {};
@@ -156,6 +157,8 @@ export function validateLead(input) {
   if (captchaToken === null) pushError(errors, 'captcha_token');
   value.captcha_token = captchaToken ?? '';
 
+  // Une provenance inconnue est neutralisée sans perdre la demande métier.
+  Object.assign(value, cleanProvenance(input, campaigns));
   return errors.length ? {ok: false, errors} : {ok: true, value};
 }
 

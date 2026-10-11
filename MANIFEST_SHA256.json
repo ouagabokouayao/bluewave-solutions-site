@@ -231,8 +231,8 @@
   },
   {
     "path": "assets/js/automation.js",
-    "sha256": "cb55cd7f267effe6313bf686d34501d29dba65510d6a01f6afd1f26c4b945a5c",
-    "bytes": 4536
+    "sha256": "6d8edcceecd275c53ba16c65f304a47eecef18204277be9116834d136d5f8dad",
+    "bytes": 5299
   },
   {
     "path": "assets/js/journey-form.js",
@@ -241,8 +241,8 @@
   },
   {
     "path": "assets/js/lead-schema.js",
-    "sha256": "d44033004361e4dc046bdfd1eb9cac9a55bdb67608d786c75fdb702b4d5fc4ab",
-    "bytes": 11206
+    "sha256": "5c05cd90e3195dd385172acf01907f33215e05e3a4f6662b97cef8df5d6fdbfa",
+    "bytes": 11470
   },
   {
     "path": "assets/js/main.js",
@@ -253,6 +253,11 @@
     "path": "assets/js/mediatheque.js",
     "sha256": "a15b96a37b06ce78f493b346439712e350c65f81c7e63d7436890bbe0c773ce6",
     "bytes": 3193
+  },
+  {
+    "path": "assets/js/provenance.js",
+    "sha256": "7657e3632a82e055a31f8122d66d6dee89ff7174148164b8d92c4764beaee13e",
+    "bytes": 1906
   },
   {
     "path": "assets/js/qualifier.js",
@@ -526,8 +531,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "8d36a5cb73ec611f34552b5e51d55e40540871d1bb7ac2384b8eb8e62f82e364",
-    "bytes": 5084
+    "sha256": "b10ed49f9a6fa2fee711c86eb257ec6a8a59091f9d0d35d5fab069074117983f",
+    "bytes": 5115
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -560,6 +565,46 @@
     "bytes": 13987
   },
   {
+    "path": "serverless/a01/README.md",
+    "sha256": "5557b92944444fab5b29b9285509787a7b031e806192afef983b59529e5a74e5",
+    "bytes": 10374
+  },
+  {
+    "path": "serverless/a01/contracts.mjs",
+    "sha256": "3319909ec803695466183a1dc1ba34ddd406edfb9959b774900cdeb4a8892a72",
+    "bytes": 5515
+  },
+  {
+    "path": "serverless/a01/editorial.mjs",
+    "sha256": "390a701e3591dd12af1dc8eb66df5b01d16ae8bd3f0860e5dcf017f60cff6e89",
+    "bytes": 3844
+  },
+  {
+    "path": "serverless/a01/inventory.mjs",
+    "sha256": "5fc34547826e4e836d419b74f9bb5982c180942f47ec78ba1bfb2d8c1f6231f6",
+    "bytes": 1795
+  },
+  {
+    "path": "serverless/a01/newsletter-test-channel.mjs",
+    "sha256": "853470659dee8db4d4ade96e360c920f2037a4032e317b2895e6747f41271861",
+    "bytes": 9152
+  },
+  {
+    "path": "serverless/a01/newsletter-test-schema.sql",
+    "sha256": "89d99a107e5caaa7b2c36feef87a13fa75a487cae0e4f51b82b9828ae93a0cb7",
+    "bytes": 458
+  },
+  {
+    "path": "serverless/a01/prepare.mjs",
+    "sha256": "c21267c6e7513ce2558cbbda501589bb28516060c3944307fa39ab1c39452b0b",
+    "bytes": 1646
+  },
+  {
+    "path": "serverless/a01/reporting.mjs",
+    "sha256": "816ac47cd8eff02f36597b65a00b1624836819c9d4309c066c309d0a95f36369",
+    "bytes": 4606
+  },
+  {
     "path": "serverless/bluewave-leads/.env.example",
     "sha256": "91484f475b9663a28cc6d3bbc3db8dd8dd3f692659344953c72cb35a58e4f195",
     "bytes": 1412
@@ -586,13 +631,13 @@
   },
   {
     "path": "serverless/bluewave-leads/handler.mjs",
-    "sha256": "f4293a04fb352e5c828c808540d5a8005e3778da147fd55dd02ab0ee6d827ccc",
-    "bytes": 9724
+    "sha256": "d36349f0f8e57269d63ad60bc1cb97becf4189aaab2ba2c820537fed81753cbe",
+    "bytes": 9774
   },
   {
     "path": "serverless/bluewave-leads/lead-store.mjs",
-    "sha256": "8b3731e9877c24cf15be34e1c845316ce76a367577f37addca6d1e6b90d01199",
-    "bytes": 9160
+    "sha256": "01b543c9cd80a6e7c4e8f299ba28eecd109ca7111787299a2d2ca0d2b0b50101",
+    "bytes": 9468
   },
   {
     "path": "serverless/bluewave-leads/newsletter.mjs",
@@ -613,6 +658,11 @@
     "path": "serverless/bluewave-leads/security.mjs",
     "sha256": "4f76672dc4363b2d842da7f4f05e6a4ca3ef6f408cd9187f8c8e0366b6e90cb7",
     "bytes": 1077
+  },
+  {
+    "path": "serverless/bluewave-leads/tests/a01.test.mjs",
+    "sha256": "3aae0d45e9af1e92e9f037b25c509ea7b13fd7a65fc681cd21bbaf5a86971815",
+    "bytes": 25549
   },
   {
     "path": "serverless/bluewave-leads/tests/commercial-readiness.test.mjs",
@@ -656,8 +706,8 @@
   },
   {
     "path": "serverless/bluewave-leads/validation.mjs",
-    "sha256": "8335f24a9c2e957268fefe94790b913491ad4c003073f71e48260cd94312ce02",
-    "bytes": 3866
+    "sha256": "2db5f64b76a0c345aa5477a47d78d0b5ec082de1515ce7190d6e7ccb68348b8a",
+    "bytes": 4074
   },
   {
     "path": "serverless/cloudflare/PRODUCTION.md",
