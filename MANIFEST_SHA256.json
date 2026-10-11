@@ -366,13 +366,13 @@
   },
   {
     "path": "package-lock.json",
-    "sha256": "812c980d81a7b6bf0bc55bc02ac8c86da62b3149666d1586ac5f887127a7354f",
-    "bytes": 72586
+    "sha256": "b4bb29abdaf71f5994482c53493ddde6d29f1df4365f846d4e40d3a39b56452a",
+    "bytes": 53759
   },
   {
     "path": "package.json",
-    "sha256": "6d3378d368ade50a64b463b613ac14e7819ded6d99becac43121839f981a203d",
-    "bytes": 933
+    "sha256": "f5f7ee5e1749c90750e10fc737d143e28303513bf9d999d006c4ebe4189036b2",
+    "bytes": 1030
   },
   {
     "path": "politique-confidentialite.html",
