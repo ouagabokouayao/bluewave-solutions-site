@@ -117,8 +117,8 @@ test('A01 CRM : remise sensible désactivée par défaut, clé unique, aucune pr
   assert.equal(result.master_crm_written,false);assert.equal(result.items[0].review_status,'PENDING_REVIEW');
   assert.equal(result.items[0].crm_id,null);assert.equal(result.items[0].next_action_at,null);
   assert.equal(result.sensitive,false);assert.equal(JSON.stringify(result).includes(base.email),false);
-  assert.throws(()=>prepareHandoff([record],{enabled:true,includeContact:true}),/03/);
-  assert.equal(prepareHandoff([record],{enabled:true,includeContact:true,contactAccessApprovedBy:'03'}).items[0].contact.email,base.email);
+  assert.throws(()=>prepareHandoff([record],{enabled:true,includeContact:true}),/Autorisation/);
+  assert.throws(()=>prepareHandoff([record],{enabled:true,includeContact:true,contactAccessApprovedBy:'03'}),/Autorisation/);
   assert.throws(()=>prepareHandoff([record,record],{enabled:true}),/Doublon/);
   assert.throws(()=>validateHumanReview({lead_id:record.id,stage:'N5'}),/03/);
   assert.throws(()=>validateHumanReview({owner:'03',lead_id:record.id,reviewed_at:stamp,stage:'N5',evidence_ref:'test'}),/besoin/);
@@ -142,25 +142,25 @@ const content={content_id:'c01-synthetic',version_hash:'a'.repeat(64),networks:[
 test('A01 C01 : DRAFT→REVIEW→APPROVED lié au hash ; aucun PROGRAMMÉ',()=>{
   const review=transitionContent(content,'REVIEW');
   const approved=transitionContent(review,'APPROVED',{reviewer:'02',approved_at:stamp});
-  assert.equal(prepareSchedule([content],{campaigns}).plans[0].ready_for_manual_execution,false);
-  assert.equal(prepareSchedule([approved],{campaigns}).plans[0].ready_for_manual_execution,false);
-  const result=prepareSchedule([approved],{campaigns,enabled:true,go:{owner:'Joseph',reference:'go-test',content_id:content.content_id,version_hash:content.version_hash,account_ids:['test-account']},accounts:[{account_id:'test-account',network:'linkedin',authorized:true}]});
+  assert.equal(prepareSchedule([content],{campaigns,approvedOrigins:['https://example.invalid']}).plans[0].ready_for_manual_execution,false);
+  assert.equal(prepareSchedule([approved],{campaigns,approvedOrigins:['https://example.invalid']}).plans[0].ready_for_manual_execution,false);
+  const result=prepareSchedule([approved],{campaigns,enabled:true,go:{owner:'Joseph',reference:'go-test',content_id:content.content_id,version_hash:content.version_hash,account_ids:['test-account']},accounts:[{account_id:'test-account',network:'linkedin',authorized:true}],approvedOrigins:['https://example.invalid']});
   assert.equal(result.external_calls,0);assert.equal(result.plans[0].status,'DRY_RUN');assert.equal(result.plans[0].scheduled_id,null);
   assert.equal(result.plans[0].ready_for_manual_execution,true);
   assert.equal(reviseContent(approved,'b'.repeat(64)).approved_hash,null);
-  assert.throws(()=>prepareSchedule([{...approved,version_hash:'b'.repeat(64)}],{campaigns}),/version/);
-  assert.throws(()=>prepareSchedule([approved,approved],{campaigns}),/Doublon/);
-  assert.throws(()=>prepareSchedule([{...approved,scheduled_id:'existing'}],{campaigns}),/déjà/);
+  assert.throws(()=>prepareSchedule([{...approved,version_hash:'b'.repeat(64)}],{campaigns,approvedOrigins:['https://example.invalid']}),/version/);
+  assert.throws(()=>prepareSchedule([approved,approved],{campaigns,approvedOrigins:['https://example.invalid']}),/Doublon/);
+  assert.throws(()=>prepareSchedule([{...approved,scheduled_id:'existing'}],{campaigns,approvedOrigins:['https://example.invalid']}),/déjà/);
 });
 test('A01 reporting : source→CTA→demande→revue 03→N5 ou contrat, aucune identité exportée',async()=>{
   const record=await buildLeadRecord(validateLeadPayload(base,{campaigns}).value,{now:new Date(stamp)});
   const review={owner:'03',lead_id:record.id,reviewed_at:'2026-10-11T10:00:00Z',stage:'N5',evidence_ref:'review-test',need_evidence_ref:'need-test',next_action_at:'2026-10-12T09:00:00Z'};
   const event={occurred_at:stamp,event_name:'journey_cta_click',page:'projet',source:'linkedin',campaign:'c01-test',count:4};
   const options={from:'2026-10-11T00:00:00Z',to:'2026-10-12T00:00:00Z',campaigns,leads:[record],reviews:[review],events:[event,{...event,event_name:'lead_submit_fallback_email',count:2}]};
-  const report=buildReport(options);assert.equal(report.counts[0].accepted_requests,1);assert.equal(report.counts[0].n5,1);assert.equal(report.counts[0].fallback_events,2);
+  const report=buildReport(options);assert.equal(report.counts[0].accepted_requests,1);assert.equal(report.counts[0].n5,0);assert.equal(report.counts[0].fallback_events,2);
   const text=JSON.stringify(report);for(const value of [base.email,base.firstname,record.id,base.need])assert.equal(text.includes(value),false);
   const n9={...review,stage:'N9',reviewed_at:'2026-10-11T11:00:00Z',contract_evidence_ref:'contract-test',contract_at:'2026-10-11T10:30:00Z'};
-  const contracted=buildReport({...options,reviews:[review,n9]});assert.equal(contracted.counts[0].proven_contracts,1);assert.equal(contracted.counts[0].pipeline_n5_n8,0);assert.equal(contracted.signed_revenue,null);
+  const contracted=buildReport({...options,reviews:[review,n9]});assert.equal(contracted.counts[0].proven_contracts,0);assert.equal(contracted.counts[0].pipeline_n5_n8,0);assert.equal(contracted.signed_revenue,null);
   assert.throws(()=>buildReport({...options,events:[{...event,email:base.email}]}),/invalide/);
   assert.throws(()=>buildReport({...options,leads:[record,record]}),/Doublon/);
   assert.throws(()=>buildReport({...options,reviews:[{...n9,contract_evidence_ref:null}]}),/Contrat/);

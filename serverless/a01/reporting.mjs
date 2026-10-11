@@ -2,7 +2,17 @@
 import {sanitizeEvent} from '../../assets/js/analytics.js';
 import {allowedCampaigns} from '../../assets/js/provenance.js';
 import {provenanceOf, validateHumanReview, isDate} from './contracts.mjs';
-export function buildReport({events = [], leads = [], reviews = [], costs = [], from, to, campaigns = []} = {}) {
+export function adaptSqlReportRows(rows) {
+  if(!Array.isArray(rows))throw new Error('Lignes SQL invalides');
+  return rows.map(row=>{
+    if(!row||typeof row.day!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(row.day)||
+       new Date(`${row.day}T00:00:00.000Z`).toISOString().slice(0,10)!==row.day ||
+       !Number.isSafeInteger(row.events)||row.events<0)throw new Error('Agrégat SQL D1 invalide');
+    const {day,events,...dimensions}=row;
+    return {...dimensions,occurred_at:`${day}T00:00:00.000Z`,count:events};
+  });
+}
+export function buildReport({events = [], leads = [], reviews = [], costs = [], from, to, campaigns = [], resolveEvidence = null} = {}) {
   campaigns = allowedCampaigns(campaigns);
   if (!isDate(from) || !isDate(to) || Date.parse(from) >= Date.parse(to)) throw new Error('Fenêtre temporelle invalide');
   const inside = stamp => isDate(stamp) && Date.parse(stamp) >= Date.parse(from) && Date.parse(stamp) < Date.parse(to);
@@ -36,8 +46,8 @@ export function buildReport({events = [], leads = [], reviews = [], costs = [], 
   }
   const latestReviews = new Map();
   for (const raw of reviews) {
-    const review = validateHumanReview(raw);
-    const lead = byId.get(review.lead_id);
+    const lead = byId.get(raw.lead_id);
+    const review = validateHumanReview(raw,{lead,resolveEvidence});
     if (!lead || Date.parse(review.reviewed_at) < Date.parse(lead.created_at)) throw new Error('Revue sans demande enregistrée antérieure');
     if (Date.parse(review.reviewed_at) >= Date.parse(to)) continue;
     const previous = latestReviews.get(review.lead_id);
@@ -50,11 +60,11 @@ export function buildReport({events = [], leads = [], reviews = [], costs = [], 
     if (!inside(lead.created_at)) continue;
     const p = provenanceOf(lead,campaigns); const target = bucket(lead.created_at,p.acquisition_source,p.campaign_code);
     target.human_reviews++;
-    if (review.stage === 'N5') target.n5++;
-    if (['N5','N6','N7','N8'].includes(review.stage)) target.pipeline_n5_n8++;
+    if (review.stage === 'N5' && review.proof_status === 'VERIFIED') target.n5++;
+    if (['N5','N6','N7','N8'].includes(review.stage) && review.proof_status === 'VERIFIED') target.pipeline_n5_n8++;
     if (review.stage === 'N9') {
       if (Date.parse(review.contract_at) > Date.parse(review.reviewed_at) || Date.parse(review.contract_at) < Date.parse(lead.created_at)) throw new Error('Chronologie contrat invalide');
-      target.proven_contracts++;
+      if (review.proof_status === 'VERIFIED') target.proven_contracts++;
     }
   }
   const costRows = costs.map(cost => {
@@ -65,5 +75,5 @@ export function buildReport({events = [], leads = [], reviews = [], costs = [], 
     signed_revenue:null,invoiced_revenue:null,cash_received:null,
     counts:[...buckets.values()].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))),costs:costRows,
     limitations:['CTA = événements, pas visiteurs uniques','Repli e-mail exclu des demandes enregistrées',
-      'Revue 03 humaine, N9 exclu du pipeline N5-N8','Contrat prouvé ne vaut ni facture ni encaissement','Attribution déclarative, pas preuve causale']};
+      'Revue 03 humaine, N9 exclu du pipeline N5-N8','Contrat prouvé ne vaut ni facture ni encaissement','Attribution déclarative, pas preuve causale','N5 et N9 exclus sans pièce vérifiée via registre 03']};
 }

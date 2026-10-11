@@ -576,13 +576,13 @@
   },
   {
     "path": "serverless/a01/contracts.mjs",
-    "sha256": "59f2d8e867b291a9ee061fc573cb0cc17877a3af886ec76d099caea265ceeb5d",
-    "bytes": 5715
+    "sha256": "ea2682fc80aaf5c270abb8d966949e9de194d914f062b397597bfca8616e8525",
+    "bytes": 8963
   },
   {
     "path": "serverless/a01/editorial.mjs",
-    "sha256": "390a701e3591dd12af1dc8eb66df5b01d16ae8bd3f0860e5dcf017f60cff6e89",
-    "bytes": 3844
+    "sha256": "08dc0f0ec8acdc6ec95d0aee63991c888a8afc80bedfba6023a58d8781a63f67",
+    "bytes": 4406
   },
   {
     "path": "serverless/a01/inventory.mjs",
@@ -601,13 +601,18 @@
   },
   {
     "path": "serverless/a01/prepare.mjs",
-    "sha256": "2449aaaf19d544cc586d51520534e46db86fbf6b11675f470c2129b37206cdb4",
-    "bytes": 1794
+    "sha256": "0545d432b3edde6642ba462f9b6f8702f33f6de15f09890716fd28f754178907",
+    "bytes": 1849
   },
   {
     "path": "serverless/a01/reporting.mjs",
-    "sha256": "816ac47cd8eff02f36597b65a00b1624836819c9d4309c066c309d0a95f36369",
-    "bytes": 4606
+    "sha256": "bc45774c573d2fda476267b96fa47b2acbcd3f0511fb76ccfe2a759d9cd989b8",
+    "bytes": 5346
+  },
+  {
+    "path": "serverless/a01/secure-review.mjs",
+    "sha256": "e664a53744758c3e033c834f71d3c2476ef3a35d8454fdda64595797fc8639bf",
+    "bytes": 3698
   },
   {
     "path": "serverless/bluewave-leads/.env.example",
@@ -665,9 +670,14 @@
     "bytes": 1077
   },
   {
+    "path": "serverless/bluewave-leads/tests/a01-correctifs.test.mjs",
+    "sha256": "07c25434d9b883899f922823cc11474e0745aaf4eabb5f8cae5fa2a9301ddfb3",
+    "bytes": 8874
+  },
+  {
     "path": "serverless/bluewave-leads/tests/a01.test.mjs",
-    "sha256": "ff440d49df49abf03cd030a1c14b0351943103cc6fb42c38d025f69c2ed2ebf9",
-    "bytes": 27109
+    "sha256": "e296e1ae6529ca375f11f28539f8c95f1afb3505a1681ad2670d7a46f17ac1c8",
+    "bytes": 27369
   },
   {
     "path": "serverless/bluewave-leads/tests/commercial-readiness.test.mjs",

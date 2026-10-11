@@ -7,6 +7,7 @@ import {prepareSchedule} from './editorial.mjs';
 import {importC01Calendar} from './calendar.mjs';
 import {buildReport} from './reporting.mjs';
 const [kind,inputPath,outputPath,authorization]=process.argv.slice(2);
+if(authorization==='--sensitive-handoff')throw new Error('Export sensible indisponible via JSON CLI : mécanisme de confiance serveur requis');
 if (!['handoff','schedule','report','calendar'].includes(kind) || !inputPath || !outputPath) throw new Error('Usage : node prepare.mjs handoff|schedule|report|calendar input.json|csv /chemin/hors-depot/output.json [--sensitive-handoff]');
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const output=resolve(await realpath(dirname(resolve(outputPath))),basename(outputPath));
@@ -15,7 +16,7 @@ if (!isAbsolute(outputPath) || !(relativeOutput === '..' || relativeOutput.start
 const raw=await readFile(inputPath,'utf8');
 const input=kind==='calendar'?null:JSON.parse(raw);
 const result=kind==='calendar' ? await importC01Calendar(raw) : kind==='handoff' ? prepareHandoff(input.records,{campaigns:input.campaigns,enabled:true,
-  includeContact:authorization==='--sensitive-handoff',contactAccessApprovedBy:input.contact_access_approved_by})
+  includeContact:false})
   : kind==='schedule' ? prepareSchedule(input.contents,input.options) : buildReport(input);
 await writeFile(output,JSON.stringify(result,null,2)+'\n',{encoding:'utf8',mode:0o600,flag:'wx'});
 console.log(JSON.stringify({kind,export_created:true,external_calls:0,master_crm_written:false}));

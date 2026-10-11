@@ -1,6 +1,7 @@
 // Interfaces internes de préparation A01. Aucun client réseau ni écriture CRM.
 import {cleanProvenance} from '../../assets/js/provenance.js';
 import {buildLogRecord} from '../bluewave-leads/observability.mjs';
+import {verifyContactGrant, verifyEvidence} from './secure-review.mjs';
 
 const CODE = /^[a-z0-9][a-z0-9_.:-]{0,79}$/i;
 export const isCode = value => typeof value === 'string' && CODE.test(value);
@@ -12,36 +13,70 @@ export function provenanceOf(record, campaigns = []) {
   return cleanProvenance(payload, campaigns);
 }
 
-// Export sensible pour revue 03, jamais destiné au build public ou aux logs.
-export function prepareHandoff(records, {campaigns = [], enabled = false, includeContact = false, contactAccessApprovedBy = null} = {}) {
+// The handoff never writes CRM or grants CRM IDs. Nominal data require a
+// signed, unexpired and non-revoked grant checked with a server-owned key.
+const OFFERS = new Set(['diagnostic-strategique','vulnerabilite-cotiere','gouvernance-acteurs',
+ 'structuration-projet','formation-capacites','note-strategique','atelier-cadrage']);
+const NEED_CATEGORIES = new Set(['vulnerabilite','strategie','gouvernance','sfn','projet','planification','formation','collaboration','expertise','multiple','indetermine']);
+const normalize = value => String(value||'').normalize('NFKC').trim().toLocaleLowerCase('fr').replace(/\s+/g,' ');
+export function prepareHandoff(records, {campaigns = [], enabled = false, includeContact = false,
+  authorization = null, authorizationKey = null, isRevoked = null, checkPrivacy = null, now = new Date().toISOString(),
+  existingActors = [], reviewDays = 7} = {}) {
   if (!enabled) return {enabled:false, items:[]};
-  requireValue(!includeContact || contactAccessApprovedBy === '03', 'Accès nominatif approuvé par 03 requis');
-  const unique = new Map();
-  for (const record of records) {
+  requireValue(Array.isArray(records) && Number.isInteger(reviewDays) && reviewDays>=1 && reviewDays<=30, 'File de revue invalide');
+  if (includeContact) requireValue(verifyContactGrant(authorization,{key:authorizationKey,now,isRevoked,checkPrivacy}),
+    'Autorisation nominative vérifiable requise');
+  const unique = new Map(), possibleMatches = new Map();
+  const prepared = records.map(record => {
     requireValue(isCode(record.id) && isDate(record.created_at), 'Demande enregistrée requise');
     requireValue(!unique.has(record.id), 'Doublon lead_id');
-    unique.set(record.id, {
-      lead_id:record.id, received_at:record.created_at, owner:'03', review_status:'PENDING_REVIEW',
-      crm_id:null, next_action_at:null, evidence_ref:null,
-      journey:record.journey, lead_type:record.lead_type, ...provenanceOf(record, campaigns),
-      ...(includeContact ? {contact:{firstname:record.firstname, lastname:record.lastname, email:record.email, organisation:record.organisation},
-        need:JSON.parse(record.journey_payload || '{}')} : {}), delivery_status:record.delivery_status
-    });
-  }
-  return {enabled:true, sensitive:includeContact, master_crm_written:false, items:[...unique.values()]};
+    unique.set(record.id,true);
+    const offer_code = [record.recommended_offer,record.offer_code].find(code=>OFFERS.has(code))||null;
+    const review_due_at = new Date(Date.parse(record.created_at)+reviewDays*86400000).toISOString();
+    const item = {lead_id:record.id,received_at:record.created_at,owner:'03',review_status:'PENDING_REVIEW',
+      actor_match_status:'UNMATCHED',actor_id:null,duplicate_candidate:false,possible_existing_actor_id:null,
+      crm_id:null,offer_code, next_action_at:null,review_due_at,evidence_ref:null,
+      need_evidence_ref:null,contract_evidence_ref:null,source_proof:`lead:${record.id}`,
+      date_verification:null,journey:record.journey,lead_type:record.lead_type,
+      ...provenanceOf(record,campaigns),delivery_status:record.delivery_status};
+    if (includeContact) {
+      item.contact = {firstname:String(record.firstname||''),lastname:String(record.lastname||''),
+        email:String(record.email||''),organisation:String(record.organisation||'')};
+      // Only closed business fields; free-text journey_payload is NEVER copied.
+      item.need_summary={need_category:NEED_CATEGORIES.has(record.need_category)?record.need_category:null};
+      const email=normalize(record.email),org=normalize(record.organisation);
+      const key=email&&org?`${email}|${org}`:null;
+      const match=key ? existingActors.find(actor=>normalize(actor.email)===email && normalize(actor.organisation)===org && isCode(actor.actor_id)) : null;
+      if(match){item.duplicate_candidate=true;item.actor_match_status='DUPLICATE_CANDIDATE';item.possible_existing_actor_id=match.actor_id;}
+      const previous=key?possibleMatches.get(key):null;
+      if(previous){item.duplicate_candidate=true;item.actor_match_status='DUPLICATE_CANDIDATE';previous.duplicate_candidate=true;previous.actor_match_status='DUPLICATE_CANDIDATE';}
+      if(key)possibleMatches.set(key,item);
+    }
+    return item;
+  });
+  return {enabled:true,sensitive:includeContact,master_crm_written:false,items:prepared};
 }
 
-// Décision fournie par 03, pas une promotion déduite d'un formulaire.
-export function validateHumanReview(review) {
+// Syntax and chronology are necessary but NOT proof of an N5/N9 commercial fact.
+// The trusted proof resolver, when available, must verify the actual document.
+export function validateHumanReview(review,{lead=null,resolveEvidence=null}={}) {
   requireValue(review?.owner === '03' && isCode(review.lead_id) && isDate(review.reviewed_at), 'Revue humaine 03 requise');
   requireValue(/^N[0-9]$/.test(review.stage) && isCode(review.evidence_ref), 'Stade et preuve requis');
   if (['N5','N6','N7','N8'].includes(review.stage)) requireValue(isCode(review.need_evidence_ref), 'Preuve de besoin explicite requise');
   if (review.stage === 'N9') requireValue(isCode(review.contract_evidence_ref) && isDate(review.contract_at), 'Contrat prouvé requis');
-  else requireValue(isDate(review.next_action_at), 'Prochaine action datée requise');
-  return {lead_id:review.lead_id, owner:'03', reviewed_at:review.reviewed_at, stage:review.stage,
-    evidence_ref:review.evidence_ref, need_evidence_ref:review.need_evidence_ref || null,
-    contract_evidence_ref:review.contract_evidence_ref || null, contract_at:review.contract_at || null,
-    next_action_at:review.next_action_at || null};
+  const closed = review.closure_reason && isCode(review.closure_reason);
+  if(review.stage!=='N9'&&!closed)requireValue(isDate(review.next_action_at),'Prochaine action datée requise');
+  if(review.next_action_at)requireValue(isDate(review.next_action_at)&&Date.parse(review.next_action_at)>=Date.parse(review.reviewed_at),'Chronologie prochaine action invalide');
+  if(closed)requireValue(!review.next_action_at,'Clôture sans prochaine action requise');
+  if(review.stage==='N9') {
+    requireValue(!review.next_action_at||Date.parse(review.next_action_at)>=Date.parse(review.reviewed_at),'Action post-contrat invalide');
+  }
+  const proof=lead ? verifyEvidence(review,lead,resolveEvidence) : {status:'PENDING_EVIDENCE',need:false,contract:false};
+  return {lead_id:review.lead_id,owner:'03',reviewed_at:review.reviewed_at,stage:review.stage,
+    evidence_ref:review.evidence_ref,need_evidence_ref:review.need_evidence_ref||null,
+    contract_evidence_ref:review.contract_evidence_ref||null,contract_at:review.contract_at||null,
+    next_action_at:review.next_action_at||null,closure_reason:review.closure_reason||null,
+    proof_status:proof.status,verified_need:proof.need,verified_contract:proof.contract};
 }
 
 const INCIDENTS = Object.freeze({
