@@ -316,8 +316,8 @@
   },
   {
     "path": "formation.html",
-    "sha256": "3e4eb4be278bf16361a8a2c4c3e716b866268a3b593157039e35bab45f8b6148",
-    "bytes": 8172
+    "sha256": "67717fadeca2648c5f8076f1732e7f27149c2a2e2139e393dec4e02195029611",
+    "bytes": 10635
   },
   {
     "path": "index.html",
@@ -615,6 +615,11 @@
     "bytes": 1077
   },
   {
+    "path": "serverless/bluewave-leads/tests/commercial-readiness.test.mjs",
+    "sha256": "09233827d361348836e961c871caa510c4c97220775a1902bfa58b71fc0d86e6",
+    "bytes": 2333
+  },
+  {
     "path": "serverless/bluewave-leads/tests/d1-double.mjs",
     "sha256": "f750bc3c1b5095f5d668a4fc66623c15f05996354a84db0d8f1a222eb54b703f",
     "bytes": 2772
@@ -766,7 +771,7 @@
   },
   {
     "path": "solutions.html",
-    "sha256": "ca854e29e981e3b2dfcffe1f4f39943231a2d2b9efa26a16a60928ae46d83e1f",
-    "bytes": 9324
+    "sha256": "89dcc090bdcac8d0596c32267f4dcef3da241de64c92adff0b7de15c8e1ec2b7",
+    "bytes": 11806
   }
 ]
