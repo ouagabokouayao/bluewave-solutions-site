@@ -566,13 +566,18 @@
   },
   {
     "path": "serverless/a01/README.md",
-    "sha256": "5557b92944444fab5b29b9285509787a7b031e806192afef983b59529e5a74e5",
-    "bytes": 10374
+    "sha256": "01ed17553318f554b6a409326b512ba00e152a26146b726e65a05f3013f397da",
+    "bytes": 11373
+  },
+  {
+    "path": "serverless/a01/calendar.mjs",
+    "sha256": "b3aa55485ef9f17e460b356dcf724917f6fc23861035470573cfe7b502935ac4",
+    "bytes": 2251
   },
   {
     "path": "serverless/a01/contracts.mjs",
-    "sha256": "3319909ec803695466183a1dc1ba34ddd406edfb9959b774900cdeb4a8892a72",
-    "bytes": 5515
+    "sha256": "59f2d8e867b291a9ee061fc573cb0cc17877a3af886ec76d099caea265ceeb5d",
+    "bytes": 5715
   },
   {
     "path": "serverless/a01/editorial.mjs",
@@ -596,8 +601,8 @@
   },
   {
     "path": "serverless/a01/prepare.mjs",
-    "sha256": "c21267c6e7513ce2558cbbda501589bb28516060c3944307fa39ab1c39452b0b",
-    "bytes": 1646
+    "sha256": "2449aaaf19d544cc586d51520534e46db86fbf6b11675f470c2129b37206cdb4",
+    "bytes": 1794
   },
   {
     "path": "serverless/a01/reporting.mjs",
@@ -661,8 +666,8 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/a01.test.mjs",
-    "sha256": "3aae0d45e9af1e92e9f037b25c509ea7b13fd7a65fc681cd21bbaf5a86971815",
-    "bytes": 25549
+    "sha256": "ff440d49df49abf03cd030a1c14b0351943103cc6fb42c38d025f69c2ed2ebf9",
+    "bytes": 27109
   },
   {
     "path": "serverless/bluewave-leads/tests/commercial-readiness.test.mjs",

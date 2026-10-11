@@ -13,8 +13,9 @@ export function provenanceOf(record, campaigns = []) {
 }
 
 // Export sensible pour revue 03, jamais destiné au build public ou aux logs.
-export function prepareHandoff(records, {campaigns = [], enabled = false} = {}) {
+export function prepareHandoff(records, {campaigns = [], enabled = false, includeContact = false, contactAccessApprovedBy = null} = {}) {
   if (!enabled) return {enabled:false, items:[]};
+  requireValue(!includeContact || contactAccessApprovedBy === '03', 'Accès nominatif approuvé par 03 requis');
   const unique = new Map();
   for (const record of records) {
     requireValue(isCode(record.id) && isDate(record.created_at), 'Demande enregistrée requise');
@@ -23,11 +24,11 @@ export function prepareHandoff(records, {campaigns = [], enabled = false} = {}) 
       lead_id:record.id, received_at:record.created_at, owner:'03', review_status:'PENDING_REVIEW',
       crm_id:null, next_action_at:null, evidence_ref:null,
       journey:record.journey, lead_type:record.lead_type, ...provenanceOf(record, campaigns),
-      contact:{firstname:record.firstname, lastname:record.lastname, email:record.email, organisation:record.organisation},
-      need:JSON.parse(record.journey_payload || '{}'), delivery_status:record.delivery_status
+      ...(includeContact ? {contact:{firstname:record.firstname, lastname:record.lastname, email:record.email, organisation:record.organisation},
+        need:JSON.parse(record.journey_payload || '{}')} : {}), delivery_status:record.delivery_status
     });
   }
-  return {enabled:true, sensitive:true, master_crm_written:false, items:[...unique.values()]};
+  return {enabled:true, sensitive:includeContact, master_crm_written:false, items:[...unique.values()]};
 }
 
 // Décision fournie par 03, pas une promotion déduite d'un formulaire.
@@ -46,11 +47,11 @@ export function validateHumanReview(review) {
 const INCIDENTS = Object.freeze({
   lead_storage_failed:{severity:'CRITICAL',action:'STOP_LEADS'},
   delivery_status_write_failed:{severity:'CRITICAL',action:'RECONCILE_BEFORE_REPLAY'},
-  brevo_contact_failed:{severity:'WARNING',action:'DRY_RUN_REPLAY'},
-  ack_failed:{severity:'WARNING',action:'DRY_RUN_REPLAY'},
-  internal_notification_failed:{severity:'WARNING',action:'DRY_RUN_REPLAY'},
-  event_storage_failed:{severity:'WARNING',action:'STOP_EVENTS'},
-  replay_failed:{severity:'WARNING',action:'MANUAL_REVIEW'}
+  brevo_contact_failed:{severity:'MAJOR',action:'DRY_RUN_REPLAY'},
+  ack_failed:{severity:'MAJOR',action:'DRY_RUN_REPLAY'},
+  internal_notification_failed:{severity:'MAJOR',action:'DRY_RUN_REPLAY'},
+  event_storage_failed:{severity:'MAJOR',action:'STOP_EVENTS'},
+  replay_failed:{severity:'MAJOR',action:'MANUAL_REVIEW'}
 });
 export function classifyIncident(event, details = {}, occurredAt = new Date().toISOString()) {
   const clean = buildLogRecord(event, details);

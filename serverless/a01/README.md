@@ -1,8 +1,9 @@
 # A01 — Interfaces internes, préproduction OFF
 
 Base : `982fa9eebd80e680e887fc68f17135f2ac9bbfd5`. Contrats source : dossier
-Automation Readiness et Interfaces 02/W14 de 07, 11/10/2026. Le delta complémentaire
-C01+A01 de 02 n'était pas accessible à l'exécution : revue 02 requise avant promotion.
+Automation Readiness et Interfaces 02/W14 de 07, 11/10/2026. Delta complémentaire 02 retrouvé et contrôlé : `BlueWave_C01_A01_Delta_Preparation_2026-10-11.zip`,
+SHA-256 `c852a6e34d8c93e3f51ecc93d7560667e9189a95f7c9fb7f92dff932ac9ee249`.
+Ses prototypes ont été audités et adaptés ; ils n'ont pas été installés ni leurs tests recopiés.
 
 ## Exécution locale
 
@@ -13,8 +14,12 @@ C01+A01 de 02 n'était pas accessible à l'exécution : revue 02 requise avant p
 - `npm test` : régressions et intégration A01.
 - `node serverless/a01/prepare.mjs report input.json /tmp/report.json` : agrégats.
 - `node serverless/a01/prepare.mjs schedule input.json /tmp/schedule.json` : plan DRY RUN.
-- `node serverless/a01/prepare.mjs handoff input.json /tmp/handoff.json --sensitive-handoff` :
-  export sensible pour 03, créé hors dépôt en mode 0600, jamais écrit au CRM maître.
+- `node serverless/a01/prepare.mjs handoff input.json /tmp/handoff.json` :
+  file de revue sans identité par défaut, créée hors dépôt en mode 0600, jamais écrite au CRM maître.
+  L'option `--sensitive-handoff` exige en plus `contact_access_approved_by=03` dans l'entrée ;
+  utiliser seulement après approbation réelle 03 de l'accès nominatif.
+- `node serverless/a01/prepare.mjs calendar calendrier.csv /tmp/calendar.json` :
+  interface du CSV C01 original, sans modification ni programmation.
   Fichier de sortie neuf obligatoire ; ne pas placer un export dans le dépôt public.
 
 Les entrées CLI sont celles des fonctions `buildReport`, `prepareSchedule` et
@@ -55,8 +60,8 @@ Ce lot ne prétend pas avoir rejoué l'E2E distant du 07/10.
 
 ## T02-04 — Revue 03
 
-`prepareHandoff` est fermé par défaut. Clé `lead_id` stable/unique, revue en attente,
-coordonnées et besoin sous accès restreint, aucune promotion ou écriture CRM.
+`prepareHandoff` est fermé par défaut et exclut les coordonnées/besoins libres. Clé `lead_id` stable/unique, revue en attente,
+coordonnées et besoin seulement sur option avec approbation 03, aucune promotion ou écriture CRM.
 `validateHumanReview` exige décision 03, horodatage, preuve et prochaine action
 pour N0–N8 ; N5–N8 exigent preuve de besoin ; N9 exige contrat et date.
 Mapping proposé : identité → contact, organisation → acteur à rapprocher par 03,
@@ -75,7 +80,7 @@ Canal réel, destinataire, seuils d'astreinte et réception distante : à valide
 
 Runbook :
 1. Stockage indisponible : CRITICAL, STOP_LEADS, conserver les bases.
-2. PARTIAL_FAILURE : garder la demande ; alerte WARNING avec codes seulement.
+2. PARTIAL_FAILURE : garder la demande ; alerte MAJOR avec codes seulement.
 3. Lire l'état des trois étapes ; exécuter `replayDelivery(db,id)` en DRY RUN.
 4. Si écriture de statuts échouée ou état ambigu, vérifier les envois côté Brevo
    avant toute reprise ; ne jamais croire qu'un statut PENDING prouve un non-envoi.
@@ -99,6 +104,11 @@ Sans compte connecté, le plan se construit et reste bloqué pour l'exécution.
 Même autorisé dans la simulation : DRY_RUN, scheduled_id=null, zéro API appelée.
 Un scheduled_id existant et les doublons de contenu/version/réseau sont refusés.
 Le calendrier, les contenus et les créations de 02 ne sont pas recréés.
+`calendar.mjs` lit les 12 colonnes du CSV C01 original (33 lignes), conserve chaque
+valeur/source et date indicative, calcule son SHA-256, initialise DRAFT sans
+réseau présumé, version approuvée ou programmation. Le CLI a été exécuté sur le
+CSV original inchangé : SHA-256 `3e3442396c94507daea613646334281df6504bfc93ec1bd0c473b8fbf1c9b800`.
+Les créations VIS01/VID01 et les règles de légende de 02 restent hors de ce lot code.
 Choix de scheduler et preuve d'identité des comptes restent 02 ; aucun coût engagé.
 
 ## T02-07 — Newsletter E2E isolée
@@ -143,7 +153,7 @@ activation, route ou secret n'a été appliqué, aucune donnée réelle à resta
 
 ## Gates propriétaires
 
-02 : delta C01/A01, interface et QA ; 03 : mapping/revue ; 07 : sécurité et preuves ;
+02 : interface et QA du delta C01/A01 retrouvé ; 03 : mapping/revue ; 07 : sécurité et preuves ;
 04B : mentions/retention/newsletter avant réel ; 01B : coûts éventuels (aucun ici).
 Accès runtime read-only et restauration restent à vérifier. Les preuves locales ne
 valent pas preuve de configuration ou livraison distante. Aucun GO production.
@@ -151,7 +161,7 @@ valent pas preuve de configuration ou livraison distante. Aucun GO production.
 ## Preuves locales du 11/10/2026
 
 - Baseline avant modification : `npm test`, 124/124, aucun test ignoré.
-- Candidat A01 : `npm test`, 142/142, dont 18 cas A01 ; aucun test ignoré.
+- Candidat A01 : `npm test`, 143/143, dont 19 cas A01 ; aucun test ignoré.
 - Qualité HTML/contenu : 21 pages, zéro erreur/avertissement.
 - Préactivation : intégrations distantes désactivées.
 - Secret scan : aucune valeur réelle détectée ; les fixtures utilisent uniquement

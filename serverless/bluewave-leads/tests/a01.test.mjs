@@ -66,13 +66,13 @@ test('A01 E2E local natif : Projet, Organisation, Expertise, Formation et qualif
   await databaseTest(async({leads,conversions})=>{
     let calls=0;
     const handle=makeHandler(leads,{fetchImpl:async()=>{calls++;return new Response('{}',{status:201});}});
-    for(const payload of [base,organisation,expertise,formation,{...base,recommended_offer:'atelier-cadrage',need:'Qualification fictive'}]) {
+    for(const payload of [base,organisation,expertise,formation,{...formation,email:'presentiel@example.invalid',training_format:'presentiel',location:'Lieu fictif'},{...formation,email:'hybride@example.invalid',training_format:'hybride',location:'Lieu fictif'},{...base,recommended_offer:'atelier-cadrage',need:'Qualification fictive'}]) {
       const response=await handle(request(payload));assert.equal(response.status,201);
       assert.equal((await response.json()).success,true);
       assert.equal((await handle(request(payload))).status,409);
     }
     const rows=(await leads.prepare('SELECT * FROM lead_records').all()).results;
-    assert.equal(rows.length,5);assert.equal(calls,15);
+    assert.equal(rows.length,7);assert.equal(calls,21);
     for(const row of rows) {
       assert.equal(row.delivery_status,'DELIVERED');
       assert.equal(JSON.parse(row.journey_payload).campaign_code,'c01-test');
@@ -82,7 +82,7 @@ test('A01 E2E local natif : Projet, Organisation, Expertise, Formation et qualif
     for(const field of ['email','ip','lead_id','journey_payload']) await assert.rejects(()=>conversions.prepare(`SELECT ${field} FROM conversion_counts`).all());
     const permissive={allowRate:()=>true,claimSubmission:()=>true};
     assert.equal((await makeHandler(leads,{guard:permissive})(request({...base,campaign_code:'unknown'}))).status,200);
-    assert.equal((await leads.prepare('SELECT COUNT(*) AS count FROM lead_records').all()).results[0].count,5);
+    assert.equal((await leads.prepare('SELECT COUNT(*) AS count FROM lead_records').all()).results[0].count,7);
   });
 });
 test('A01 E2E local : 400,403,429,503 ne déclenchent aucun Brevo',async()=>{
@@ -116,6 +116,9 @@ test('A01 CRM : remise sensible désactivée par défaut, clé unique, aucune pr
   const result=prepareHandoff([record],{enabled:true,campaigns});
   assert.equal(result.master_crm_written,false);assert.equal(result.items[0].review_status,'PENDING_REVIEW');
   assert.equal(result.items[0].crm_id,null);assert.equal(result.items[0].next_action_at,null);
+  assert.equal(result.sensitive,false);assert.equal(JSON.stringify(result).includes(base.email),false);
+  assert.throws(()=>prepareHandoff([record],{enabled:true,includeContact:true}),/03/);
+  assert.equal(prepareHandoff([record],{enabled:true,includeContact:true,contactAccessApprovedBy:'03'}).items[0].contact.email,base.email);
   assert.throws(()=>prepareHandoff([record,record],{enabled:true}),/Doublon/);
   assert.throws(()=>validateHumanReview({lead_id:record.id,stage:'N5'}),/03/);
   assert.throws(()=>validateHumanReview({owner:'03',lead_id:record.id,reviewed_at:stamp,stage:'N5',evidence_ref:'test'}),/besoin/);
@@ -128,7 +131,7 @@ test('A01 alertes : gravité, cooldown, échec/reprise, aucune PII',async()=>{
   assert.equal((await alert('ack_failed',details)).reason,'alert_transport_failed');fail=false;
   assert.equal((await alert('ack_failed',details)).sent,true);
   assert.equal((await alert('ack_failed',details)).reason,'cooldown');
-  assert.equal(messages[0].severity,'WARNING');assert.doesNotMatch(JSON.stringify(messages),/qa@example|Besoin fictif|192\.0|secret/);
+  assert.equal(messages[0].severity,'MAJOR');assert.doesNotMatch(JSON.stringify(messages),/qa@example|Besoin fictif|192\.0|secret/);
   assert.equal(classifyIncident('lead_storage_failed',{},stamp).action,'STOP_LEADS');
   assert.equal(classifyIncident('delivery_status_write_failed',{},stamp).action,'RECONCILE_BEFORE_REPLAY');
   assert.deepEqual(stopPlan({leads:true}).changes,{LEADS_ENABLED:'false'});
@@ -279,7 +282,7 @@ test('A01 CLI : exports exploitables hors dépôt, permissions restreintes et au
     for(const [kind,input] of [['handoff',{records:[record],campaigns}],['schedule',{contents:[content],options:{campaigns}}],['report',{from:'2026-10-11T00:00:00Z',to:'2026-10-12T00:00:00Z',leads:[record],campaigns}]]) {
       const inputPath=join(directory,`${kind}-input.json`),outputPath=join(directory,`${kind}-output.json`);
       await writeFile(inputPath,JSON.stringify(input));
-      const args=[cli.pathname,kind,inputPath,outputPath,...(kind==='handoff'?['--sensitive-handoff']:[])];
+      const args=[cli.pathname,kind,inputPath,outputPath];
       execFileSync(process.execPath,args);
       const result=JSON.parse(await readFile(outputPath,'utf8'));
       assert.equal((await stat(outputPath)).mode&0o777,0o600);
@@ -307,4 +310,17 @@ test('A01 qualification historique : provenance rétrocompatible pour Collaborat
     assert.equal(rows.length,2);
     for(const row of rows)assert.equal(JSON.parse(row.journey_payload).campaign_code,'c01-test');
   });
+});
+
+test('A01 CSV C01 : 12 colonnes conservées, aucun statut/date indicative transformé en programmation',async()=>{
+  const {C01_COLUMNS,importC01Calendar}=await import('../../a01/calendar.mjs');
+  const row=['C01-TEST','2026-10-13','S01','Pilier fictif','Série fictive','"Sujet; avec séparateur"','Post fictif','Compte à vérifier','Aucun','CTA fictif','PRÊT À PRÉPARER','GO requis'];
+  const csv=`${C01_COLUMNS.join(';')}\r\n${row.join(';')}\r\n`;
+  const result=await importC01Calendar(csv);assert.equal(result.rows,1);assert.equal(result.columns,12);
+  assert.equal(result.contents[0].source_row.Sujet,'Sujet; avec séparateur');
+  assert.equal(result.contents[0].source_row['État'],'PRÊT À PRÉPARER');
+  assert.equal(result.contents[0].status,'DRAFT');assert.equal(result.contents[0].scheduled_id,null);
+  assert.equal(result.calendar_modified,false);assert.equal(result.external_calls,0);
+  await assert.rejects(()=>importC01Calendar(csv+row.join(';')),/doublon/);
+  await assert.rejects(()=>importC01Calendar(csv.replace('Date indicative','Date')),/Colonnes/);
 });
