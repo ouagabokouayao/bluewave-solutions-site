@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "5b93cbf5997269ea2d4b0d40c6b74ab60620cc876f9508320eb27725b7cbeebd",
-    "bytes": 4473
+    "sha256": "9cda9a5324264fe2e9f9ec98818351a1042d63ffacc8d87e01d14adfcf24c3fe",
+    "bytes": 4708
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -58,6 +58,11 @@
     "path": "assets/css/activites-bluewave.css",
     "sha256": "f9cecb6ea6d9abf18ca7b70d203e3e95dcfcfabbce1b0ceb8e4ec563d785694f",
     "bytes": 3110
+  },
+  {
+    "path": "assets/css/experience.css",
+    "sha256": "d86a706b8a4cae9ff5ccaf51895a175b65c789f6826de07b7783e51d39e4aeab",
+    "bytes": 24334
   },
   {
     "path": "assets/css/premium.css",
@@ -133,6 +138,31 @@
     "path": "assets/img/brand/logo/logo-bluewave-vertical-officiel.png",
     "sha256": "7dc47f8dc66d796764900a3a3417965389c7f3939b33409b1877f6594343a5e4",
     "bytes": 67737
+  },
+  {
+    "path": "assets/img/experience/cote-conceptuelle.webp",
+    "sha256": "8dd05da8dedee95805cdac4a0f836a13729e80875aa5994c52feb6390b2af662",
+    "bytes": 299152
+  },
+  {
+    "path": "assets/img/experience/lagune-conceptuelle.webp",
+    "sha256": "f21fe692aee8f2ab827d6ec0aa0c919903d37d3b9fdea8989804a55a074d8ad8",
+    "bytes": 178334
+  },
+  {
+    "path": "assets/img/experience/littoral-conceptuel.webp",
+    "sha256": "efd8f8f0b92f2cf42b80450575d145afef98a5e823383fa518c07f25d0db5858",
+    "bytes": 157920
+  },
+  {
+    "path": "assets/img/experience/port-conceptuel-mobile.webp",
+    "sha256": "959956818d48e6a612e421b1cef93339a75b57c7f5c50d74a37304c8aa91aee9",
+    "bytes": 85844
+  },
+  {
+    "path": "assets/img/experience/port-conceptuel.webp",
+    "sha256": "a2a06a9753f801fe5f75b4922d9593f84a59fae616eefd68a2fe62130c87284e",
+    "bytes": 187728
   },
   {
     "path": "assets/img/fondateur/bokoua-yao-ouaga.webp",
@@ -235,6 +265,11 @@
     "bytes": 5299
   },
   {
+    "path": "assets/js/experience.js",
+    "sha256": "d34ba22c61b7f19c84e75e133f2098d2d7414a85f82381861461ce7181c7b646",
+    "bytes": 3249
+  },
+  {
     "path": "assets/js/journey-form.js",
     "sha256": "2351da97d81beee4aa2d69b833cda445c85bb51ccd8b8ee9a96286e8cacaddbe",
     "bytes": 11829
@@ -326,8 +361,8 @@
   },
   {
     "path": "index.html",
-    "sha256": "62bf2a993c62beea4781fb925e22d403dc4fb27a7f74bc225a995f696ace1cdf",
-    "bytes": 14002
+    "sha256": "e73c516211ac62cd94cf19751879725aff2757a4730409dbf9ebe8022260b533",
+    "bytes": 23160
   },
   {
     "path": "media-intervention.html",
@@ -495,6 +530,11 @@
     "bytes": 3057
   },
   {
+    "path": "quality/scripts/check_home_conservation.py",
+    "sha256": "8387417ce5f8e04ab5d5783ec40b08207ae71d7de4e7ae113280f3c30cb0d7b0",
+    "bytes": 3122
+  },
+  {
     "path": "quality/scripts/check_preactivation.py",
     "sha256": "f76e7f75902630398b76c0874a3799f076f8e45ee3aa8e192881bc3e40a5a058",
     "bytes": 1187
@@ -531,8 +571,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "b10ed49f9a6fa2fee711c86eb257ec6a8a59091f9d0d35d5fab069074117983f",
-    "bytes": 5115
+    "sha256": "c0bbf59c1420f024b84e1d3eb137f90bc10c6795a7bfc490284af933edd6f79a",
+    "bytes": 5270
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -543,6 +583,11 @@
     "path": "quality/sources-candidates-afrique-ouest.md",
     "sha256": "10592f6023a3953847578056d9a9712a4010358a511f0e44894613b216eecdd4",
     "bytes": 4167
+  },
+  {
+    "path": "quality/tests/experience.test.mjs",
+    "sha256": "c451a92d3fc306ba5352fe0a3313305cc6740a4180e096003e4adc50cdc5bf62",
+    "bytes": 4200
   },
   {
     "path": "quality/tests/test_brand_assets.py",

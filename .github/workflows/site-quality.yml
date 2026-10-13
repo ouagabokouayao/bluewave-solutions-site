@@ -38,6 +38,7 @@ jobs:
         run: python quality/scripts/quality_check.py
       - name: JavaScript syntax
         run: |
+          node --check assets/js/experience.js
           node --check assets/js/main.js
           node --check assets/js/qualifier.js
           node --check assets/js/mediatheque.js
@@ -51,6 +52,10 @@ jobs:
           node --check serverless/cloudflare/worker.mjs
       - name: Serverless lead pipeline tests
         run: npm test
+      - name: Premium home interactions and conservation
+        run: |
+          node --test quality/tests/experience.test.mjs
+          python quality/scripts/check_home_conservation.py
       - name: Pre-activation locks
         run: python quality/scripts/check_preactivation.py
       - name: Internal opportunity radar
