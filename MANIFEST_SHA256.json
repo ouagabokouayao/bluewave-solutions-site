@@ -61,8 +61,8 @@
   },
   {
     "path": "assets/css/experience.css",
-    "sha256": "2b37370afe6149fd0348a8339442a468daed9f80389c2efa0ac6290adb6d0892",
-    "bytes": 24564
+    "sha256": "08c278d9de8f7e58e0cd4606e761dfb187082dd262e0b3eb8ec409660b0e3a5d",
+    "bytes": 26565
   },
   {
     "path": "assets/css/premium.css",
@@ -361,8 +361,8 @@
   },
   {
     "path": "index.html",
-    "sha256": "e73c516211ac62cd94cf19751879725aff2757a4730409dbf9ebe8022260b533",
-    "bytes": 23160
+    "sha256": "a5a9729cd79ca60cc02a2aebd1e18d4feddf5a229c96c810a4668cd075199554",
+    "bytes": 23370
   },
   {
     "path": "media-intervention.html",
@@ -591,8 +591,8 @@
   },
   {
     "path": "quality/tests/experience.test.mjs",
-    "sha256": "c451a92d3fc306ba5352fe0a3313305cc6740a4180e096003e4adc50cdc5bf62",
-    "bytes": 4200
+    "sha256": "526e2effdccafdff471c96b58e62063fd8a34948208a8a9f1f68a6bbecd5777c",
+    "bytes": 6166
   },
   {
     "path": "quality/tests/test_brand_assets.py",

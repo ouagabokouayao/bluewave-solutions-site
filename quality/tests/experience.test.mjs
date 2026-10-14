@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
+import {execFileSync} from 'node:child_process';
 
 const source = readFileSync(new URL('../../assets/js/experience.js', import.meta.url), 'utf8');
 function element(dataset = {}) {
@@ -50,4 +51,34 @@ test('sticky header changes at the scroll threshold', () => {
   const x=setup(); assert.equal(x.header.classList.contains('scrolled'),false);
   x.win.scrollY=75; x.win.handlers.scroll(); assert.equal(x.header.classList.contains('scrolled'),true);
   x.win.scrollY=0; x.win.handlers.scroll(); assert.equal(x.header.classList.contains('scrolled'),false);
+});
+
+const home = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+const approvedHome = execFileSync('git', ['show', '6333ccbd23ee4043232758c73a5dc433ab4d5379:index.html'], {cwd: new URL('../..', import.meta.url), encoding: 'utf8'});
+test('the seven situations retain every text, link and preselection', () => {
+  const cards = html => html.match(/<article class="problem-card">[\s\S]*?<\/article>/g) || [];
+  assert.equal(cards(home).length, 7);
+  assert.deepEqual(cards(home), cards(approvedHome));
+});
+test('situations use a closed native disclosure with its approved label', () => {
+  const details = home.match(/<details\b([^>]*)>([\s\S]*?)<\/details>/);
+  assert.ok(details);
+  assert.doesNotMatch(details[1], /\bopen\b/);
+  assert.match(details[2], /^<summary>Vous partez d’une situation concrète \?<\/summary>/);
+  assert.equal((details[2].match(/class="problem-card"/g) || []).length, 7);
+});
+test('the compact proof strip retains all three original contents and destinations', () => {
+  const before = approvedHome.match(/<article class="proof-card">[\s\S]*?<\/article>/g) || [];
+  const after = home.match(/<article class="proof-strip-item">[\s\S]*?<\/article>/g) || [];
+  assert.equal(after.length, 3);
+  assert.deepEqual(after, before.map(card => card.replace('class="proof-card"', 'class="proof-strip-item"')));
+});
+test('hero actions qualify first and reveal the offers, with method still in both menus', () => {
+  const actions = home.match(/<div class="hero-actions">([\s\S]*?)<\/div>/)[1];
+  assert.match(actions, /class="btn btn-primary" href="qualifier-un-besoin\.html">Qualifier un besoin/);
+  assert.match(actions, /class="btn btn-glass" href="#expertises">Découvrir les offres/);
+  for (const mode of ['desktop', 'mobile']) {
+    const nav = home.match(new RegExp('<nav class="' + mode + '-nav"[\\s\\S]*?<\\/nav>'))[0];
+    assert.match(nav, /href="methode\.html"/);
+  }
 });
