@@ -48,3 +48,9 @@
 @media(max-width:1200px){.home-premium:not([data-experience-ready]) .topbar{position:relative;background:#071c32}.home-premium:not([data-experience-ready]) .mobile-nav{position:static}}
 
 .home-premium .offer-card a,.home-premium .link-arrow{min-height:44px}.home-premium .mobile-nav a:focus-visible{outline-offset:-3px}
+
+/* Lisibilité des seules zones sombres de l'accueil premium. */
+.home-premium .offer-feature h3,
+.home-premium .proof-copy h2,
+.home-premium .closing h2{color:#fff}
+.home-premium .menu-toggle span:not(.sr-only){background:#fff}

@@ -80,6 +80,7 @@ CRITICAL_FILES = [
     "quality/scripts/check_preactivation.py",
     "quality/scripts/check_home_conservation.py",
     "quality/tests/experience.test.mjs",
+    "quality/tests/actualites-status.test.mjs",
     "quality/scripts/check_brand_assets.py",
     "quality/tests/test_brand_assets.py",
     "quality/scripts/check_dist.py",

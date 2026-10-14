@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "9cda9a5324264fe2e9f9ec98818351a1042d63ffacc8d87e01d14adfcf24c3fe",
-    "bytes": 4708
+    "sha256": "7d85e0dbf426b611fd1def970c16473665384236c3fbe8262424d7c49ef11c19",
+    "bytes": 4771
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -61,8 +61,8 @@
   },
   {
     "path": "assets/css/experience.css",
-    "sha256": "d86a706b8a4cae9ff5ccaf51895a175b65c789f6826de07b7783e51d39e4aeab",
-    "bytes": 24334
+    "sha256": "2b37370afe6149fd0348a8339442a468daed9f80389c2efa0ac6290adb6d0892",
+    "bytes": 24564
   },
   {
     "path": "assets/css/premium.css",
@@ -251,8 +251,8 @@
   },
   {
     "path": "assets/js/actualites.js",
-    "sha256": "1d7373158eb671a698b99bb40793f82b580ba74c51e9e5a7c797bcc469fd679b",
-    "bytes": 7254
+    "sha256": "b6d3405628697269c13c6da1a19062a569f22974afd9b24a83d27419e3c28195",
+    "bytes": 7721
   },
   {
     "path": "assets/js/analytics.js",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "8387417ce5f8e04ab5d5783ec40b08207ae71d7de4e7ae113280f3c30cb0d7b0",
-    "bytes": 3122
+    "sha256": "942ed460bf55156eeb6154f7f479846c7b92d3156c23966b6277d13e89d186a8",
+    "bytes": 4175
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -571,8 +571,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "c0bbf59c1420f024b84e1d3eb137f90bc10c6795a7bfc490284af933edd6f79a",
-    "bytes": 5270
+    "sha256": "078cda02cbc70be9a0ef80b154513410982f669a65d8e9cfe3683f6a024d076f",
+    "bytes": 5318
   },
   {
     "path": "quality/scripts/verify_manifest.py",
@@ -583,6 +583,11 @@
     "path": "quality/sources-candidates-afrique-ouest.md",
     "sha256": "10592f6023a3953847578056d9a9712a4010358a511f0e44894613b216eecdd4",
     "bytes": 4167
+  },
+  {
+    "path": "quality/tests/actualites-status.test.mjs",
+    "sha256": "8847c1c76f57926f2d65ef48c8f6d9e559c3ac72e8cd1752c001cfe89f4b030a",
+    "bytes": 3684
   },
   {
     "path": "quality/tests/experience.test.mjs",

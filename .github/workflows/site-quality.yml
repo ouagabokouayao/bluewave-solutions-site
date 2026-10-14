@@ -55,6 +55,7 @@ jobs:
       - name: Premium home interactions and conservation
         run: |
           node --test quality/tests/experience.test.mjs
+          node --test quality/tests/actualites-status.test.mjs
           python quality/scripts/check_home_conservation.py
       - name: Pre-activation locks
         run: python quality/scripts/check_preactivation.py

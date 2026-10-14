@@ -2,6 +2,7 @@
 """Contrôle de conservation du socle A01 lors de l'intégration de l'accueil."""
 import hashlib
 import json
+import re
 import subprocess
 from html.parser import HTMLParser
 from pathlib import Path
@@ -10,6 +11,13 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[2]
 BASE = '70b683105ca2e660dc21076173d0f019fe6e1bd7'
 ALLOWED = {'index.html', 'MANIFEST_SHA256.json', 'quality/scripts/update_manifest.py', '.github/workflows/site-quality.yml'}
+# V03 est autorisée exclusivement dans renderStatus ; les données, filtres,
+# cartes et parcours historiques restent contrôlés octet pour octet.
+STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const renderHome =', re.S)
+def outside_news_status(content):
+    if len(STATUS_BLOCK.findall(content)) != 1:
+        raise ValueError('Bloc renderStatus absent ou ambigu')
+    return STATUS_BLOCK.sub(b'  const renderHome =', content)
 class Page(HTMLParser):
     def __init__(self):
         super().__init__(); self.links=set(); self.ids=set(); self.scripts=set(); self.offers=set()
@@ -23,6 +31,7 @@ def git(*args):
     return subprocess.check_output(['git',*args],cwd=ROOT)
 def main():
     errors=[]
+    authorized=[]
     paths=git('ls-tree','-r','--name-only',BASE).decode().splitlines()
     preserved=[]
     for path in paths:
@@ -30,6 +39,15 @@ def main():
         if not target.is_file(): errors.append('Fichier perdu : '+path); continue
         if path not in ALLOWED:
             before=git('show',BASE+':'+path)
+            if path == 'assets/js/actualites.js' and before != target.read_bytes():
+                try:
+                    if outside_news_status(before) != outside_news_status(target.read_bytes()):
+                        errors.append('Modification Actualités hors statut autorisé')
+                    else:
+                        authorized.append('assets/js/actualites.js:renderStatus uniquement (V03)')
+                except ValueError as error:
+                    errors.append(str(error))
+                continue
             if before!=target.read_bytes(): errors.append('Modification hors accueil : '+path)
             else: preserved.append(path)
     old=Page(); old.feed(git('show',BASE+':index.html').decode())
@@ -48,7 +66,7 @@ def main():
             if u.fragment and target.suffix=='.html':
                 dest=Page();dest.feed(target.read_text())
                 if unquote(u.fragment) not in dest.ids: errors.append(f'{page.name}: ancre absente {link}')
-    result={'status':'FAIL' if errors else 'PASS','base':BASE,'baseline_files':len(paths),'unchanged_baseline_files':len(preserved),'unchanged_pages':len([x for x in preserved if x.endswith('.html')]),'old_home_links_preserved':len(old.links-now.links)==0,'old_home_scripts_preserved':len(old.scripts-now.scripts)==0,'canonical_offers':sorted(now.offers),'errors':errors}
+    result={'status':'FAIL' if errors else 'PASS','base':BASE,'baseline_files':len(paths),'unchanged_baseline_files':len(preserved),'unchanged_pages':len([x for x in preserved if x.endswith('.html')]),'authorized_modifications':authorized,'old_home_links_preserved':len(old.links-now.links)==0,'old_home_scripts_preserved':len(old.scripts-now.scripts)==0,'canonical_offers':sorted(now.offers),'errors':errors}
     print(json.dumps(result,ensure_ascii=False,indent=2))
     return bool(errors)
 if __name__=='__main__': raise SystemExit(main())
