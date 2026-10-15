@@ -108,3 +108,9 @@ jobs:
           python quality/scripts/check_turnstile_profile.py
       - name: Workers package and native runtime
         run: npm run cloudflare:test-runtime
+      - name: Journey forms in a real browser (prepared message, transmission off)
+        run: |
+          python quality/scripts/build_dist.py
+          npm i --no-save --no-audit --no-fund playwright@1.56.0
+          npx playwright install --with-deps chromium
+          node quality/tests/journey-copy.e2e.mjs dist

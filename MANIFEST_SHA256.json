@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "7d85e0dbf426b611fd1def970c16473665384236c3fbe8262424d7c49ef11c19",
-    "bytes": 4771
+    "sha256": "b839b80601ac02cccc32493a5ecc7169920aeb7fe36dafde4a5d8eb817f361fd",
+    "bytes": 5090
   },
   {
     "path": ".github/workflows/update-actualites.yml",
