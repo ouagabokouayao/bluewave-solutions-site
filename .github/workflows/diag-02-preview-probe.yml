@@ -82,6 +82,9 @@ jobs:
           n=0; for f in dist-production/*.html; do p=$(basename $f); curl -s -A "$UA" --max-time 30 "$BASE_URL/$p" | grep -q 'content="noindex, nofollow"' || n=$((n+1)); done
           echo "::notice title=Pages sans noindex::$n"; [ "$n" = 0 ] || v=FAIL
           for r in leads events; do code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 -X POST -H 'content-type: application/json' -H "origin: $BASE_URL" --data '{}' "$BASE_URL/api/$r"); echo "::notice title=POST /api/$r::code=$code"; [ "$code" = 503 ] || v=FAIL; done
+          code=$(curl -s -o nf.html -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL/page-inexistante-sonde")
+          if [ "$code" = 404 ] && grep -q '<base href="/">' nf.html && ! grep -q 'bluewave-solutions-site' nf.html; then nf=PASS; else nf=FAIL; v=FAIL; fi
+          echo "::notice title=Page 404 a la racine::code=$code statut=$nf"
           echo "::notice title=VERDICT contenu::$v"; [ "$v" = PASS ]
       - name: Rendu navigateur 390 / 1440
         if: always()
