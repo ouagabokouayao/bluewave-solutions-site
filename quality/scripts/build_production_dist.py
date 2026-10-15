@@ -15,6 +15,7 @@ OUT = ROOT / 'dist-production'
 APPROVAL = ROOT / 'quality/privacy-approval.json'
 ORIGIN = 'https://www.bluewavesolutions.fr'
 OLD = 'https://ouagabokouayao.github.io/bluewave-solutions-site/'
+OLD_PATH = '/bluewave-solutions-site/'
 
 
 def privacy_gate(indexable, simulation):
@@ -142,6 +143,11 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
         if document.count(OLD) < 2:
             raise ValueError(f'Canonical/OG absent : {page.name}')
         document = document.replace(OLD, ORIGIN + '/')
+        # La page 404 de GitHub Pages fixe <base> sur le chemin du projet.
+        # Servie à la racine du domaine, elle perdrait styles, logos et liens.
+        document = document.replace(OLD_PATH, '/')
+        if 'bluewave-solutions-site' in document:
+            raise ValueError(f'Chemin GitHub Pages résiduel : {page.name}')
         desired = 'index, follow' if indexable and page.name != '404.html' else 'noindex, nofollow'
         document, count = re.subn(r'(<meta name="robots" content=")[^"]+("/?>)',
             lambda m: m.group(1) + desired + m.group(2), document, count=1)

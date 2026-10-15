@@ -511,8 +511,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "f775f2723e0605463f5e3726e82ea2650660ccaa459fe48118752c7cad3d8b62",
-    "bytes": 14316
+    "sha256": "5448846de6ec5130bad37a62743053d2641312287c6eeeb8b929117e2657a1f4",
+    "bytes": 14688
   },
   {
     "path": "quality/scripts/check_brand_assets.py",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "27683f0aa4746ccc94e6e18fc050e48ff42ce229dae9c761832706d2f551743f",
-    "bytes": 5566
+    "sha256": "4ae101aa50c6108276337e36a2026c80a74a5070cf81acac554a35bf89fbd916",
+    "bytes": 5937
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -601,8 +601,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "8b5eae0dbb61a8e15f4b6679ba4d88a3239b5d62ff6214002c891b91147dcd72",
-    "bytes": 6136
+    "sha256": "96b21ddc696b3d0ff1003a564eb4e5a1af141c80452140a1a90c7db6ec72749a",
+    "bytes": 6459
   },
   {
     "path": "robots.txt",
