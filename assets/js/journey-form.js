@@ -116,13 +116,61 @@ export function fallbackMailBody(payload) {
   ].filter(line => line !== '').join('\n');
 }
 
+// Certaines messageries tronquent un lien mailto long sans prévenir. Le
+// message complet reste donc toujours lisible et copiable dans la page.
+export function preparedMessage(subject, safeLines) {
+  return `À : bluewavesolutions3399@gmail.com\nObjet : ${subject}\n\nBonjour,\n\n${safeLines}\n\nCordialement,`;
+}
+
+function copyBox(form) {
+  let box = form.querySelector('[data-mail-copy]');
+  if (box) return box;
+  box = document.createElement('div');
+  box.className = 'mail-copy';
+  box.dataset.mailCopy = '';
+  box.hidden = true;
+  box.style.marginTop = '1.25rem';
+  const id = `${form.querySelector('[name="email"]')?.id || 'lead'}-message-prepare`;
+  const label = document.createElement('label');
+  label.htmlFor = id;
+  label.textContent = 'Message préparé — si votre messagerie le tronque, copiez-le et collez-le dans un nouveau courriel';
+  const area = document.createElement('textarea');
+  area.id = id;
+  area.readOnly = true;
+  area.rows = 8;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'button secondary';
+  button.textContent = 'Copier le message';
+  const status = document.createElement('p');
+  status.className = 'note';
+  status.setAttribute('aria-live', 'polite');
+  button.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(area.value);
+    } catch {
+      area.select();
+      document.execCommand?.('copy');
+    }
+    status.textContent = 'Message copié.';
+  });
+  box.append(label, area, button, status);
+  form.querySelector('[data-form-message]').after(box);
+  return box;
+}
+
 function fallbackMail(form, payload, status) {
   const safeLines = fallbackMailBody(payload);
-  const subject = encodeURIComponent(`BlueWave — ${form.dataset.mailSubject}`);
+  const plainSubject = `BlueWave — ${form.dataset.mailSubject}`;
+  const subject = encodeURIComponent(plainSubject);
   const body = encodeURIComponent(`Bonjour,\n\n${safeLines}\n\nCordialement,`);
   const mail = form.querySelector('[data-mail-fallback]');
   mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
   mail.hidden = false;
+  const box = copyBox(form);
+  box.querySelector('textarea').value = preparedMessage(plainSubject, safeLines);
+  box.querySelector('.note').textContent = '';
+  box.hidden = false;
   window.BlueWaveAutomation?.track('lead_submit_fallback_email', {journey: payload.journey, offer: payload.source_offer || undefined, status});
   mail.focus();
 }
@@ -145,8 +193,11 @@ function showSchemaError(form, errors) {
 function wireForm(form) {
   formState.set(form, {started: false, submitting: false});
   const clearFeedback = event => {
+    if (event.target.closest?.('[data-mail-copy]')) return;
     event.target.removeAttribute?.('aria-invalid');
     form.querySelector('[data-mail-fallback]').hidden = true;
+    const copy = form.querySelector('[data-mail-copy]');
+    if (copy) copy.hidden = true;
     form.querySelector('[data-form-message]').textContent = '';
   };
   form.addEventListener('input', clearFeedback);

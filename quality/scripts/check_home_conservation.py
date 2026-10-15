@@ -25,8 +25,8 @@ AUTHORIZED_VERSIONS = {
         '02-E3 : alternative courriel sans JavaScript'),
     'qualifier-un-besoin.html': ('b7b70536e1390b8396327dc8c90e63e7c69a6de7fa6e1565931a855e39524d95',
         '02-E3 : alternative courriel sans JavaScript'),
-    'assets/js/journey-form.js': ('924841d6a6f2217c64e8ed0debfb31e971c9d2b04d93b762bcec27da3bb92596',
-        '02-E2 : courriel de repli complet pour les trois formulaires de parcours'),
+    'assets/js/journey-form.js': ('972e632fd283eb078071a507554dc41dbe2d3497ca3199e39ee1a66b6683329c',
+        '02-E2/E4 : courriel de repli complet et message copiable pour les trois formulaires de parcours'),
 }
 def outside_news_status(content):
     if len(STATUS_BLOCK.findall(content)) != 1:
