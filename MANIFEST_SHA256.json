@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "7d85e0dbf426b611fd1def970c16473665384236c3fbe8262424d7c49ef11c19",
-    "bytes": 4771
+    "sha256": "b839b80601ac02cccc32493a5ecc7169920aeb7fe36dafde4a5d8eb817f361fd",
+    "bytes": 5090
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -271,8 +271,8 @@
   },
   {
     "path": "assets/js/journey-form.js",
-    "sha256": "924841d6a6f2217c64e8ed0debfb31e971c9d2b04d93b762bcec27da3bb92596",
-    "bytes": 13893
+    "sha256": "972e632fd283eb078071a507554dc41dbe2d3497ca3199e39ee1a66b6683329c",
+    "bytes": 15868
   },
   {
     "path": "assets/js/lead-schema.js",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "ff00115963f6f926391115f9ce2b8922987ff9ddbaea556209b05b70c1450b05",
-    "bytes": 5543
+    "sha256": "27683f0aa4746ccc94e6e18fc050e48ff42ce229dae9c761832706d2f551743f",
+    "bytes": 5566
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -763,6 +763,11 @@
     "path": "serverless/bluewave-leads/tests/pipeline.test.mjs",
     "sha256": "e16f24179501bdbfe66093b17d33e02b2adb284b280e8df88d9aceded8b10ed7",
     "bytes": 7053
+  },
+  {
+    "path": "serverless/bluewave-leads/tests/prepared-message.test.mjs",
+    "sha256": "e6d3280d49d29dae58cc65bd84d789a0aa6cd5ed24341be614e606a2552ea25c",
+    "bytes": 1342
   },
   {
     "path": "serverless/bluewave-leads/tests/replay.test.mjs",
