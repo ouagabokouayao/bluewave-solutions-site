@@ -1,0 +1,73 @@
+name: W14 original Git bundle transfer
+
+on:
+  push:
+    branches: [w14-transfer-6a69323-2026-10-15]
+    paths: [.github/workflows/w14-original-transfer.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: w14-original-transfer-6a69323
+  cancel-in-progress: false
+
+jobs:
+  transfer:
+    if: github.repository == 'ouagabokouayao/bluewave-solutions-site' && github.ref == 'refs/heads/w14-transfer-6a69323-2026-10-15'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.W14_GIT_TRANSFER_TOKEN || github.token }}
+      - name: Import original Git objects to an isolated transport ref
+        shell: python
+        env:
+          BUNDLE_BASE64: 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
+        run: |
+          import base64, hashlib, os, pathlib, subprocess
+
+          EXPECTED = "6a693235ca6c3e965ac729149fc174d704f3caad"
+          PARENT = "6333ccbd23ee4043232758c73a5dc433ab4d5379"
+          BASE = "abf62c24717472590093b92add1c63982ba4895a"
+          MAIN = "89cc6315e9fe59046cdcd5c86dccc52027dd4a79"
+          TRANSPORT = "refs/heads/w14-objects-6a69323-2026-10-15"
+          FINAL = "refs/heads/site-premium-final-v1-2026-10-14"
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          def remote(ref):
+              result = git("ls-remote", "origin", ref)
+              return result.split()[0] if result else None
+
+          assert os.environ["GITHUB_REPOSITORY"] == "ouagabokouayao/bluewave-solutions-site"
+          assert os.environ["GITHUB_REF"] == "refs/heads/w14-transfer-6a69323-2026-10-15"
+          assert remote("refs/heads/main") == MAIN, "main differs from the approved baseline"
+          assert remote(FINAL) in (None, EXPECTED), "Final branch already has another SHA"
+          payload = base64.b64decode(os.environ["BUNDLE_BASE64"], validate=True)
+          assert hashlib.sha256(payload).hexdigest() == "83416009f4b86202d32ded975facd02f66a0a56542eae213bd2c87b09c270c7e"
+          bundle = pathlib.Path(os.environ["RUNNER_TEMP"]) / "w14-original.bundle"
+          bundle.write_bytes(payload)
+          git("fetch", "origin", BASE)
+          print(git("bundle", "verify", str(bundle)))
+          assert git("bundle", "list-heads", str(bundle)) == EXPECTED + " " + FINAL
+          git("fetch", str(bundle), FINAL + ":refs/w14/original-candidate")
+          assert git("rev-parse", "refs/w14/original-candidate") == EXPECTED
+          assert git("rev-parse", EXPECTED + "^") == PARENT
+          assert git("rev-parse", PARENT + "^") == BASE
+          assert git("cat-file", "-t", EXPECTED) == "commit"
+          existing = remote(TRANSPORT)
+          assert existing in (None, EXPECTED), "Transport branch already has another SHA"
+          if existing is None:
+              # An empty lease only permits creating this technical ref, never replacing it.
+              print(git("push", "--porcelain", "--force-with-lease=" + TRANSPORT + ":", "origin", EXPECTED + ":" + TRANSPORT))
+          assert remote(TRANSPORT) == EXPECTED
+          assert remote("refs/heads/main") == MAIN
+          print("ORIGINAL_GIT_TRANSFER_PASS " + EXPECTED)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as report:
+              report.write("Original Git bundle imported without rebuilding commits.\n\n")
+              report.write("Candidate: `" + EXPECTED + "`\n\nParent: `" + PARENT + "`\n\n")
+              report.write("main unchanged: `" + MAIN + "`\n")
