@@ -18,16 +18,19 @@ MANIFEST_NAME = "MANIFEST_SHA256.json"
 FORBIDDEN_TOP_LEVEL = {
     ".claude", ".github", ".git", "QA", "quality", "serverless",
     "archives", "backups", "prompts", "documents", "supports",
-    "exports", "captures", "brand", "dist", "node_modules",
+    "exports", "captures", "private", "brand", "dist", "node_modules",
 }
 # Segments qui ne sont légitimes à aucune profondeur (assets/img/brand/logo est public).
 FORBIDDEN_SEGMENTS = {
     ".claude", ".github", ".git", "QA", "quality", "serverless",
     "archives", "backups", "prompts", "documents", "supports",
-    "exports", "captures", "node_modules", "boards", "libraries", "sources",
+    "exports", "captures", "private", "prepublication", "placeholders",
+    "node_modules", "boards", "libraries", "sources",
     "radar", "opportunites",
 }
 FORBIDDEN_NAMES = {"README.md", ".gitignore", "CLAUDE.md", "AGENTS.md"}
+# Marqueur littéral des gabarits de prépublication : jamais dans un fichier servi.
+PREPUBLICATION_MARKERS = ("TEMP — DO NOT PUBLISH", "TEMP - DO NOT PUBLISH")
 FORBIDDEN_SUFFIXES = (".py", ".mjs", ".md", ".yml", ".yaml", ".zip", ".log", ".bak")
 ALLOWED_SUFFIXES = {".html", ".css", ".js", ".json", ".txt", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".ico", ".woff", ".woff2"}
 ALLOWED_EXTENSIONLESS = {".nojekyll"}
@@ -84,6 +87,13 @@ def main() -> int:
         if Path(relative).suffix.lower() in {".html", ".css", ".js", ".json", ".txt"}:
             if SECRET.search((DIST / relative).read_text(encoding="utf-8", errors="ignore")):
                 errors.append(f"secret potentiel dans un fichier servi : {relative}")
+
+    # Aucun gabarit de prépublication dans les fichiers servis.
+    for relative in files:
+        if Path(relative).suffix.lower() in {".html", ".css", ".js", ".json", ".txt", ".svg"}:
+            content = (DIST / relative).read_text(encoding="utf-8", errors="ignore")
+            if any(marker in content for marker in PREPUBLICATION_MARKERS):
+                errors.append(f"marqueur de prépublication dans un fichier servi : {relative}")
 
     # robots.txt de pré-publication : le site reste fermé aux robots.
     robots = (DIST / "robots.txt").read_text(encoding="utf-8")

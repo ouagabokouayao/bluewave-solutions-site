@@ -18,6 +18,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Reproducible dependencies
+        run: npm ci
       - name: Git whitespace
         run: git diff --check HEAD^ HEAD
       - name: JSON syntax
@@ -27,22 +33,56 @@ jobs:
           python -m json.tool data/actualites-sources.json >/dev/null
           python -m json.tool data/actualites-curation.json >/dev/null
           python -m json.tool data/automation-config.json >/dev/null
+          python -m json.tool data/analytics-config.json >/dev/null
       - name: HTML and content quality
         run: python quality/scripts/quality_check.py
       - name: JavaScript syntax
         run: |
+          node --check assets/js/experience.js
           node --check assets/js/main.js
           node --check assets/js/qualifier.js
           node --check assets/js/mediatheque.js
           node --check assets/js/actualites.js
           node --check assets/js/automation.js
+          node --check assets/js/analytics.js
+          node --check assets/js/lead-schema.js
+          node --check assets/js/journey-form.js
+          node --check assets/js/turnstile.js
+          node --check assets/js/trust.js
+          node --check serverless/cloudflare/worker.mjs
       - name: Serverless lead pipeline tests
-        run: node --test serverless/bluewave-leads/tests/handler.test.mjs
+        run: npm test
+      - name: Premium home interactions and conservation
+        run: |
+          node --test quality/tests/experience.test.mjs
+          node --test quality/tests/actualites-status.test.mjs
+          python quality/scripts/check_home_conservation.py
+      - name: Pre-activation locks
+        run: python quality/scripts/check_preactivation.py
       - name: Internal opportunity radar
         run: python quality/scripts/radar_check.py
 
       - name: Secret values scan
         run: python quality/scripts/check_secrets.py
+
+      - name: Integrity manifest
+        run: python quality/scripts/update_manifest.py --check
+
+      - name: Brand asset prepublication gate
+        run: python quality/scripts/check_brand_assets.py
+
+      - name: Brand asset system tests
+        run: python -m unittest quality.tests.test_brand_assets
+
+      - name: Public build and served content control
+        run: |
+          python quality/scripts/build_dist.py
+          python quality/scripts/check_dist.py
+          python quality/scripts/dist_manifest.py
+          python quality/scripts/dist_manifest.py --check
+
+      - name: Prepublication tightness of the public build
+        run: python quality/scripts/check_brand_assets.py
       - name: Integrity manifest
         run: python quality/scripts/verify_manifest.py
       - name: Public build and manifest
@@ -51,3 +91,20 @@ jobs:
           python quality/scripts/check_dist.py
           python quality/scripts/dist_manifest.py
           python quality/scripts/dist_manifest.py --check
+      - name: Production profile OFF and ON without external calls
+        run: |
+          python -m unittest discover -s quality/tests -p 'test_production.py'
+          python quality/scripts/build_production_dist.py --indexable --leads --events --privacy-simulation
+          python quality/scripts/render_production_wrangler.py --database-id 11111111-1111-1111-1111-111111111111 --leads-database-id 22222222-2222-2222-2222-222222222222
+          npx wrangler deploy --config serverless/cloudflare/.wrangler-production.generated.json --dry-run --outdir ../../quality/reports/cloudflare-production-build
+      - name: Turnstile activation requires its public key
+        run: |
+          if python quality/scripts/render_production_wrangler.py --database-id 11111111-1111-1111-1111-111111111111 --leads-database-id 22222222-2222-2222-2222-222222222222 --turnstile; then
+            echo "Turnstile accepte sans cle publique" >&2
+            exit 1
+          fi
+          python quality/scripts/build_production_dist.py --leads --turnstile-site-key 0x4AAAAAAATestKey --privacy-simulation
+          python quality/scripts/render_production_wrangler.py --database-id 11111111-1111-1111-1111-111111111111 --leads-database-id 22222222-2222-2222-2222-222222222222 --leads --turnstile
+          python quality/scripts/check_turnstile_profile.py
+      - name: Workers package and native runtime
+        run: npm run cloudflare:test-runtime

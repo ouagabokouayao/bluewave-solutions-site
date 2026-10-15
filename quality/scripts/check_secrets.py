@@ -6,8 +6,8 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SKIP_PARTS = {".git", "__pycache__", ".codex-backups", "node_modules"}
-TEXT_SUFFIXES = {"", ".css", ".env", ".example", ".html", ".js", ".json", ".md", ".mjs", ".py", ".txt", ".yml", ".yaml"}
+SKIP_PARTS = {".git", "__pycache__", ".codex-backups", "node_modules", ".wrangler"}
+TEXT_SUFFIXES = {"", ".css", ".env", ".example", ".html", ".js", ".json", ".jsonc", ".md", ".mjs", ".py", ".txt", ".yml", ".yaml"}
 
 SECRET_VALUE_PATTERNS = (
     re.compile(r"xkeysib-[A-Za-z0-9_-]{20,}"),
@@ -20,7 +20,7 @@ SECRET_VALUE_PATTERNS = (
 def main() -> int:
     findings = []
     for path in ROOT.rglob("*"):
-        if not path.is_file() or SKIP_PARTS.intersection(path.parts):
+        if not path.is_file() or SKIP_PARTS.intersection(path.parts) or path.relative_to(ROOT).as_posix().startswith("quality/reports/cloudflare-worker-build/"):
             continue
         if path.suffix.lower() not in TEXT_SUFFIXES and path.name != ".env.example":
             continue

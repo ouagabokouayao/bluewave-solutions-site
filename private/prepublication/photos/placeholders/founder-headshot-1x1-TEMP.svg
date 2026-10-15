@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000" role="img" aria-labelledby="t d">
+  <title id="t">Emplacement reserve FOUNDER_HEADSHOT — gabarit de prepublication, aucune photographie</title>
+  <desc id="d">Gabarit geometrique sans representation humaine. Il reserve un emplacement de 1:1 pour l'actif FOUNDER_HEADSHOT (Portrait serre visage et epaules, univers institutionnel). Statut TEMP : hors build public.</desc>
+  <defs>
+    <pattern id="hatch" width="28" height="28" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="28" height="28" fill="#eef3f7"/>
+      <line x1="0" y1="0" x2="0" y2="28" stroke="#cedcE7" stroke-width="10"/>
+    </pattern>
+  </defs>
+  <rect width="1000" height="1000" fill="url(#hatch)"/>
+  <rect x="10" y="10" width="980" height="980" fill="none" stroke="#0f5f82" stroke-width="6" stroke-dasharray="26 18"/>
+  <g fill="none" stroke="#9bb0c2" stroke-width="3">
+    <line x1="10" y1="10" x2="990" y2="990"/>
+    <line x1="990" y1="10" x2="10" y2="990"/>
+  </g>
+  <rect x="60" y="389" width="880" height="221" fill="#0f3147"/>
+  <text x="500" y="465" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="bold" fill="#ffffff" letter-spacing="2">TEMP — DO NOT PUBLISH</text>
+  <text x="500" y="525" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#bcd3e2" letter-spacing="1">FOUNDER_HEADSHOT</text>
+  <text x="500" y="569" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#8fb0c6">1:1 · 1000×1000 · univers institutionnel</text>
+  <text x="500" y="604" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#8fb0c6">Aucune photographie. Aucun visage. Emplacement reserve.</text>
+</svg>

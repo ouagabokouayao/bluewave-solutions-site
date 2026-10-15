@@ -198,3 +198,9 @@ python quality/scripts/verify_manifest.py
 ## Préactivation
 
 Toutes les pages conservent `noindex, nofollow` et `robots.txt` conserve `Disallow: /`. Le qualifier continue de préparer un courriel local tant que `lead_endpoint` vaut `null`. Aucun envoi distant, abonnement, assistant, traceur ou rendez-vous automatisé n’est actif avant configuration et validation explicites.
+
+## Préparation V3.4 (branche uniquement)
+
+La branche `site-v3-4-analytics-brevo-cloudflare-prep-2026-09-27` prépare les compteurs de conversion et un Worker Cloudflare sans déploiement. GitHub reste le dépôt source et GitHub Pages héberge la version publique. Le `dist/` cible est construit depuis le graphe de ressources publiques. Les paramètres navigateur dans `data/automation-config.json` et `data/analytics-config.json` restent tous désactivés ; les routes `/api/leads` et `/api/events` répondent 503 tant que leurs indicateurs privés sont à false. La configuration Worker sans route ni domaine et ses limites sont documentées dans `serverless/cloudflare/README.md`. Aucun secret ou identifiant de compte ne doit entrer dans Git.
+
+Pour vérifier localement : `npm ci`, `npm test`, `npm run build`, `npm run cloudflare:check` et `npm run cloudflare:test-runtime`. Ces commandes ne publient rien. Le plan d'activation détaillé est un document interne distinct, hors du dépôt et du build public.

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { createLeadHandler, ERROR_MESSAGE, SUCCESS_MESSAGE } from '../handler.mjs';
+import { BrevoClient } from '../brevo-client.mjs';
 import { createMemoryGuard } from '../security.mjs';
 
 const environment = Object.freeze({
@@ -55,6 +56,20 @@ function handler(fetchImpl, guard = createMemoryGuard({ rateLimit: 20 })) {
   return createLeadHandler({ environment, fetchImpl, guard });
 }
 
+test('le fetch natif conserve son receveur dans le client Brevo', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = function (_url, _options) {
+    if (this !== globalThis) throw new TypeError('Illegal invocation');
+    return Promise.resolve(new Response('{}', { status: 201 }));
+  };
+  try {
+    const response = await new BrevoClient({ environment }).request('/contacts', {});
+    assert.equal(response.status, 201);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('cas valide : contact, accusé et notification, sans donnée brute en réponse', async () => {
   const brevo = mockBrevo();
   const response = await handler(brevo.fetchImpl)(request());
@@ -62,6 +77,10 @@ test('cas valide : contact, accusé et notification, sans donnée brute en répo
   assert.deepEqual(await response.json(), { success: true, message: SUCCESS_MESSAGE });
   assert.equal(brevo.calls.length, 3);
   assert.equal(brevo.calls[0].body.email, 'awa.kone@example.invalid');
+  assert.equal(brevo.calls[0].body.attributes.PRENOM, 'Awa');
+  assert.equal(brevo.calls[0].body.attributes.NOM, 'Koné');
+  assert.equal('FIRSTNAME' in brevo.calls[0].body.attributes, false);
+  assert.equal('LASTNAME' in brevo.calls[0].body.attributes, false);
   assert.equal(brevo.calls[0].body.attributes.BW_STATUT, 'NOUVEAU');
 });
 
@@ -85,14 +104,29 @@ test('newsletter false : seule la liste Leads est transmise', async () => {
   const brevo = mockBrevo();
   await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: false }));
   assert.deepEqual(brevo.calls[0].body.listIds, [11]);
-  assert.equal(brevo.calls[0].body.attributes.BW_CONSENT_VEILLE, false);
+  assert.equal('BW_CONSENT_VEILLE' in brevo.calls[0].body.attributes, false);
 });
 
-test('newsletter true : la liste Newsletter est ajoutée indépendamment', async () => {
+test('newsletter true : aucun ajout direct, même si un ancien drapeau serveur est activé', async () => {
   const brevo = mockBrevo();
-  await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: true }));
-  assert.deepEqual(brevo.calls[0].body.listIds, [11, 22]);
-  assert.equal(brevo.calls[0].body.attributes.BW_CONSENT_VEILLE, true);
+  const response = await createLeadHandler({ environment: {...environment, NEWSLETTER_ENABLED: 'true'}, fetchImpl: brevo.fetchImpl, guard: createMemoryGuard() })(request({ ...validPayload, newsletter_consent: true }));
+  assert.equal(response.status, 400);
+  assert.equal(brevo.calls.length, 0);
+});
+
+test('la liste newsletter n’est pas nécessaire lorsque le canal reste fermé', async () => {
+  const brevo = mockBrevo();
+  const environmentSansListe = { ...environment };
+  delete environmentSansListe.BREVO_NEWSLETTER_LIST_ID;
+  const response = await createLeadHandler({environment: environmentSansListe, fetchImpl: brevo.fetchImpl, guard:createMemoryGuard()})(request());
+  assert.equal(response.status,201);
+});
+
+test('newsletter forgée et désactivée rejetée avant Brevo', async () => {
+  const brevo = mockBrevo();
+  const response = await handler(brevo.fetchImpl)(request({ ...validPayload, newsletter_consent: true }));
+  assert.equal(response.status, 400);
+  assert.equal(brevo.calls.length, 0);
 });
 
 test('contact existant : updateEnabled évite la création d’un doublon', async () => {
@@ -109,6 +143,33 @@ test('API Brevo indisponible : erreur générique sans réponse brute', async ()
   const body = await response.json();
   assert.deepEqual(body, { success: false, message: ERROR_MESSAGE });
   assert.equal(JSON.stringify(body).includes('private-upstream-detail'), false);
+});
+
+test('échec accusé après contact : pas de notification et rapprochement nécessaire', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    calls.push({url, body:JSON.parse(options.body)});
+    return new Response(null,{status:calls.length===2?503:201});
+  };
+  const response = await handler(fetchImpl)(request());
+  assert.equal(response.status,502);
+  assert.equal(calls.length,2);
+  assert.equal(calls[0].url,'https://api.brevo.com/v3/contacts');
+  assert.equal(calls[1].body.templateId,33);
+  assert.deepEqual(await response.json(),{success:false,message:ERROR_MESSAGE});
+});
+
+test('échec notification après contact et accusé : réponse neutre et aucune reprise automatique', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    calls.push({url, body:JSON.parse(options.body)});
+    return new Response(null,{status:calls.length===3?503:201});
+  };
+  const response = await handler(fetchImpl)(request());
+  assert.equal(response.status,502);
+  assert.equal(calls.length,3);
+  assert.equal(calls[2].body.templateId,44);
+  assert.deepEqual(await response.json(),{success:false,message:ERROR_MESSAGE});
 });
 
 test('double soumission rapprochée rejetée', async () => {
@@ -150,4 +211,14 @@ test('limite de débit : les requêtes excédentaires sont rejetées', async () 
   const changed = { ...validPayload, need: 'Une autre demande littorale.' };
   assert.equal((await handle(request(changed))).status, 429);
   assert.equal(brevo.calls.length, 3);
+});
+
+test('hook captcha préservé : un jeton refusé bloque avant Brevo', async () => {
+  const brevo = mockBrevo();
+  let checked = false;
+  const captchaVerifier = async (token) => { checked = true; assert.equal(token, 'future-token'); return false; };
+  const response = await createLeadHandler({environment, fetchImpl:brevo.fetchImpl, guard:createMemoryGuard(), captchaVerifier})(request({...validPayload, captcha_token:'future-token'}));
+  assert.equal(response.status, 403);
+  assert.equal(checked, true);
+  assert.equal(brevo.calls.length, 0);
 });

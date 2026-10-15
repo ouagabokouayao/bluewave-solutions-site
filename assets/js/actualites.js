@@ -53,22 +53,30 @@
 
   const renderStatus = (status) => {
     const targets = document.querySelectorAll('[data-news-status]');
-    const generated = new Date(status.generated_at);
-    const hours = Number.isNaN(generated.valueOf()) ? Infinity : (Date.now() - generated.valueOf()) / 3600000;
-    let message = status.message || 'Veille actualisée.';
-    if (status.state === 'cached' && !Number.isNaN(generated.valueOf())) {
-      message = `${message} Revalidation : ${formatter.format(generated)}.`;
-    } else if (hours > 36) {
-      message = 'Actualisation en cours.';
-    } else if (!Number.isNaN(generated.valueOf())) {
-      message = `${message} Dernière mise à jour : ${formatter.format(generated)}.`;
+    const validDate = value => {
+      const date = typeof value === 'string' && value.trim() ? new Date(value) : null;
+      return date && !Number.isNaN(date.valueOf()) ? date : null;
+    };
+    const generated = validDate(status.generated_at);
+    const lastUpdate = validDate(status.last_successful_at)
+      || (['ok', 'partial'].includes(status.state) ? generated : null);
+    const hours = lastUpdate ? (Date.now() - lastUpdate.valueOf()) / 3600000 : Infinity;
+    const messages = {
+      ok: hours > 36 ? 'Actualisation nécessaire.' : 'Veille actualisée.',
+      partial: 'Veille partiellement actualisée ; certaines sources sont indisponibles.',
+      cached: 'Corpus revalidé sans nouvelle collecte distante.',
+      error: 'Sources momentanément indisponibles ; dernier corpus conservé.'
+    };
+    let message = messages[status.state] || 'État de la veille non renseigné.';
+    message += lastUpdate
+      ? ` Dernière mise à jour : ${formatter.format(lastUpdate)}.`
+      : ' Date de dernière mise à jour indisponible.';
+    if (status.state === 'cached' && generated) {
+      message += ` Revalidation du corpus : ${formatter.format(generated)}.`;
     }
     targets.forEach(target => {
       target.textContent = message;
-      if (!Number.isNaN(generated.valueOf())) {
-        const action = status.state === 'cached' ? 'Dernière revalidation' : 'Dernière collecte';
-        target.title = `${action} : ${formatter.format(generated)}`;
-      }
+      target.title = lastUpdate ? `Dernière collecte réussie : ${formatter.format(lastUpdate)}` : '';
     });
   };
 
