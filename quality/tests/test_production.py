@@ -37,6 +37,14 @@ class ProductionProfile(unittest.TestCase):
         self.assertEqual(len(list(out.glob('*.html'))), 21)
         self.assertIn('noindex, nofollow', (out / 'index.html').read_text())
 
+    def test_not_found_page_works_at_domain_root(self):
+        module.build()
+        out = module.OUT
+        page = (out / '404.html').read_text()
+        self.assertIn('<base href="/">', page)
+        for html in out.glob('*.html'):
+            self.assertNotIn('bluewave-solutions-site', html.read_text(), html.name)
+
     def test_open_profile_is_canonical_and_minimal(self):
         module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'], privacy_simulation=True)
         out = module.OUT

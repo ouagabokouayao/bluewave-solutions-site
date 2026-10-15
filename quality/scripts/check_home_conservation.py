@@ -17,6 +17,10 @@ STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const
 # Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
 # dans sa version exacte épinglée ici. Toute autre modification échoue.
 AUTHORIZED_VERSIONS = {
+    'quality/scripts/build_production_dist.py': ('5448846de6ec5130bad37a62743053d2641312287c6eeeb8b929117e2657a1f4',
+        '02-E5 : page 404 fonctionnelle à la racine du domaine en production'),
+    'quality/tests/test_production.py': ('96b21ddc696b3d0ff1003a564eb4e5a1af141c80452140a1a90c7db6ec72749a',
+        '02-E5 : test de la page 404 à la racine du domaine'),
     'projet.html': ('d5d052935e7680013f07d2bb1ca31f9bfedd255054630938790a7e3202231548',
         '02-E1 : sept questions de qualification distinguées des quatre étapes du parcours'),
     'collaboration.html': ('304ad15f07c1360e201b97c12a569a055e239031cc1209094c694d36a68f868f',
