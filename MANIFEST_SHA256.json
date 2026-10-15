@@ -271,8 +271,8 @@
   },
   {
     "path": "assets/js/journey-form.js",
-    "sha256": "2351da97d81beee4aa2d69b833cda445c85bb51ccd8b8ee9a96286e8cacaddbe",
-    "bytes": 11829
+    "sha256": "924841d6a6f2217c64e8ed0debfb31e971c9d2b04d93b762bcec27da3bb92596",
+    "bytes": 13893
   },
   {
     "path": "assets/js/lead-schema.js",
@@ -306,8 +306,8 @@
   },
   {
     "path": "collaboration.html",
-    "sha256": "d3e922804bc183df2a477cd9a35e357aac459d773c836d0536f296a9d726adfa",
-    "bytes": 18930
+    "sha256": "304ad15f07c1360e201b97c12a569a055e239031cc1209094c694d36a68f868f",
+    "bytes": 19259
   },
   {
     "path": "contact.html",
@@ -356,8 +356,8 @@
   },
   {
     "path": "formation.html",
-    "sha256": "67717fadeca2648c5f8076f1732e7f27149c2a2e2139e393dec4e02195029611",
-    "bytes": 10635
+    "sha256": "06ec9eea812d3506f12d55b04c9aa814882d9c8e5c16b1f5d4b0369f239cb173",
+    "bytes": 10907
   },
   {
     "path": "index.html",
@@ -421,13 +421,13 @@
   },
   {
     "path": "projet.html",
-    "sha256": "e981cf1df40a85da0610ea732717cf8fd804555de9b9f146664a0b0920a927be",
-    "bytes": 4597
+    "sha256": "d5d052935e7680013f07d2bb1ca31f9bfedd255054630938790a7e3202231548",
+    "bytes": 4659
   },
   {
     "path": "qualifier-un-besoin.html",
-    "sha256": "94e03f44b599276c1181033f8310e516d3731283fc73c8eca2e00059c9e5a77c",
-    "bytes": 14184
+    "sha256": "b7b70536e1390b8396327dc8c90e63e7c69a6de7fa6e1565931a855e39524d95",
+    "bytes": 14477
   },
   {
     "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "942ed460bf55156eeb6154f7f479846c7b92d3156c23966b6277d13e89d186a8",
-    "bytes": 4175
+    "sha256": "ff00115963f6f926391115f9ce2b8922987ff9ddbaea556209b05b70c1450b05",
+    "bytes": 5543
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -738,6 +738,11 @@
     "path": "serverless/bluewave-leads/tests/d1-double.mjs",
     "sha256": "f750bc3c1b5095f5d668a4fc66623c15f05996354a84db0d8f1a222eb54b703f",
     "bytes": 2772
+  },
+  {
+    "path": "serverless/bluewave-leads/tests/fallback-mail.test.mjs",
+    "sha256": "2081f5c947b126b1cb22f74cce124bd7e9e3c3ffaec1a09cd846dbebdd03237f",
+    "bytes": 3227
   },
   {
     "path": "serverless/bluewave-leads/tests/handler.test.mjs",

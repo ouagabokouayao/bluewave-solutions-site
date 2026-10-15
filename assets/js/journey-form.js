@@ -60,27 +60,57 @@ function payloadFor(form) {
   return payload;
 }
 
+// Tant que la transmission automatisée est fermée, ce courriel est le seul
+// canal réel : chaque réponse saisie dans un formulaire doit y figurer.
+const listLine = (label, value) => {
+  const items = (Array.isArray(value) ? value : [value]).filter(Boolean);
+  return items.length ? `${label} : ${items.join(', ')}` : '';
+};
+
 export function fallbackMailBody(payload) {
   return [
     `Prénom : ${payload.firstname}`,
     `Nom : ${payload.lastname}`,
     `E-mail : ${payload.email}`,
     payload.organisation ? `Organisation : ${payload.organisation}` : '',
+    payload.organisation_type ? `Type d’organisation : ${payload.organisation_type}` : '',
     payload.role ? `Fonction : ${payload.role}` : '',
     payload.territory ? `Territoire : ${payload.territory}` : '',
+    payload.organisation_website ? `Site web de l’organisation : ${payload.organisation_website}` : '',
     payload.collaboration_subject ? `Objet de la collaboration : ${payload.collaboration_subject}` : '',
+    listLine('Domaines concernés', payload.domains),
     payload.collaboration_expectation ? `Recherche : ${payload.collaboration_expectation}` : '',
     payload.collaboration_form ? `Forme envisagée : ${payload.collaboration_form}` : '',
+    payload.public_reference ? `Référence publique : ${payload.public_reference}` : '',
+    payload.professional_status ? `Statut professionnel : ${payload.professional_status}` : '',
+    payload.availability ? `Disponibilité : ${payload.availability}` : '',
+    listLine('Domaines de compétence', payload.expertise_domains),
+    listLine('Types d’intervention', payload.intervention_types),
+    listLine('Langues de travail', payload.work_languages),
     payload.expertise_evidence ? `Références publiques / capacités : ${payload.expertise_evidence}` : '',
     payload.motivation ? `Motivation : ${payload.motivation}` : '',
+    payload.phone ? `Téléphone : ${payload.phone}` : '',
+    payload.linkedin ? `Profil professionnel public : ${payload.linkedin}` : '',
+    payload.website_url ? `Site : ${payload.website_url}` : '',
+    payload.orcid ? `ORCID : ${payload.orcid}` : '',
+    payload.portfolio ? `Portfolio : ${payload.portfolio}` : '',
+    payload.mobility ? `Zone de mobilité : ${payload.mobility}` : '',
+    payload.rate_range ? `Tarif ou fourchette : ${payload.rate_range}` : '',
+    payload.rc_pro ? `RC Pro : ${payload.rc_pro}` : '',
     payload.training_subject ? `Sujet : ${payload.training_subject}` : '',
     payload.learning_objectives ? `Objectifs pédagogiques : ${payload.learning_objectives}` : '',
     payload.audience ? `Public concerné : ${payload.audience}` : '',
+    payload.training_level ? `Niveau : ${payload.training_level}` : '',
     payload.training_format ? `Format : ${payload.training_format}` : '',
     payload.location ? `Lieu envisagé : ${payload.location}` : '',
     payload.period ? `Période : ${payload.period}` : '',
+    payload.duration ? `Durée souhaitée : ${payload.duration}` : '',
     payload.participant_count ? `Participants estimés : ${payload.participant_count}` : '',
+    payload.customization ? `Adaptation attendue : ${payload.customization}` : '',
+    payload.context ? `Contexte de la formation : ${payload.context}` : '',
+    payload.deadline && payload.deadline !== 'nondef' ? `Échéance : ${payload.deadline}` : '',
     payload.need ? `Contexte / besoin : ${payload.need}` : '',
+    payload.contact_preference ? `Préférence de contact : ${payload.contact_preference}` : '',
     '',
     'J’ai relu ces informations avant envoi.'
   ].filter(line => line !== '').join('\n');
