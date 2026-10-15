@@ -1,0 +1,67 @@
+name: 02 preview probe (read-only)
+
+# Sonde en lecture seule de la préproduction Cloudflare existante.
+# Aucun secret, aucun déploiement, aucune écriture, aucun domaine BlueWave.
+# Elle établit quelle version est réellement servie et la compare au build
+# public exact du commit sondé. Résultats en annotations.
+
+on:
+  push:
+    branches: [diag-02-preview-probe-2026-10-15]
+
+permissions:
+  contents: read
+
+env:
+  BASE_URL: https://bluewave-site-preproduction.bluewave-solutions.workers.dev
+  UA: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build public du commit sondé
+        run: |
+          python quality/scripts/build_dist.py >/dev/null
+          python quality/scripts/dist_manifest.py >/dev/null
+          python quality/scripts/build_production_dist.py >/dev/null
+      - name: Etat servi
+        if: always()
+        run: |
+          for p in / /robots.txt /api/health /projet.html /collaboration.html /mentions-legales.html /politique-confidentialite.html; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL$p")
+            echo "::notice title=GET $p::code=$code"
+          done
+          curl -s -D /tmp/h.txt -o /dev/null -A "$UA" --max-time 30 "$BASE_URL/"
+          echo "::notice title=x-robots-tag::$(grep -i '^x-robots-tag:' /tmp/h.txt | tr -d '\r' || echo absent)"
+          lead=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 -X POST -H 'content-type: application/json' -H "origin: $BASE_URL" --data '{}' "$BASE_URL/api/leads")
+          echo "::notice title=POST /api/leads (attendu 503 ferme)::code=$lead"
+      - name: Version servie vs commit sondé
+        if: always()
+        run: |
+          curl -s -A "$UA" --max-time 30 "$BASE_URL/MANIFEST_SHA256.json" -o served.json || true
+          python - <<'PY'
+          import json, hashlib, pathlib, urllib.request
+          try:
+              served = {e['path']: e['sha256'] for e in json.load(open('served.json'))}
+          except Exception as e:
+              print(f"::warning title=Manifeste servi::illisible ({e})"); served = {}
+          for label, root in (('dist', 'dist'), ('dist-production', 'dist-production')):
+              local = {}
+              for p in pathlib.Path(root).rglob('*'):
+                  if p.is_file() and p.name != 'MANIFEST_SHA256.json':
+                      local[p.relative_to(root).as_posix()] = hashlib.sha256(p.read_bytes()).hexdigest()
+              same = sorted(k for k in local if served.get(k) == local[k])
+              diff = sorted(k for k in local if k in served and served[k] != local[k])
+              only_local = sorted(k for k in local if k not in served)
+              only_served = sorted(k for k in served if k not in local)
+              print(f"::notice title=Comparaison {label}::identiques={len(same)} differents={len(diff)} absents_servis={len(only_local)} seulement_servis={len(only_served)} total_servi={len(served)}")
+              if diff: print(f"::notice title=Differents {label}::{' '.join(diff[:25])}")
+              if only_local: print(f"::notice title=Absents du servi {label}::{' '.join(only_local[:25])}")
+          for key in ('assets/js/journey-form.js', 'projet.html', 'index.html'):
+              print(f"::notice title=SHA servi {key}::{served.get(key, 'absent')}")
+          PY
