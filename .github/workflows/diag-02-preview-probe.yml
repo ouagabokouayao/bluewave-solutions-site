@@ -8,6 +8,7 @@ name: 02 preview probe (read-only)
 on:
   push:
     branches: [diag-02-preview-probe-2026-10-15]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -65,3 +66,30 @@ jobs:
           for key in ('assets/js/journey-form.js', 'projet.html', 'index.html'):
               print(f"::notice title=SHA servi {key}::{served.get(key, 'absent')}")
           PY
+      - name: Contenu servi (mentions, canonical, robots, API)
+        if: always()
+        run: |
+          v=PASS
+          curl -s -A "$UA" --max-time 30 "$BASE_URL/mentions-legales.html" -o m.html
+          if grep -q "Cloudflare, Inc." m.html && ! grep -q "GitHub Pages" m.html; then h=cloudflare; elif grep -q "GitHub Pages" m.html; then h=github-pages; v=FAIL; else h=absent; v=FAIL; fi
+          echo "::notice title=Hebergeur mentionne::$h"
+          curl -s -A "$UA" --max-time 30 "$BASE_URL/" -o i.html
+          c=$(grep -o 'rel="canonical" href="[^"]*"' i.html | head -1); echo "::notice title=Canonical accueil::$c"
+          echo "$c" | grep -q 'https://www.bluewavesolutions.fr/' || v=FAIL
+          n=0; for f in dist-production/*.html; do p=$(basename $f); curl -s -A "$UA" --max-time 30 "$BASE_URL/$p" | grep -q 'content="noindex, nofollow"' || n=$((n+1)); done
+          echo "::notice title=Pages sans noindex::$n"; [ "$n" = 0 ] || v=FAIL
+          for r in leads events; do code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 -X POST -H 'content-type: application/json' -H "origin: $BASE_URL" --data '{}' "$BASE_URL/api/$r"); echo "::notice title=POST /api/$r::code=$code"; [ "$code" = 503 ] || v=FAIL; done
+          echo "::notice title=VERDICT contenu::$v"; [ "$v" = PASS ]
+      - name: Rendu navigateur 390 / 1440
+        if: always()
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.56.0 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+          node quality/diag/preview-render.mjs
+      - name: Captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-shots
+          path: preview-shots
+          if-no-files-found: ignore
