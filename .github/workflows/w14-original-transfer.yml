@@ -37,7 +37,11 @@ jobs:
           FINAL = "refs/heads/site-premium-final-v1-2026-10-14"
 
           def git(*args):
-              return subprocess.check_output(["git", *args], text=True).strip()
+              result = subprocess.run(["git", *args], text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+              if result.returncode:
+                  print(result.stdout, flush=True)
+                  result.check_returncode()
+              return result.stdout.strip()
 
           def remote(ref):
               result = git("ls-remote", "origin", ref)
