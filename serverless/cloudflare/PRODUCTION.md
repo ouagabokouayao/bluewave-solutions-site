@@ -19,7 +19,7 @@ Le commit de préparation ne publie rien. `wrangler.production.jsonc` est distin
 4. `npx wrangler deploy --config serverless/cloudflare/.wrangler-production.generated.json --dry-run` vérifie l'assemblage ; `--dry-run` n'envoie rien.
 5. Le déploiement réel, les routes et la bascule DNS n'ont lieu qu'après GO. Une URL `workers.dev` n'est pas ouverte implicitement.
 
-Le profil production `--indexable` produit les 17 pages sur la nouvelle origine, `404.html` non indexable, `robots.txt` ouvert, un sitemap de 16 URLs, canonical et OG corrigés. Le Worker ajoute `X-Robots-Tag: index, follow` aux réponses publiques réussies uniquement si `PUBLIC_INDEXABLE=true`; les erreurs/404 restent noindex. Le profil fermé conserve `Disallow: /` et aucun beacon ni endpoint client.
+Le profil production `--indexable` produit les 21 pages sur la nouvelle origine, `404.html` non indexable, `robots.txt` ouvert, un sitemap de 20 URLs, canonical et OG corrigés, image de partage 1200×630 et données structurées Organization/WebSite sur l’accueil (faits publiés uniquement). Le Worker ajoute `X-Robots-Tag: index, follow` aux réponses publiques réussies uniquement si `PUBLIC_INDEXABLE=true`; les erreurs/404 restent noindex. Le profil fermé conserve `Disallow: /` et aucun beacon ni endpoint client.
 
 ## Paramètres Brevo et contrôle des erreurs
 

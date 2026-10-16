@@ -59,6 +59,28 @@ class ProductionProfile(unittest.TestCase):
             for tag in re.findall(r'<script\b[^>]*>', body):
                 self.assertTrue('src=' in tag or 'application/ld+json' in tag, f'{page.name}: {tag}')
 
+    def test_share_card_and_structured_data(self):
+        module.build()
+        out = module.OUT
+        image = out / module.SOCIAL_IMAGE
+        header = image.read_bytes()[:24]
+        self.assertEqual(header[:8], b'\x89PNG\r\n\x1a\n')
+        self.assertEqual((int.from_bytes(header[16:20], 'big'), int.from_bytes(header[20:24], 'big')), (1200, 630))
+        for page in out.glob('*.html'):
+            body = page.read_text()
+            tag = f'<meta property="og:image" content="{module.ORIGIN}/{module.SOCIAL_IMAGE}">'
+            self.assertEqual(body.count(tag), 0 if page.name == '404.html' else 1, page.name)
+        index = (out / 'index.html').read_text()
+        blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', index, re.S)
+        self.assertEqual(len(blocks), 1)
+        graph = {node['@type']: node for node in json.loads(blocks[0])['@graph']}
+        organisation = graph['Organization']
+        self.assertEqual(organisation['name'], 'BlueWave Solutions')
+        self.assertEqual(organisation['url'], module.ORIGIN + '/')
+        self.assertTrue((out / organisation['logo'].replace(module.ORIGIN + '/', '')).is_file())
+        for absent in ('address', 'telephone', 'foundingDate', 'member', 'employee', 'award'):
+            self.assertNotIn(absent, organisation)
+
     def test_open_profile_is_canonical_and_minimal(self):
         module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'], privacy_simulation=True)
         out = module.OUT

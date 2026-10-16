@@ -15,6 +15,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -150,8 +151,20 @@ def is_forbidden(relative: str) -> bool:
     return relative.lower().endswith(FORBIDDEN_SUFFIXES)
 
 
+def public_pages() -> list[str]:
+    """Pages racine suivies par Git : un fichier HTML local non suivi
+    (brouillon, capture de recette) n'entre jamais dans le site servi.
+    Hors dépôt Git (archive exportée), toutes les pages racine sont reprises."""
+    try:
+        listed = subprocess.run(["git", "ls-files", "-z", "--", "*.html"], cwd=ROOT,
+                                capture_output=True, check=True).stdout.decode("utf-8")
+    except (OSError, subprocess.CalledProcessError):
+        return sorted(path.name for path in ROOT.glob("*.html"))
+    return sorted(name for name in listed.split("\0") if name and "/" not in name)
+
+
 def collect() -> list[str]:
-    seeds = sorted(path.name for path in ROOT.glob("*.html"))
+    seeds = public_pages()
     seeds += [name for name in UNREFERENCED_RUNTIME if (ROOT / name).is_file()]
     selected: set[str] = set()
     queue = list(seeds)

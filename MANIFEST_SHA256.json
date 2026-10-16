@@ -140,6 +140,11 @@
     "bytes": 67737
   },
   {
+    "path": "assets/img/brand/social/bluewave-partage-1200x630.png",
+    "sha256": "1bd6095e0d9e927f71f1ea48ba98e14f24815f7b0b94ff0523ac10df65a2498a",
+    "bytes": 249197
+  },
+  {
     "path": "assets/img/experience/cote-conceptuelle.webp",
     "sha256": "8dd05da8dedee95805cdac4a0f836a13729e80875aa5994c52feb6390b2af662",
     "bytes": 299152
@@ -326,13 +331,13 @@
   },
   {
     "path": "data/actualites-status.json",
-    "sha256": "51da290d7cbb1305f9173048e33d6834a66a786d32d35db75a23e087f4c78e72",
-    "bytes": 894
+    "sha256": "5f1422c2ac5e4abf2f21ecb736cb22402265f5bd6ce253edeac3c387b239f377",
+    "bytes": 925
   },
   {
     "path": "data/actualites.json",
-    "sha256": "4e1b3c41e230819471d78cfbf4d8ad5e3ab0fdd0269bd0aec20f45e062d1e4d1",
-    "bytes": 14222
+    "sha256": "dfc7ac62fb5befca4ec0917a78332e47a00021a350b533bb3d70dc736c510cf8",
+    "bytes": 17719
   },
   {
     "path": "data/analytics-config.json",
@@ -506,13 +511,13 @@
   },
   {
     "path": "quality/scripts/build_dist.py",
-    "sha256": "de5911ea3cb80e26a7447c65b6297e894c78a50b97ef56e704b1dbdf25536704",
-    "bytes": 7012
+    "sha256": "f5c2c1bfe334dad6bbe5b0e11cb8f3650c9fe21799ec59fb76b3945468aebe7c",
+    "bytes": 7638
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "5448846de6ec5130bad37a62743053d2641312287c6eeeb8b929117e2657a1f4",
-    "bytes": 14688
+    "sha256": "a8f0a4b0396a1edfe6d43bc7341a6ab489fd14b6bc2c4d54fbe99942859970fd",
+    "bytes": 17185
   },
   {
     "path": "quality/scripts/check_brand_assets.py",
@@ -531,8 +536,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "e9445184c7678b4ad380944f0d27b977e711127d0676ceac150ca04c1409f07a",
-    "bytes": 6593
+    "sha256": "4976e5a6420fa843d5cf1b414415b14c9c23c99d95c25419e5b63b5541e50932",
+    "bytes": 7395
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -601,8 +606,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "e7070b955c7ec0fe546ab5a4c9522e4d84bfa2b2c16afbf8d792c4a15da6c086",
-    "bytes": 7228
+    "sha256": "746ccd246147b6e3641fd87b3e07a3d16638c384a4ffc710b90b85abe2cbdf18",
+    "bytes": 8544
   },
   {
     "path": "robots.txt",
@@ -786,8 +791,8 @@
   },
   {
     "path": "serverless/cloudflare/PRODUCTION.md",
-    "sha256": "9e7e3a36364b03e88f2e91139d34a26f21e8af3cbec06d1dfda901798a9079e6",
-    "bytes": 5470
+    "sha256": "fb9c54ab18481126c8ec09572db9f108a8d43cbb81247de25ddf5c7e30d861d0",
+    "bytes": 5588
   },
   {
     "path": "serverless/cloudflare/README.md",

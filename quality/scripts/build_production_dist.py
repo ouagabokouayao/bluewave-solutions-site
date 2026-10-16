@@ -16,6 +16,38 @@ APPROVAL = ROOT / 'quality/privacy-approval.json'
 ORIGIN = 'https://www.bluewavesolutions.fr'
 OLD = 'https://ouagabokouayao.github.io/bluewave-solutions-site/'
 OLD_PATH = '/bluewave-solutions-site/'
+# Carte de partage composée à partir du logo officiel de référence (sans redessin).
+SOCIAL_IMAGE = 'assets/img/brand/social/bluewave-partage-1200x630.png'
+LOGO_URL = ORIGIN + '/assets/img/brand/logo/logo-bluewave-horizontal-officiel.png'
+
+
+def social(document, name):
+    """Ajoute l'image de partage et, sur l'accueil, les données structurées.
+
+    Les données structurées ne décrivent que des faits publiés sur le site :
+    nom, adresse, logo, courriel de contact, description et zones prioritaires.
+    Aucun client, partenaire, adresse postale, téléphone ou date de création.
+    """
+    tags = (f'<meta property="og:image" content="{ORIGIN}/{SOCIAL_IMAGE}">'
+            '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
+            '<meta property="og:image:alt" content="BlueWave Solutions — conseil, études, recherche, innovation">'
+            '<meta name="twitter:card" content="summary_large_image">')
+    if name == 'index.html':
+        description = re.search(r'<meta name="description" content="([^"]*)"', document)
+        graph = {'@context': 'https://schema.org', '@graph': [
+            {'@type': 'Organization', '@id': ORIGIN + '/#organisation', 'name': 'BlueWave Solutions',
+             'url': ORIGIN + '/', 'logo': LOGO_URL, 'email': 'bluewavesolutions3399@gmail.com',
+             'description': html.unescape(description.group(1)) if description else None,
+             'areaServed': ['France', 'Méditerranée', 'Côte d’Ivoire', 'Afrique de l’Ouest'],
+             'knowsAbout': ['Gouvernance maritime', 'Gestion côtière', 'Économie bleue',
+                            'Vulnérabilité côtière et adaptation', 'Concertation et médiation de projets']},
+            {'@type': 'WebSite', '@id': ORIGIN + '/#site', 'name': 'BlueWave Solutions', 'url': ORIGIN + '/',
+             'inLanguage': 'fr', 'publisher': {'@id': ORIGIN + '/#organisation'}}]}
+        payload = json.dumps(graph, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+        tags += f'<script type="application/ld+json">{payload}</script>'
+    if document.count('</head>') != 1:
+        raise ValueError('Balise </head> absente ou répétée')
+    return document.replace('</head>', tags + '</head>')
 
 
 def privacy_gate(indexable, simulation):
@@ -153,6 +185,8 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
             lambda m: m.group(1) + desired + m.group(2), document, count=1)
         if count != 1:
             raise ValueError(f'Méta robots absente : {page.name}')
+        if page.name != '404.html':
+            document = social(document, page.name)
         if page.name == 'politique-confidentialite.html':
             document = privacy(document, leads, events, bool(token))
         if page.name == 'mentions-legales.html':
@@ -169,6 +203,8 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
                 '<p>Le site reste non indexable pendant sa préparation. Les mentions légales '
                 'seront complétées après immatriculation sur justificatifs.</p>')
         page.write_text(document, encoding='utf-8')
+    (OUT / SOCIAL_IMAGE).parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / SOCIAL_IMAGE, OUT / SOCIAL_IMAGE)
     (OUT / 'robots.txt').write_text(
         ('User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ' + ORIGIN + '/sitemap.xml\n')
         if indexable else 'User-agent: *\nDisallow: /\n', encoding='utf-8')
