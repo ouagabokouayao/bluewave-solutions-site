@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+"""Contrôle de conservation du socle A01 lors de l'intégration de l'accueil."""
+import hashlib
+import json
+import re
+import subprocess
+from html.parser import HTMLParser
+from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+ROOT = Path(__file__).resolve().parents[2]
+BASE = '70b683105ca2e660dc21076173d0f019fe6e1bd7'
+ALLOWED = {'index.html', 'MANIFEST_SHA256.json', 'quality/scripts/update_manifest.py', '.github/workflows/site-quality.yml'}
+# V03 est autorisée exclusivement dans renderStatus ; les données, filtres,
+# cartes et parcours historiques restent contrôlés octet pour octet.
+STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const renderHome =', re.S)
+# Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
+# dans sa version exacte épinglée ici. Toute autre modification échoue.
+AUTHORIZED_VERSIONS = {
+    'politique-confidentialite.html': ('0e6dbff92524322bf983d2f451bd2f773de9d37715cb292e2ab755fb2df290aa',
+        '02-E7/E12 : Gmail identifié ; bases, durées et droits selon 04B ; téléphone non confirmé retiré'),
+    'mentions-legales.html': ('4d77759ab82b1009ed86f9172095d3940118732efebd2e3d69c6eeed6eda24ae',
+        '02-E12 : téléphone non confirmé retiré et rangé parmi les informations non encore acquises'),
+    'solutions.html': ('4ca76012aa133993279aeef912bca4b3e25b6e789925d40026e7ff83a15986bb',
+        '02-E12 : déclinaisons spécialisées rattachées aux cinq offres cœur (arbitrage 01)'),
+    'quality/scripts/build_dist.py': ('f5c2c1bfe334dad6bbe5b0e11cb8f3650c9fe21799ec59fb76b3945468aebe7c',
+        '02-E11 : seules les pages suivies par Git entrent dans le site servi'),
+    'serverless/cloudflare/PRODUCTION.md': ('fb9c54ab18481126c8ec09572db9f108a8d43cbb81247de25ddf5c7e30d861d0',
+        '02-E11 : décomptes du profil indexable mis à jour (21 pages, sitemap de 20 URLs)'),
+    'data/actualites.json': ('dfc7ac62fb5befca4ec0917a78332e47a00021a350b533bb3d70dc736c510cf8',
+        '02-E11 : veille actualisée le 16/10/2026 par le collecteur existant (sources vérifiées)'),
+    'data/actualites-status.json': ('5f1422c2ac5e4abf2f21ecb736cb22402265f5bd6ce253edeac3c387b239f377',
+        '02-E11 : état de la veille du 16/10/2026'),
+    'assets/css/premium.css': ('9adb0e28f557a662b1ce715e044edd108a78942871da07f95ead1721ee4a791b',
+        '02-E8/E10 : numéros de format au contraste WCAG ; cases fermées masquées par la feuille (CSP)'),
+    'assets/js/automation.js': ('16366bddae3af93c28b48ea2eb0af1b473641c970c91d3da1fd93059fcca651d',
+        '02-E6 : option newsletter fermée masquée ; modules optionnels résolus sur la base du document'),
+    'assets/js/qualifier.js': ('638ae1c302efdd8f77fd81320582b2ceea3737ae43bbf32cbab7f2f9b7710585',
+        '02-E6 : courriel du parcours Projet complet et message copiable'),
+    'quality/scripts/build_production_dist.py': ('5be36964d1a9bd3877add8ea5b55396afe44cbc0f9130c5a7444764c2d72501b',
+        '02-E5/E7/E11/E12 : 404 à la racine ; partage et données structurées ; confidentialité selon 04B'),
+    'quality/tests/test_production.py': ('a99e40383887cc8a3bc413b6a7fe2ac9c42a78e105bbd1cc4ed6ff3aea313525',
+        '02-E5/E7/E10/E11/E12 : tests 404, CSP, partage, données structurées, confidentialité 04B'),
+    'projet.html': ('d5d052935e7680013f07d2bb1ca31f9bfedd255054630938790a7e3202231548',
+        '02-E1 : sept questions de qualification distinguées des quatre étapes du parcours'),
+    'collaboration.html': ('304ad15f07c1360e201b97c12a569a055e239031cc1209094c694d36a68f868f',
+        '02-E3 : alternative courriel sans JavaScript'),
+    'formation.html': ('06ec9eea812d3506f12d55b04c9aa814882d9c8e5c16b1f5d4b0369f239cb173',
+        '02-E3 : alternative courriel sans JavaScript'),
+    'qualifier-un-besoin.html': ('7824c1567951b67087a09339ab047c40d5a44a81938720e5e0c98d683da1fdca',
+        '02-E3/E6/E10 : alternative courriel sans JavaScript ; option newsletter fermée masquée sans attribut style'),
+    'assets/js/journey-form.js': ('972e632fd283eb078071a507554dc41dbe2d3497ca3199e39ee1a66b6683329c',
+        '02-E2/E4 : courriel de repli complet et message copiable pour les trois formulaires de parcours'),
+}
+def outside_news_status(content):
+    if len(STATUS_BLOCK.findall(content)) != 1:
+        raise ValueError('Bloc renderStatus absent ou ambigu')
+    return STATUS_BLOCK.sub(b'  const renderHome =', content)
+class Page(HTMLParser):
+    def __init__(self):
+        super().__init__(); self.links=set(); self.ids=set(); self.scripts=set(); self.offers=set()
+    def handle_starttag(self, tag, attrs):
+        a=dict(attrs)
+        if tag=='a' and a.get('href'): self.links.add(a['href'])
+        if a.get('id'): self.ids.add(a['id'])
+        if tag=='script' and a.get('src'): self.scripts.add(a['src'])
+        if a.get('data-offer'): self.offers.add(a['data-offer'])
+def git(*args):
+    return subprocess.check_output(['git',*args],cwd=ROOT)
+def main():
+    errors=[]
+    authorized=[]
+    paths=git('ls-tree','-r','--name-only',BASE).decode().splitlines()
+    preserved=[]
+    for path in paths:
+        target=ROOT/path
+        if not target.is_file(): errors.append('Fichier perdu : '+path); continue
+        if path not in ALLOWED:
+            before=git('show',BASE+':'+path)
+            if path == 'assets/js/actualites.js' and before != target.read_bytes():
+                try:
+                    if outside_news_status(before) != outside_news_status(target.read_bytes()):
+                        errors.append('Modification Actualités hors statut autorisé')
+                    else:
+                        authorized.append('assets/js/actualites.js:renderStatus uniquement (V03)')
+                except ValueError as error:
+                    errors.append(str(error))
+                continue
+            current=target.read_bytes()
+            if path in AUTHORIZED_VERSIONS and before!=current:
+                pinned,reason=AUTHORIZED_VERSIONS[path]
+                if hashlib.sha256(current).hexdigest()==pinned: authorized.append(f'{path}: {reason}')
+                else: errors.append('Modification hors version autorisée : '+path)
+                continue
+            if before!=current: errors.append('Modification hors accueil : '+path)
+            else: preserved.append(path)
+    old=Page(); old.feed(git('show',BASE+':index.html').decode())
+    now=Page(); now.feed((ROOT/'index.html').read_text())
+    for link in sorted(old.links-now.links): errors.append('Lien accueil perdu : '+link)
+    for script in sorted(old.scripts-now.scripts): errors.append('Script accueil perdu : '+script)
+    expected={'diagnostic-strategique','vulnerabilite-cotiere','gouvernance-acteurs','structuration-projet','formation-capacites','note-strategique','atelier-cadrage'}
+    if now.offers!=expected: errors.append('Sept entrées commerciales non canoniques')
+    for page in ROOT.glob('*.html'):
+        p=Page();p.feed(page.read_text())
+        for link in p.links:
+            u=urlsplit(link)
+            if u.scheme or link.startswith('//'): continue
+            target=(ROOT/unquote(u.path)).resolve() if u.path else page
+            if not target.is_file(): errors.append(f'{page.name}: cible absente {link}'); continue
+            if u.fragment and target.suffix=='.html':
+                dest=Page();dest.feed(target.read_text())
+                if unquote(u.fragment) not in dest.ids: errors.append(f'{page.name}: ancre absente {link}')
+    result={'status':'FAIL' if errors else 'PASS','base':BASE,'baseline_files':len(paths),'unchanged_baseline_files':len(preserved),'unchanged_pages':len([x for x in preserved if x.endswith('.html')]),'authorized_modifications':authorized,'old_home_links_preserved':len(old.links-now.links)==0,'old_home_scripts_preserved':len(old.scripts-now.scripts)==0,'canonical_offers':sorted(now.offers),'errors':errors}
+    print(json.dumps(result,ensure_ascii=False,indent=2))
+    return bool(errors)
+if __name__=='__main__': raise SystemExit(main())
