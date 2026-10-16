@@ -82,7 +82,7 @@ const news = await pf.evaluate(() => document.querySelectorAll('[data-actualites
 await pf.goto(`${base}/index.html`, {waitUntil: 'networkidle'});
 const pause = await pf.evaluate(() => [...document.querySelectorAll('button')].some(x => /pause/i.test(x.textContent)));
 out.fonctions_locales = {visionneuse_mediatheque_ouverte: dlg, cartes_actualites: news, bouton_pause_animations: pause};
-await ctxF.close(); await b.close(); 
+await ctxF.close(); await b.close();
 const fail = [];
 for (const w of ['pages_390', 'pages_1440']) { const d = out[w]; if (d.http_non200.length || d.debordements.length || d.images_cassees.length || d.erreurs.length || d.requetes_externes.length) fail.push(w); }
 if (out.liens_internes.casses.length) fail.push('liens');
