@@ -73,10 +73,8 @@ jobs:
               for k in sorted(local): tree.update(k.encode() + b'\0' + bytes.fromhex(local[k]))
               print(f"::notice title=Empreinte arbre {label} attendue::{tree.hexdigest()}")
               print(f"::notice title=Comparaison {label}::identiques={len(same)} differents={len(diff)} absents_servis={len(only_local)} seulement_servis={len(only_served)} total_servi={len(served)}")
-              if diff: print(f"::notice title=Differents {label}::{' '.join(diff[:25])}")
-              if only_local: print(f"::notice title=Absents du servi {label}::{' '.join(only_local[:25])}")
-          for key in ('assets/js/journey-form.js', 'projet.html', 'index.html'):
-              print(f"::notice title=SHA servi {key}::{served.get(key, 'absent')}")
+              if diff and label == 'dist-production': print(f"::notice title=Differents {label}::{' '.join(diff[:25])}")
+              if only_local and label == 'dist-production': print(f"::notice title=Absents du servi {label}::{' '.join(only_local[:25])}")
           PY
       - name: Contenu servi (mentions, canonical, robots, API)
         if: always()
