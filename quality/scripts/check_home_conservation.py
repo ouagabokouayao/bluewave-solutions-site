@@ -17,15 +17,17 @@ STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const
 # Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
 # dans sa version exacte épinglée ici. Toute autre modification échoue.
 AUTHORIZED_VERSIONS = {
+    'politique-confidentialite.html': ('ad97a33b9239ea3fde5bcd79ed82a58a355256babec020d582359dff0047801a',
+        '02-E7 : messagerie de réception Gmail mentionnée'),
     'assets/css/premium.css': ('9adb0e28f557a662b1ce715e044edd108a78942871da07f95ead1721ee4a791b',
         '02-E8/E10 : numéros de format au contraste WCAG ; cases fermées masquées par la feuille (CSP)'),
     'assets/js/automation.js': ('16366bddae3af93c28b48ea2eb0af1b473641c970c91d3da1fd93059fcca651d',
         '02-E6 : option newsletter fermée masquée ; modules optionnels résolus sur la base du document'),
     'assets/js/qualifier.js': ('638ae1c302efdd8f77fd81320582b2ceea3737ae43bbf32cbab7f2f9b7710585',
         '02-E6 : courriel du parcours Projet complet et message copiable'),
-    'quality/scripts/build_production_dist.py': ('5448846de6ec5130bad37a62743053d2641312287c6eeeb8b929117e2657a1f4',
+    'quality/scripts/build_production_dist.py': ('b109bc948f6b0d9ca2c8ebc9d3d28e7ff4f0b06a33e8c8abd14a28e71e334cc3',
         '02-E5 : page 404 fonctionnelle à la racine du domaine en production'),
-    'quality/tests/test_production.py': ('e7070b955c7ec0fe546ab5a4c9522e4d84bfa2b2c16afbf8d792c4a15da6c086',
+    'quality/tests/test_production.py': ('a48b7772f5e1e9c02f08471f3f010c2eb07b5f702141fa154ba084ca283b8383',
         '02-E5 : test de la page 404 à la racine du domaine'),
     'projet.html': ('d5d052935e7680013f07d2bb1ca31f9bfedd255054630938790a7e3202231548',
         '02-E1 : sept questions de qualification distinguées des quatre étapes du parcours'),

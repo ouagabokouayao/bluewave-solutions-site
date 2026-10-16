@@ -38,6 +38,18 @@ class ProductionProfile(unittest.TestCase):
         self.assertEqual(len(list(out.glob('*.html'))), 21)
         self.assertIn('noindex, nofollow', (out / 'index.html').read_text())
 
+    def test_privacy_recipients_are_factual(self):
+        for options in ({}, {'leads': True, 'privacy_simulation': True}):
+            module.build(**options)
+            page = (module.OUT / 'politique-confidentialite.html').read_text()
+            self.assertNotIn('personnes habilitées', page)
+            self.assertIn('Le fondateur de BlueWave Solutions, seul destinataire à ce jour', page)
+            self.assertIn('Google (Gmail)', page)
+        module.build()
+        page = (module.OUT / 'politique-confidentialite.html').read_text()
+        self.assertIn('les informations que vous choisissez d’inclure dans votre courriel', page)
+        self.assertNotIn('Si le formulaire est actif', page)
+
     def test_not_found_page_works_at_domain_root(self):
         module.build()
         out = module.OUT
