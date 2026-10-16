@@ -45,7 +45,7 @@
 
 
 .home-premium [hidden]{display:none!important}
-@media(max-width:1200px){.home-premium:not([data-experience-ready]) .topbar{position:relative;background:#071c32}.home-premium:not([data-experience-ready]) .mobile-nav{position:static}}
+/* Sans JavaScript : en-tête et menu dans le flux, navigation toujours accessible. */@media(max-width:1200px) and (scripting:none){.home-premium:not([data-experience-ready]) .topbar{position:relative;background:#071c32}.home-premium:not([data-experience-ready]) .mobile-nav{position:static}}/* JavaScript actif : la mise en page finale est posée dès le premier rendu, sans saut. */@media(max-width:1200px) and (scripting:enabled){.home-premium:not([data-experience-ready]) .mobile-nav{display:none}}
 
 .home-premium .offer-card a,.home-premium .link-arrow{min-height:44px}.home-premium .mobile-nav a:focus-visible{outline-offset:-3px}
 

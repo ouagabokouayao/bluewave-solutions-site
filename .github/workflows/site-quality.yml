@@ -118,3 +118,5 @@ jobs:
         run: |
           npm i --no-save --no-audit --no-fund axe-core@4.10.3
           node quality/tests/accessibility.e2e.mjs dist
+      - name: Layout stability (CLS < 0.1) on every page, menu usable without JavaScript
+        run: node quality/tests/layout-stability.e2e.mjs dist

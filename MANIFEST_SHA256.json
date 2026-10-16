@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "d3ee3fe698bc0c6691e45ec207d243aa77618c1849a4d65398ca7ada00e5153a",
-    "bytes": 5291
+    "sha256": "4d128d5d9fdcdff53477b3c14669e5d1ea8ea7af6e851b7c6e327fb2b1ffe051",
+    "bytes": 5442
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -61,8 +61,8 @@
   },
   {
     "path": "assets/css/experience.css",
-    "sha256": "74e8ca518dbb40351fa3629ff80e4eaca07701f758d923155f8e2b497a0f23b5",
-    "bytes": 26565
+    "sha256": "25822e392214c17884486dbde5598c17e62a76cf4b0b40b9c57370704bdb3f61",
+    "bytes": 26882
   },
   {
     "path": "assets/css/premium.css",
@@ -361,8 +361,8 @@
   },
   {
     "path": "index.html",
-    "sha256": "a5a9729cd79ca60cc02a2aebd1e18d4feddf5a229c96c810a4668cd075199554",
-    "bytes": 23370
+    "sha256": "9e71ff17f2d7cd98dd54e01446c6f51881d856ac6c22d5c5a9a2a9491deafa28",
+    "bytes": 23635
   },
   {
     "path": "media-intervention.html",
