@@ -1,22 +1,23 @@
 {
   "version": 1,
-  "generated_at": "2026-09-20T16:22:11Z",
+  "generated_at": "2026-10-16T13:19:07Z",
   "state": "ok",
   "configured_sources": 3,
   "reachable_sources": 3,
-  "collected": 35,
-  "after_deduplication": 35,
+  "collected": 38,
+  "after_deduplication": 38,
   "duplicates_removed": 0,
-  "kept": 13,
+  "kept": 16,
   "source_limit": 8,
   "featured_eligible": 0,
   "featured": 0,
   "categories": {
-    "droit-securite": 2,
+    "droit-securite": 5,
     "economie-bleue": 5,
-    "environnement-marin": 4,
+    "environnement-marin": 2,
+    "gouvernance-maritime": 1,
     "littoral-adaptation": 1,
-    "ports-maritime": 1
+    "ports-maritime": 2
   },
   "source_reports": [
     {
@@ -35,10 +36,10 @@
       "source_id": "emsa",
       "status": "ok",
       "fetched": 10,
-      "accepted": 4
+      "accepted": 7
     }
   ],
   "errors": [],
-  "last_successful_at": "2026-09-20T16:22:11Z",
+  "last_successful_at": "2026-10-16T13:19:07Z",
   "message": "Veille actualisée."
 }
