@@ -1,0 +1,105 @@
+name: 02 preview probe b8885a2 (read-only)
+
+# Sonde en lecture seule du Worker de test isolé bluewave-site-preview-b8885a2.
+# Aucun secret, aucun déploiement, aucune écriture, aucun domaine BlueWave.
+# Elle ne s'exécute que sur un commit dont le message contient
+# [sonde-preview-b8885a2] : un push ordinaire de cette branche ne sonde rien.
+# Le build est celui du commit candidat exact ; la version servie doit en
+# reproduire l'empreinte. Résultats en annotations, captures en artefact.
+
+on:
+  push:
+    branches: [diag-02-preview-probe-b8885a2]
+
+permissions:
+  contents: read
+
+env:
+  BASE_URL: https://bluewave-site-preview-b8885a2.bluewave-solutions.workers.dev
+  EXPECTED_TREE: 615b1ccf2089ced9b2c7f2cda458027bc2a528db1fbd89b7452aa760dbea629b
+  UA: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+
+jobs:
+  probe:
+    if: contains(github.event.head_commit.message, '[sonde-preview-b8885a2]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build du commit candidat
+        run: |
+          python quality/scripts/build_dist.py >/dev/null
+          python quality/scripts/dist_manifest.py >/dev/null
+          python quality/scripts/build_production_dist.py >/dev/null
+      - name: Empreinte servie = empreinte du candidat
+        if: always()
+        run: |
+          curl -s -A "$UA" --max-time 30 "$BASE_URL/MANIFEST_SHA256.json" -o served.json || true
+          python - <<'PY'
+          import json, hashlib, os, pathlib, sys
+          def tree(entries):
+              t = hashlib.sha256()
+              for k in sorted(entries): t.update(k.encode() + b'\0' + bytes.fromhex(entries[k]))
+              return t.hexdigest()
+          try:
+              served = {e['path']: e['sha256'] for e in json.load(open('served.json'))}
+          except Exception as e:
+              print(f"::error title=Manifeste servi::illisible ({e})"); sys.exit(1)
+          root = pathlib.Path('dist-production')
+          local = {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                   for p in root.rglob('*') if p.is_file() and p.name != 'MANIFEST_SHA256.json'}
+          s, l, x = tree(served), tree(local), os.environ['EXPECTED_TREE']
+          diff = sorted(k for k in set(local) | set(served) if local.get(k) != served.get(k))
+          ok = s == l == x and not diff
+          print(f"::notice title=Empreinte servie::{s} ({len(served)} fichiers)")
+          print(f"::notice title=Empreinte build CI::{l} ({len(local)} fichiers)")
+          print(f"::notice title=VERDICT empreinte::{'PASS' if ok else 'FAIL'} attendue={x} ecarts={' '.join(diff[:20]) or 'aucun'}")
+          sys.exit(0 if ok else 1)
+          PY
+      - name: Contenu servi (mentions, canonical, robots, API, exposition)
+        if: always()
+        run: |
+          v=PASS
+          curl -s -A "$UA" --max-time 30 "$BASE_URL/mentions-legales.html" -o m.html
+          if grep -q "Cloudflare, Inc." m.html && ! grep -q "GitHub Pages" m.html; then h=cloudflare; else h=KO; v=FAIL; fi
+          echo "::notice title=Hebergeur mentionne::$h"
+          curl -s -D h.txt -A "$UA" --max-time 30 "$BASE_URL/" -o i.html
+          c=$(grep -o 'rel="canonical" href="[^"]*"' i.html | head -1); echo "::notice title=Canonical accueil::$c"
+          echo "$c" | grep -q 'https://www.bluewavesolutions.fr/' || v=FAIL
+          xr=$(grep -i '^x-robots-tag:' h.txt | tr -d '\r'); echo "::notice title=En-tete robots::${xr:-absent}"
+          echo "$xr" | grep -qi 'noindex, nofollow' || v=FAIL
+          curl -s -A "$UA" --max-time 30 "$BASE_URL/robots.txt" | grep -q '^Disallow: /$' || { echo "::notice title=robots.txt::Disallow absent"; v=FAIL; }
+          sm=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL/sitemap.xml"); echo "::notice title=sitemap.xml (attendu 404)::$sm"; [ "$sm" = 404 ] || v=FAIL
+          n=0; for f in dist-production/*.html; do p=$(basename $f); curl -s -A "$UA" --max-time 30 "$BASE_URL/$p" | grep -q 'content="noindex, nofollow"' || n=$((n+1)); done
+          echo "::notice title=Pages sans meta noindex::$n"; [ "$n" = 0 ] || v=FAIL
+          for r in leads events; do code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 -X POST -H 'content-type: application/json' -H "origin: $BASE_URL" --data '{}' "$BASE_URL/api/$r"); echo "::notice title=POST /api/$r (attendu 503)::$code"; [ "$code" = 503 ] || v=FAIL; done
+          bad=""; for p in /.dev.vars /.env /package.json /wrangler.json /serverless/cloudflare/worker.mjs /serverless/cloudflare/wrangler.jsonc /.git/config /private/ /quality/privacy-approval.json /bluewave-solutions-site/index.html; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL$p"); case "$code" in 404|308) ;; *) bad="$bad $p:$code";; esac; done
+          echo "::notice title=Fichiers internes non servis::${bad:-PASS}"; [ -z "$bad" ] || v=FAIL
+          code=$(curl -s -o nf.html -w '%{http_code}' -A "$UA" --max-time 30 "$BASE_URL/page-inexistante-sonde")
+          if [ "$code" = 404 ] && grep -q '<base href="/">' nf.html && ! grep -q 'bluewave-solutions-site' nf.html; then nf=PASS; else nf=FAIL; v=FAIL; fi
+          echo "::notice title=Page 404 a la racine::code=$code statut=$nf"
+          echo "::notice title=VERDICT contenu::$v"; [ "$v" = PASS ]
+      - name: Outils navigateur
+        if: always()
+        run: |
+          npm i --no-save --no-audit --no-fund playwright@1.56.0 axe-core@4.10.3 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Rendu navigateur 390 / 1440
+        if: always()
+        run: node quality/diag/preview-render.mjs
+      - name: Recette des parcours (formulaires, menus, Qualifier, collecte)
+        if: always()
+        run: node quality/diag/preview-journeys.mjs
+      - name: Accessibilite WCAG 2.1 AA et stabilite visuelle (servi)
+        if: always()
+        run: node quality/diag/preview-quality.mjs
+      - name: Captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-b8885a2-shots
+          path: preview-shots
+          if-no-files-found: ignore
