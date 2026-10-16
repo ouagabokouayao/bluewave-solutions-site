@@ -391,8 +391,8 @@
   },
   {
     "path": "mentions-legales.html",
-    "sha256": "5efe7f7cd4e18bb50c261222903b3b0e94cdb29f13d4f379361452fff578df7b",
-    "bytes": 5732
+    "sha256": "4d77759ab82b1009ed86f9172095d3940118732efebd2e3d69c6eeed6eda24ae",
+    "bytes": 5780
   },
   {
     "path": "methode.html",
@@ -416,8 +416,8 @@
   },
   {
     "path": "politique-confidentialite.html",
-    "sha256": "78ba130fc6398390031f6861815f2a7fb03fe5d4dc21b02c3f7b599eee2a5192",
-    "bytes": 8911
+    "sha256": "0e6dbff92524322bf983d2f451bd2f773de9d37715cb292e2ab755fb2df290aa",
+    "bytes": 9405
   },
   {
     "path": "preuves-demonstrateurs.html",
@@ -516,8 +516,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "a8f0a4b0396a1edfe6d43bc7341a6ab489fd14b6bc2c4d54fbe99942859970fd",
-    "bytes": 17185
+    "sha256": "5be36964d1a9bd3877add8ea5b55396afe44cbc0f9130c5a7444764c2d72501b",
+    "bytes": 18923
   },
   {
     "path": "quality/scripts/check_brand_assets.py",
@@ -536,8 +536,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "4976e5a6420fa843d5cf1b414415b14c9c23c99d95c25419e5b63b5541e50932",
-    "bytes": 7395
+    "sha256": "aa2e16428f54dd311205e8d4f80a3802df64d57dd3f05a8d6533fb09abbededf",
+    "bytes": 8033
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -606,8 +606,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "746ccd246147b6e3641fd87b3e07a3d16638c384a4ffc710b90b85abe2cbdf18",
-    "bytes": 8544
+    "sha256": "a99e40383887cc8a3bc413b6a7fe2ac9c42a78e105bbd1cc4ed6ff3aea313525",
+    "bytes": 11163
   },
   {
     "path": "robots.txt",
@@ -901,7 +901,7 @@
   },
   {
     "path": "solutions.html",
-    "sha256": "89dcc090bdcac8d0596c32267f4dcef3da241de64c92adff0b7de15c8e1ec2b7",
-    "bytes": 11806
+    "sha256": "4ca76012aa133993279aeef912bca4b3e25b6e789925d40026e7ff83a15986bb",
+    "bytes": 14285
   }
 ]

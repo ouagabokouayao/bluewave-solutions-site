@@ -17,6 +17,12 @@ STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const
 # Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
 # dans sa version exacte épinglée ici. Toute autre modification échoue.
 AUTHORIZED_VERSIONS = {
+    'politique-confidentialite.html': ('0e6dbff92524322bf983d2f451bd2f773de9d37715cb292e2ab755fb2df290aa',
+        '02-E7/E12 : Gmail identifié ; bases, durées et droits selon 04B ; téléphone non confirmé retiré'),
+    'mentions-legales.html': ('4d77759ab82b1009ed86f9172095d3940118732efebd2e3d69c6eeed6eda24ae',
+        '02-E12 : téléphone non confirmé retiré et rangé parmi les informations non encore acquises'),
+    'solutions.html': ('4ca76012aa133993279aeef912bca4b3e25b6e789925d40026e7ff83a15986bb',
+        '02-E12 : déclinaisons spécialisées rattachées aux cinq offres cœur (arbitrage 01)'),
     'quality/scripts/build_dist.py': ('f5c2c1bfe334dad6bbe5b0e11cb8f3650c9fe21799ec59fb76b3945468aebe7c',
         '02-E11 : seules les pages suivies par Git entrent dans le site servi'),
     'serverless/cloudflare/PRODUCTION.md': ('fb9c54ab18481126c8ec09572db9f108a8d43cbb81247de25ddf5c7e30d861d0',
@@ -31,10 +37,10 @@ AUTHORIZED_VERSIONS = {
         '02-E6 : option newsletter fermée masquée ; modules optionnels résolus sur la base du document'),
     'assets/js/qualifier.js': ('638ae1c302efdd8f77fd81320582b2ceea3737ae43bbf32cbab7f2f9b7710585',
         '02-E6 : courriel du parcours Projet complet et message copiable'),
-    'quality/scripts/build_production_dist.py': ('a8f0a4b0396a1edfe6d43bc7341a6ab489fd14b6bc2c4d54fbe99942859970fd',
-        '02-E5/E11 : page 404 à la racine ; image de partage et données structurées'),
-    'quality/tests/test_production.py': ('746ccd246147b6e3641fd87b3e07a3d16638c384a4ffc710b90b85abe2cbdf18',
-        '02-E5/E10/E11 : tests 404 à la racine, compatibilité CSP, partage et données structurées'),
+    'quality/scripts/build_production_dist.py': ('5be36964d1a9bd3877add8ea5b55396afe44cbc0f9130c5a7444764c2d72501b',
+        '02-E5/E7/E11/E12 : 404 à la racine ; partage et données structurées ; confidentialité selon 04B'),
+    'quality/tests/test_production.py': ('a99e40383887cc8a3bc413b6a7fe2ac9c42a78e105bbd1cc4ed6ff3aea313525',
+        '02-E5/E7/E10/E11/E12 : tests 404, CSP, partage, données structurées, confidentialité 04B'),
     'projet.html': ('d5d052935e7680013f07d2bb1ca31f9bfedd255054630938790a7e3202231548',
         '02-E1 : sept questions de qualification distinguées des quatre étapes du parcours'),
     'collaboration.html': ('304ad15f07c1360e201b97c12a569a055e239031cc1209094c694d36a68f868f',

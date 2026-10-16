@@ -38,6 +38,18 @@ class ProductionProfile(unittest.TestCase):
         self.assertEqual(len(list(out.glob('*.html'))), 21)
         self.assertIn('noindex, nofollow', (out / 'index.html').read_text())
 
+    def test_privacy_recipients_are_factual(self):
+        for options in ({}, {'leads': True, 'privacy_simulation': True}):
+            module.build(**options)
+            page = (module.OUT / 'politique-confidentialite.html').read_text()
+            self.assertNotIn('personnes habilitées', page)
+            self.assertIn('Le fondateur de BlueWave Solutions, seul destinataire à ce jour', page)
+            self.assertIn('Google (Gmail)', page)
+        module.build()
+        page = (module.OUT / 'politique-confidentialite.html').read_text()
+        self.assertIn('les informations que vous choisissez d’inclure dans votre courriel', page)
+        self.assertNotIn('Si le formulaire est actif', page)
+
     def test_not_found_page_works_at_domain_root(self):
         module.build()
         out = module.OUT
@@ -80,6 +92,35 @@ class ProductionProfile(unittest.TestCase):
         self.assertTrue((out / organisation['logo'].replace(module.ORIGIN + '/', '')).is_file())
         for absent in ('address', 'telephone', 'foundingDate', 'member', 'employee', 'award'):
             self.assertNotIn(absent, organisation)
+
+    def test_privacy_follows_04b_principles(self):
+        # Formulations de principe validées par 04B (16/10/2026) pour la
+        # configuration statique ; elles valent pour chaque profil.
+        for options in ({}, {'leads': True, 'events': True, 'privacy_simulation': True}):
+            module.build(**options)
+            page = (module.OUT / 'politique-confidentialite.html').read_text()
+            self.assertIn('que leurs conditions sont réunies', page)
+            self.assertIn('sous réserve d’une mise en balance', page)
+            self.assertIn('la lettre de veille est un traitement distinct, désactivé', page)
+            self.assertIn('durée de référence retenue en matière de prospection et non durée applicable à toutes les données', page)
+            self.assertIn('Google (Gmail)', page)
+            self.assertIn('Aucune suppression automatique n’est présentée comme opérationnelle', page)
+            self.assertNotIn('dispense de consentement', page)
+            self.assertNotIn('supprime les données', page)
+            self.assertNotIn('jusqu’à trois ans après le dernier contact', page)
+        module.build()
+        page = (module.OUT / 'politique-confidentialite.html').read_text()
+        self.assertIn('Cloudflare Web Analytics est désactivé', page)
+        self.assertIn('Aucun événement de conversion distant n’est activé', page)
+        self.assertNotIn('agrégats de conversion', page)
+        self.assertNotIn('garde anti-abus', page)
+        self.assertNotIn('mesurer', page)
+        for html in module.OUT.glob('*.html'):
+            body = html.read_text()
+            self.assertNotIn('33651676812', body, html.name)
+            self.assertNotIn('06 51 67 68 12', body, html.name)
+        approval = json.loads((ROOT / 'quality/privacy-approval.json').read_text(encoding='utf-8'))
+        self.assertIs(approval['approved'], False)
 
     def test_open_profile_is_canonical_and_minimal(self):
         module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'], privacy_simulation=True)

@@ -87,25 +87,36 @@ def privacy(document, leads, events, traffic):
             'un contact dans la liste Leads et expédie un accusé et une notification interne. '
             'Un échec partiel peut nécessiter un rapprochement manuel. Vous pouvez toujours choisir '
             'le lien de messagerie et contrôler votre courriel avant son envoi.</p>')
-        recipients = ('<p>Le responsable BlueWave et ses personnes habilitées ; Cloudflare pour '
+        recipients = ('<p>Le fondateur de BlueWave Solutions, seul destinataire à ce jour ; Cloudflare pour '
             'l’hébergement, les mesures techniques et la protection contre les abus ; Brevo pour '
-            'les contacts et e-mails transactionnels. Aucune inscription à une liste de veille '
-            'ni automatisation marketing n’est active.</p>')
+            'les contacts et e-mails transactionnels ; Google, qui fournit la messagerie de réception. '
+            'Aucune inscription à une liste de veille ni automatisation marketing n’est active.</p>')
     else:
         transmission = ('<p>La transmission automatisée reste désactivée. Le site prépare un courriel '
             'que vous relisez et envoyez depuis votre propre messagerie. BlueWave ne reçoit ces '
             'informations que si vous l’envoyez.</p>')
-        recipients = ('<p>Le responsable BlueWave et ses personnes habilitées. Brevo ne reçoit aucune '
+        recipients = ('<p>Le fondateur de BlueWave Solutions, seul destinataire à ce jour. Les courriels '
+            'sont reçus dans une messagerie fournie par Google (Gmail). Brevo ne reçoit aucune '
             'demande depuis ce site tant que le formulaire automatisé est désactivé.</p>')
     document = article(document, 'Comment votre message est transmis', transmission)
     document = article(document, 'Destinataires', recipients)
+    # Formulations de principe validées par 04B pour la configuration statique.
+    measured = ', sécuriser le site et en mesurer le fonctionnement de façon proportionnée' if (events or traffic) else ' et sécuriser le site'
     document = article(document, 'Bases juridiques',
-        '<ul><li>Mesures précontractuelles demandées par la personne pour un projet ou une mission ;'
-        '</li><li>intérêt légitime documenté pour répondre aux autres sollicitations '
-        'professionnelles, sécuriser le site et mesurer son fonctionnement de façon '
-        'proportionnée ;</li><li>consentement distinct uniquement si une lettre de veille '
-        'est ultérieurement ouverte.</li></ul>')
-    document = article(document, 'Données concernées',
+        '<ul><li>Mesures précontractuelles prises à votre demande, uniquement lorsque votre message '
+        'porte sur une mission ou un projet et que leurs conditions sont réunies ;</li><li>intérêt '
+        f'légitime de BlueWave à répondre aux contacts professionnels{measured}, sous réserve d’une '
+        'mise en balance avec vos intérêts, libertés et droits ;</li><li>la lettre de veille est un '
+        'traitement distinct, désactivé ; s’il était ouvert, il reposerait sur votre consentement '
+        'spécifique.</li></ul>')
+    if not leads:
+        data = ('<ul><li>les informations que vous choisissez d’inclure dans votre courriel : '
+            'nom, organisation, adresse e-mail, description de la demande et, le cas échéant, '
+            'vos réponses aux questions de qualification ;</li><li>données techniques nécessaires '
+            'à la connexion et à la sécurité, traitées par l’hébergeur.</li></ul>')
+    else:
+        data = None
+    document = article(document, 'Données concernées', data or
         '<ul><li>Si le formulaire est actif : nom, organisation, e-mail, type de demande, '
         'description, territoire, thèmes, délai et préférence de contact ;</li><li>données '
         'techniques nécessaires à la connexion et à la sécurité, dont l’adresse IP traitée '
@@ -115,7 +126,8 @@ def privacy(document, leads, events, traffic):
     document = article(document, 'Hébergement et transferts',
         '<p>Le site est servi par Cloudflare Workers et Static Assets. Cloudflare traite les '
         'données techniques nécessaires à l’hébergement et à la sécurité ; Brevo, si le formulaire '
-        'est activé, traite les données de contact et les courriels. Des traitements ou transferts '
+        'est activé, traite les données de contact et les courriels. Les courriels adressés à '
+        'BlueWave sont reçus dans une messagerie fournie par Google (Gmail). Des traitements ou transferts '
         'hors de l’Union européenne peuvent dépendre des contrats et paramètres réels de ces '
         'prestataires. Le responsable fournit sur demande les informations contractuelles applicables ; '
         'aucune résidence exclusivement européenne n’est garantie ici.</p>')
@@ -126,26 +138,34 @@ def privacy(document, leads, events, traffic):
         'visiteur ou URL brute n’y est envoyé. Les agrégats sont purgés après treize mois glissants.</p>'
         if events else '<p>Aucun événement de conversion distant n’est activé.</p>')
     if events or traffic:
-        analytics_text += ('<p>La base juridique et les conditions de dispense de consentement pour '
-            'la mesure d’audience sont documentées par le responsable.</p>')
+        # Aucune dispense de consentement n'est revendiquée : le régime applicable
+        # doit être établi avant toute activation de la mesure.
+        analytics_text += ('<p>Le régime applicable à cette mesure (consentement ou exemption) est '
+            'établi par le responsable avant son activation ; aucune exemption n’est présumée.</p>')
     document = article(document, 'Cookies et traceurs', analytics_text +
         '<p>Aucun cookie publicitaire, newsletter, chat ou lien de rendez-vous automatisé n’est activé. '
         'Cloudflare peut traiter des données techniques de connexion pour servir et sécuriser le site.</p>')
     document = article(document, 'Lettre de veille',
         '<p>La lettre de veille est désactivée. Aucun formulaire de prise de contact ne vaut '
         'inscription marketing. Une éventuelle activation ultérieure demandera un consentement séparé.</p>')
-    document = article(document, 'Durées de conservation',
-        '<ul><li>Demandes sans suite : jusqu’à trois ans après le dernier contact, sous réserve de '
-        'l’examen du responsable et des obligations applicables ;</li><li>relations contractuelles : '
-        'selon les obligations propres au dossier ;</li><li>agrégats de conversion : treize mois '
-        'glissants lorsqu’ils sont activés ;</li><li>garde anti-abus : fenêtres temporaires '
-        'd’environ vingt minutes ;</li><li>journaux techniques des prestataires : selon leurs '
-        'paramètres contractuels effectivement retenus.</li></ul>')
+    durations = ('<ul><li>Demandes de contact : le temps nécessaire à leur traitement ;</li><li>contacts '
+        'professionnels susceptibles d’un suivi commercial : trois ans au plus à compter du dernier '
+        'contact, durée de référence retenue en matière de prospection et non durée applicable à '
+        'toutes les données ;</li><li>relations contractuelles : selon les obligations propres au dossier ;</li>')
+    if events:
+        durations += '<li>agrégats de conversion : treize mois glissants ;</li>'
+    if leads:
+        durations += '<li>garde anti-abus : fenêtres temporaires d’environ vingt minutes ;</li>'
+    durations += ('<li>journaux techniques des prestataires : selon leurs paramètres contractuels '
+        'effectivement retenus.</li></ul>')
+    document = article(document, 'Durées de conservation', durations)
     document = article(document, 'Évolution',
         '<p>Pour exercer vos droits d’accès, de rectification, d’effacement, d’opposition ou de '
-        'limitation, utilisez l’adresse de contact indiquée plus haut. BlueWave rapproche les '
-        'demandes et supprime les données dans ses systèmes et auprès de ses prestataires '
-        'lorsqu’une suppression est applicable.</p>')
+        'limitation, utilisez l’adresse de contact indiquée plus haut. Chaque demande est traitée '
+        'manuellement : BlueWave recherche les données concernées dans sa messagerie et, le cas '
+        'échéant, auprès des prestataires effectivement utilisés, puis vous informe des suites '
+        'données. Aucune suppression automatique n’est présentée comme opérationnelle.</p>'
+        '<p>Cette politique sera mise à jour avant toute activation d’un traitement distant.</p>')
     document = document.replace('Politique de confidentialité du site BlueWave Solutions en phase de préactivation.',
         'Traitement des données du site BlueWave Solutions et des demandes de contact.')
     return document
