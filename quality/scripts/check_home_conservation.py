@@ -17,6 +17,8 @@ STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const
 # Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
 # dans sa version exacte épinglée ici. Toute autre modification échoue.
 AUTHORIZED_VERSIONS = {
+    'assets/css/premium.css': ('175f55c8bacda915da179e13d98b63c0ef975c071312647147cf33b68ee1336a',
+        '02-E8 : numéros de format au contraste WCAG du texte large'),
     'assets/js/automation.js': ('16366bddae3af93c28b48ea2eb0af1b473641c970c91d3da1fd93059fcca651d',
         '02-E6 : option newsletter fermée masquée ; modules optionnels résolus sur la base du document'),
     'assets/js/qualifier.js': ('638ae1c302efdd8f77fd81320582b2ceea3737ae43bbf32cbab7f2f9b7710585',

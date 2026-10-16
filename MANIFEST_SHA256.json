@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "b839b80601ac02cccc32493a5ecc7169920aeb7fe36dafde4a5d8eb817f361fd",
-    "bytes": 5090
+    "sha256": "d3ee3fe698bc0c6691e45ec207d243aa77618c1849a4d65398ca7ada00e5153a",
+    "bytes": 5291
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -61,13 +61,13 @@
   },
   {
     "path": "assets/css/experience.css",
-    "sha256": "08c278d9de8f7e58e0cd4606e761dfb187082dd262e0b3eb8ec409660b0e3a5d",
+    "sha256": "74e8ca518dbb40351fa3629ff80e4eaca07701f758d923155f8e2b497a0f23b5",
     "bytes": 26565
   },
   {
     "path": "assets/css/premium.css",
-    "sha256": "2b095fd4ac282d1f32ba2c0cd83b789113c9703389290d9daf39398be0b6fdc9",
-    "bytes": 20380
+    "sha256": "175f55c8bacda915da179e13d98b63c0ef975c071312647147cf33b68ee1336a",
+    "bytes": 20365
   },
   {
     "path": "assets/css/style.css",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "f94e20b71c0f851c9f861ab1ac1bedc72136b6c20e7d7a72bc60e41c11c6ef87",
-    "bytes": 6361
+    "sha256": "0d5fba9c97b15eede6e191a942baa7c4c1958d61210a4d9ea4cf7ad837b57205",
+    "bytes": 6532
   },
   {
     "path": "quality/scripts/check_preactivation.py",
