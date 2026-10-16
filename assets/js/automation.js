@@ -19,7 +19,7 @@
   const turnstile = () => {
     if (!turnstilePromise) {
       turnstilePromise = loadConfig()
-        .then(config => import(new URL(TURNSTILE_MODULE, location.href).href)
+        .then(config => import(new URL(TURNSTILE_MODULE, document.baseURI || location.href).href)
           .then(module => module.createTurnstile({ config })))
         .catch(() => ({ enabled: false, async token() { return ''; }, reset() {}, async prepare() {} }));
     }
@@ -27,7 +27,7 @@
   };
 
   const ANALYTICS_MODULE = 'assets/js/analytics.js';
-  const analyticsReady = import(new URL(ANALYTICS_MODULE, location.href).href)
+  const analyticsReady = import(new URL(ANALYTICS_MODULE, document.baseURI || location.href).href)
     .then(module => module.createAnalytics(window, document, window.fetch.bind(window)))
     .catch(() => null);
   const track = (name, detail = {}) => { analyticsReady.then(analytics => analytics?.track(name, detail)); };
@@ -54,7 +54,7 @@
 
   const PROVENANCE_MODULE = 'assets/js/provenance.js';
   const provenanceReady = Promise.all([
-    import(new URL(PROVENANCE_MODULE, location.href).href),
+    import(new URL(PROVENANCE_MODULE, document.baseURI || location.href).href),
     fetch('data/analytics-config.json', {cache:'no-store'}).then(response => response.ok ? response.json() : {})
   ]).then(([module, config]) => {
     const provenance = module.provenanceFromLocation(location, config.campaigns, document.referrer);
@@ -91,6 +91,13 @@
       const config = await loadConfig();
       document.querySelectorAll('[data-newsletter-consent]').forEach(control => {
         control.disabled = !config.newsletter_enabled;
+        // Une option fermée n'est pas affichée : elle réapparaît à l'activation.
+        const label = control.closest('label');
+        if (label) {
+          label.hidden = !config.newsletter_enabled;
+          if (config.newsletter_enabled) label.style.removeProperty('display');
+          else label.style.setProperty('display', 'none', 'important');
+        }
       });
       document.querySelectorAll('[data-newsletter-form]').forEach(form => {
         const message = form.querySelector('[data-newsletter-message]');
@@ -100,7 +107,11 @@
           : 'Inscription désactivée. Le futur parcours exigera une confirmation par e-mail.';
       });
     } catch (error) {
-      document.querySelectorAll('[data-newsletter-consent]').forEach(control => { control.disabled = true; });
+      document.querySelectorAll('[data-newsletter-consent]').forEach(control => {
+        control.disabled = true;
+        const label = control.closest('label');
+        if (label) { label.hidden = true; label.style.setProperty('display', 'none', 'important'); }
+      });
     }
   };
 
