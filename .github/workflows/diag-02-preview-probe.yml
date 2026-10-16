@@ -100,10 +100,10 @@ jobs:
         run: |
           npm i --no-save --no-audit --no-fund playwright@1.56.0 >/dev/null
           npx playwright install --with-deps chromium >/dev/null
-          r=0
-          node quality/diag/preview-render.mjs || r=1
-          node quality/diag/preview-journeys.mjs || r=1
-          exit $r
+          node quality/diag/preview-render.mjs
+      - name: Recette des parcours (formulaires, menus, Qualifier, collecte)
+        if: always()
+        run: node quality/diag/preview-journeys.mjs
       - name: Captures
         if: always()
         uses: actions/upload-artifact@v4
