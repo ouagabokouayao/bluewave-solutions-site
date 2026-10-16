@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "b839b80601ac02cccc32493a5ecc7169920aeb7fe36dafde4a5d8eb817f361fd",
-    "bytes": 5090
+    "sha256": "c34806495eed3ca0eb64751b25bb1312826cf473e67a96a813f2eb856bea7863",
+    "bytes": 5468
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -61,13 +61,13 @@
   },
   {
     "path": "assets/css/experience.css",
-    "sha256": "08c278d9de8f7e58e0cd4606e761dfb187082dd262e0b3eb8ec409660b0e3a5d",
-    "bytes": 26565
+    "sha256": "25822e392214c17884486dbde5598c17e62a76cf4b0b40b9c57370704bdb3f61",
+    "bytes": 26882
   },
   {
     "path": "assets/css/premium.css",
-    "sha256": "2b095fd4ac282d1f32ba2c0cd83b789113c9703389290d9daf39398be0b6fdc9",
-    "bytes": 20380
+    "sha256": "9adb0e28f557a662b1ce715e044edd108a78942871da07f95ead1721ee4a791b",
+    "bytes": 20524
   },
   {
     "path": "assets/css/style.css",
@@ -361,8 +361,8 @@
   },
   {
     "path": "index.html",
-    "sha256": "a5a9729cd79ca60cc02a2aebd1e18d4feddf5a229c96c810a4668cd075199554",
-    "bytes": 23370
+    "sha256": "9e71ff17f2d7cd98dd54e01446c6f51881d856ac6c22d5c5a9a2a9491deafa28",
+    "bytes": 23635
   },
   {
     "path": "media-intervention.html",
@@ -426,8 +426,8 @@
   },
   {
     "path": "qualifier-un-besoin.html",
-    "sha256": "07757b81dfdecf0d220f58779f6fd2c7d2b72a252f1fb6a2bebeba4b08729322",
-    "bytes": 14496
+    "sha256": "7824c1567951b67087a09339ab047c40d5a44a81938720e5e0c98d683da1fdca",
+    "bytes": 14465
   },
   {
     "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "f94e20b71c0f851c9f861ab1ac1bedc72136b6c20e7d7a72bc60e41c11c6ef87",
-    "bytes": 6361
+    "sha256": "e9445184c7678b4ad380944f0d27b977e711127d0676ceac150ca04c1409f07a",
+    "bytes": 6593
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -601,8 +601,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "96b21ddc696b3d0ff1003a564eb4e5a1af141c80452140a1a90c7db6ec72749a",
-    "bytes": 6459
+    "sha256": "e7070b955c7ec0fe546ab5a4c9522e4d84bfa2b2c16afbf8d792c4a15da6c086",
+    "bytes": 7228
   },
   {
     "path": "robots.txt",

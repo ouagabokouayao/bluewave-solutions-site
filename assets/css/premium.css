@@ -220,7 +220,7 @@ p,li{text-wrap:pretty}
 .solution-problem{color:var(--steel)}
 
 /* Formats d'entrée : numéro fantôme, discret */
-.format-num{color:var(--hairline-strong);font-size:1.9rem;font-weight:900}
+.format-num{color:#7b8794;font-size:1.9rem;font-weight:900}
 
 /* Médiathèque et activités : image qui respire au survol */
 .media-open img,.media-hub-visual img,.activites-visual img{
@@ -416,3 +416,5 @@ summary:focus-visible,[tabindex]:focus-visible{
    -------------------------------------------------------------------------- */
 /* Séparateur de la sous-navigation Médiathèque : décoratif, mais lisible */
 .media-subnav span{color:#49637A}
+/* CSP style-src 'self' : le masquage des cases fermées passe par la feuille, jamais par un attribut style. */
+.consent-check[hidden]{display:none!important}

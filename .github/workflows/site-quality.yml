@@ -111,6 +111,10 @@ jobs:
       - name: Journey forms in a real browser (prepared message, transmission off)
         run: |
           python quality/scripts/build_dist.py
-          npm i --no-save --no-audit --no-fund playwright@1.56.0
+          npm i --no-save --no-audit --no-fund playwright@1.56.0 axe-core@4.10.3 || { echo "::error title=npm::installation playwright/axe-core en échec"; exit 1; }
           npx playwright install --with-deps chromium
           node quality/tests/journey-copy.e2e.mjs dist
+      - name: Accessibility WCAG 2.1 A/AA on every page (axe-core)
+        run: node quality/tests/accessibility.e2e.mjs dist
+      - name: Layout stability (CLS < 0.1) on every page, menu usable without JavaScript
+        run: node quality/tests/layout-stability.e2e.mjs dist
