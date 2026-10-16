@@ -416,3 +416,5 @@ summary:focus-visible,[tabindex]:focus-visible{
    -------------------------------------------------------------------------- */
 /* Séparateur de la sous-navigation Médiathèque : décoratif, mais lisible */
 .media-subnav span{color:#49637A}
+/* CSP style-src 'self' : le masquage des cases fermées passe par la feuille, jamais par un attribut style. */
+.consent-check[hidden]{display:none!important}

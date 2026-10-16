@@ -17,15 +17,15 @@ STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const
 # Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
 # dans sa version exacte épinglée ici. Toute autre modification échoue.
 AUTHORIZED_VERSIONS = {
-    'assets/css/premium.css': ('175f55c8bacda915da179e13d98b63c0ef975c071312647147cf33b68ee1336a',
-        '02-E8 : numéros de format au contraste WCAG du texte large'),
+    'assets/css/premium.css': ('9adb0e28f557a662b1ce715e044edd108a78942871da07f95ead1721ee4a791b',
+        '02-E8/E10 : numéros de format au contraste WCAG ; cases fermées masquées par la feuille (CSP)'),
     'assets/js/automation.js': ('16366bddae3af93c28b48ea2eb0af1b473641c970c91d3da1fd93059fcca651d',
         '02-E6 : option newsletter fermée masquée ; modules optionnels résolus sur la base du document'),
     'assets/js/qualifier.js': ('638ae1c302efdd8f77fd81320582b2ceea3737ae43bbf32cbab7f2f9b7710585',
         '02-E6 : courriel du parcours Projet complet et message copiable'),
     'quality/scripts/build_production_dist.py': ('5448846de6ec5130bad37a62743053d2641312287c6eeeb8b929117e2657a1f4',
         '02-E5 : page 404 fonctionnelle à la racine du domaine en production'),
-    'quality/tests/test_production.py': ('96b21ddc696b3d0ff1003a564eb4e5a1af141c80452140a1a90c7db6ec72749a',
+    'quality/tests/test_production.py': ('e7070b955c7ec0fe546ab5a4c9522e4d84bfa2b2c16afbf8d792c4a15da6c086',
         '02-E5 : test de la page 404 à la racine du domaine'),
     'projet.html': ('d5d052935e7680013f07d2bb1ca31f9bfedd255054630938790a7e3202231548',
         '02-E1 : sept questions de qualification distinguées des quatre étapes du parcours'),
@@ -33,8 +33,8 @@ AUTHORIZED_VERSIONS = {
         '02-E3 : alternative courriel sans JavaScript'),
     'formation.html': ('06ec9eea812d3506f12d55b04c9aa814882d9c8e5c16b1f5d4b0369f239cb173',
         '02-E3 : alternative courriel sans JavaScript'),
-    'qualifier-un-besoin.html': ('07757b81dfdecf0d220f58779f6fd2c7d2b72a252f1fb6a2bebeba4b08729322',
-        '02-E3/E6 : alternative courriel sans JavaScript ; option newsletter fermée masquée'),
+    'qualifier-un-besoin.html': ('7824c1567951b67087a09339ab047c40d5a44a81938720e5e0c98d683da1fdca',
+        '02-E3/E6/E10 : alternative courriel sans JavaScript ; option newsletter fermée masquée sans attribut style'),
     'assets/js/journey-form.js': ('972e632fd283eb078071a507554dc41dbe2d3497ca3199e39ee1a66b6683329c',
         '02-E2/E4 : courriel de repli complet et message copiable pour les trois formulaires de parcours'),
 }

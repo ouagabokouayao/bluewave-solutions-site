@@ -66,8 +66,8 @@
   },
   {
     "path": "assets/css/premium.css",
-    "sha256": "175f55c8bacda915da179e13d98b63c0ef975c071312647147cf33b68ee1336a",
-    "bytes": 20365
+    "sha256": "9adb0e28f557a662b1ce715e044edd108a78942871da07f95ead1721ee4a791b",
+    "bytes": 20524
   },
   {
     "path": "assets/css/style.css",
@@ -426,8 +426,8 @@
   },
   {
     "path": "qualifier-un-besoin.html",
-    "sha256": "07757b81dfdecf0d220f58779f6fd2c7d2b72a252f1fb6a2bebeba4b08729322",
-    "bytes": 14496
+    "sha256": "7824c1567951b67087a09339ab047c40d5a44a81938720e5e0c98d683da1fdca",
+    "bytes": 14465
   },
   {
     "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "0d5fba9c97b15eede6e191a942baa7c4c1958d61210a4d9ea4cf7ad837b57205",
-    "bytes": 6532
+    "sha256": "e9445184c7678b4ad380944f0d27b977e711127d0676ceac150ca04c1409f07a",
+    "bytes": 6593
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -601,8 +601,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "96b21ddc696b3d0ff1003a564eb4e5a1af141c80452140a1a90c7db6ec72749a",
-    "bytes": 6459
+    "sha256": "e7070b955c7ec0fe546ab5a4c9522e4d84bfa2b2c16afbf8d792c4a15da6c086",
+    "bytes": 7228
   },
   {
     "path": "robots.txt",

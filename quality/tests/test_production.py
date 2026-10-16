@@ -1,6 +1,7 @@
 import importlib.util
 import hashlib
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -44,6 +45,19 @@ class ProductionProfile(unittest.TestCase):
         self.assertIn('<base href="/">', page)
         for html in out.glob('*.html'):
             self.assertNotIn('bluewave-solutions-site', html.read_text(), html.name)
+
+    def test_pages_respect_worker_csp(self):
+        # Le Worker sert style-src 'self' et script-src 'self' : un attribut
+        # style, un élément style, un gestionnaire on* ou un script en ligne
+        # exécutable serait bloqué en production sans que le banc local le voie.
+        module.build()
+        for page in module.OUT.glob('*.html'):
+            body = page.read_text()
+            self.assertNotRegex(body, r'<[a-z][^>]*\sstyle=', page.name)
+            self.assertNotIn('<style', body, page.name)
+            self.assertNotRegex(body, r'<[a-z][^>]*\son[a-z]+=', page.name)
+            for tag in re.findall(r'<script\b[^>]*>', body):
+                self.assertTrue('src=' in tag or 'application/ld+json' in tag, f'{page.name}: {tag}')
 
     def test_open_profile_is_canonical_and_minimal(self):
         module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'], privacy_simulation=True)
