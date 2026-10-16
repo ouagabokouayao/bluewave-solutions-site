@@ -6,6 +6,9 @@ import {readFile, readdir} from 'node:fs/promises';
 import {extname, join, normalize} from 'node:path';
 import {createRequire} from 'node:module';
 
+process.on('uncaughtException', e => { if (process.env.GITHUB_ACTIONS) console.log(`::error title=Garde accessibilite::${String(e.message).slice(0, 300)}`); console.error(e); process.exit(2); });
+process.on('unhandledRejection', e => { if (process.env.GITHUB_ACTIONS) console.log(`::error title=Garde accessibilite::${String(e?.message || e).slice(0, 300)}`); console.error(e); process.exit(2); });
+
 const require = createRequire(import.meta.url);
 const ROOT = normalize(process.argv[2] || 'dist');
 const TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css',
@@ -34,7 +37,11 @@ for (const width of [390, 1440]) {
       runOnly: {type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']},
       resultTypes: ['violations']
     })).violations.map(v => `${v.id} (${v.impact}) ×${v.nodes.length} : ${v.nodes[0].target.join(' ')}`));
-    for (const line of found) { violations++; console.log(`not ok - ${name} @${width}px — ${line}`); }
+    for (const line of found) {
+      violations++;
+      console.log(`not ok - ${name} @${width}px — ${line}`);
+      if (process.env.GITHUB_ACTIONS) console.log(`::error title=WCAG ${name} @${width}px::${line}`);
+    }
   }
   await page.close();
 }
