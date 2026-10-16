@@ -9,12 +9,18 @@ on:
   push:
     branches: [diag-02-preview-probe-2026-10-15]
   workflow_dispatch:
+    inputs:
+      cible:
+        description: "Environnement sonde"
+        type: choice
+        options: ['preproduction', 'preview-2241b2b']
+        default: 'preproduction'
 
 permissions:
   contents: read
 
 env:
-  BASE_URL: https://bluewave-site-preproduction.bluewave-solutions.workers.dev
+  BASE_URL: ${{ github.event.inputs.cible == 'preview-2241b2b' && 'https://bluewave-site-preview-2241b2b.bluewave-solutions.workers.dev' || 'https://bluewave-site-preproduction.bluewave-solutions.workers.dev' }}
   UA: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
 
 jobs:
@@ -49,6 +55,9 @@ jobs:
           import json, hashlib, pathlib, urllib.request
           try:
               served = {e['path']: e['sha256'] for e in json.load(open('served.json'))}
+              st = hashlib.sha256()
+              for k in sorted(served): st.update(k.encode() + b'\0' + bytes.fromhex(served[k]))
+              print(f"::notice title=Empreinte arbre servie::{st.hexdigest()} ({len(served)} fichiers)")
           except Exception as e:
               print(f"::warning title=Manifeste servi::illisible ({e})"); served = {}
           for label, root in (('dist', 'dist'), ('dist-production', 'dist-production')):
@@ -92,6 +101,7 @@ jobs:
           npm i --no-save --no-audit --no-fund playwright@1.56.0 >/dev/null
           npx playwright install --with-deps chromium >/dev/null
           node quality/diag/preview-render.mjs
+          node quality/diag/preview-journeys.mjs
       - name: Captures
         if: always()
         uses: actions/upload-artifact@v4
