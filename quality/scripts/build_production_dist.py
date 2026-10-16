@@ -55,15 +55,16 @@ def privacy(document, leads, events, traffic):
             'un contact dans la liste Leads et expédie un accusé et une notification interne. '
             'Un échec partiel peut nécessiter un rapprochement manuel. Vous pouvez toujours choisir '
             'le lien de messagerie et contrôler votre courriel avant son envoi.</p>')
-        recipients = ('<p>Le responsable BlueWave et ses personnes habilitées ; Cloudflare pour '
+        recipients = ('<p>Le fondateur de BlueWave Solutions, seul destinataire à ce jour ; Cloudflare pour '
             'l’hébergement, les mesures techniques et la protection contre les abus ; Brevo pour '
-            'les contacts et e-mails transactionnels. Aucune inscription à une liste de veille '
-            'ni automatisation marketing n’est active.</p>')
+            'les contacts et e-mails transactionnels ; Google, qui fournit la messagerie de réception. '
+            'Aucune inscription à une liste de veille ni automatisation marketing n’est active.</p>')
     else:
         transmission = ('<p>La transmission automatisée reste désactivée. Le site prépare un courriel '
             'que vous relisez et envoyez depuis votre propre messagerie. BlueWave ne reçoit ces '
             'informations que si vous l’envoyez.</p>')
-        recipients = ('<p>Le responsable BlueWave et ses personnes habilitées. Brevo ne reçoit aucune '
+        recipients = ('<p>Le fondateur de BlueWave Solutions, seul destinataire à ce jour. Les courriels '
+            'sont reçus dans une messagerie fournie par Google (Gmail). Brevo ne reçoit aucune '
             'demande depuis ce site tant que le formulaire automatisé est désactivé.</p>')
     document = article(document, 'Comment votre message est transmis', transmission)
     document = article(document, 'Destinataires', recipients)
@@ -73,7 +74,14 @@ def privacy(document, leads, events, traffic):
         'professionnelles, sécuriser le site et mesurer son fonctionnement de façon '
         'proportionnée ;</li><li>consentement distinct uniquement si une lettre de veille '
         'est ultérieurement ouverte.</li></ul>')
-    document = article(document, 'Données concernées',
+    if not leads:
+        data = ('<ul><li>les informations que vous choisissez d’inclure dans votre courriel : '
+            'nom, organisation, adresse e-mail, description de la demande et, le cas échéant, '
+            'vos réponses aux questions de qualification ;</li><li>données techniques nécessaires '
+            'à la connexion et à la sécurité, traitées par l’hébergeur.</li></ul>')
+    else:
+        data = None
+    document = article(document, 'Données concernées', data or
         '<ul><li>Si le formulaire est actif : nom, organisation, e-mail, type de demande, '
         'description, territoire, thèmes, délai et préférence de contact ;</li><li>données '
         'techniques nécessaires à la connexion et à la sécurité, dont l’adresse IP traitée '
@@ -83,7 +91,8 @@ def privacy(document, leads, events, traffic):
     document = article(document, 'Hébergement et transferts',
         '<p>Le site est servi par Cloudflare Workers et Static Assets. Cloudflare traite les '
         'données techniques nécessaires à l’hébergement et à la sécurité ; Brevo, si le formulaire '
-        'est activé, traite les données de contact et les courriels. Des traitements ou transferts '
+        'est activé, traite les données de contact et les courriels. Les courriels adressés à '
+        'BlueWave sont reçus dans une messagerie fournie par Google (Gmail). Des traitements ou transferts '
         'hors de l’Union européenne peuvent dépendre des contrats et paramètres réels de ces '
         'prestataires. Le responsable fournit sur demande les informations contractuelles applicables ; '
         'aucune résidence exclusivement européenne n’est garantie ici.</p>')

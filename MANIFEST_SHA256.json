@@ -411,8 +411,8 @@
   },
   {
     "path": "politique-confidentialite.html",
-    "sha256": "78ba130fc6398390031f6861815f2a7fb03fe5d4dc21b02c3f7b599eee2a5192",
-    "bytes": 8911
+    "sha256": "ad97a33b9239ea3fde5bcd79ed82a58a355256babec020d582359dff0047801a",
+    "bytes": 8985
   },
   {
     "path": "preuves-demonstrateurs.html",
@@ -511,8 +511,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "5448846de6ec5130bad37a62743053d2641312287c6eeeb8b929117e2657a1f4",
-    "bytes": 14688
+    "sha256": "b109bc948f6b0d9ca2c8ebc9d3d28e7ff4f0b06a33e8c8abd14a28e71e334cc3",
+    "bytes": 15405
   },
   {
     "path": "quality/scripts/check_brand_assets.py",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "e9445184c7678b4ad380944f0d27b977e711127d0676ceac150ca04c1409f07a",
-    "bytes": 6593
+    "sha256": "fcf10d568e691cfd227972160b841d1879b755a6d95bd318eba5e298ab50639c",
+    "bytes": 6763
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -601,8 +601,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "e7070b955c7ec0fe546ab5a4c9522e4d84bfa2b2c16afbf8d792c4a15da6c086",
-    "bytes": 7228
+    "sha256": "a48b7772f5e1e9c02f08471f3f010c2eb07b5f702141fa154ba084ca283b8383",
+    "bytes": 7938
   },
   {
     "path": "robots.txt",
