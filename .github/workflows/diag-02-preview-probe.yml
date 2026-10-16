@@ -96,6 +96,17 @@ jobs:
       - name: Accessibilite WCAG 2.1 AA et stabilite visuelle (servi)
         if: always()
         run: node quality/diag/preview-quality.mjs
+      - name: Lighthouse sur l'URL servie (informatif, non bloquant)
+        if: always()
+        continue-on-error: true
+        run: |
+          npm i --no-save --no-audit --no-fund lighthouse@12.8.2 >/dev/null
+          export CHROME_PATH=$(node -e "import('playwright').then(m=>console.log(m.chromium.executablePath()))")
+          for target in "mobile index.html" "mobile qualifier-un-besoin.html" "desktop index.html"; do
+            set -- $target; preset=""; [ "$1" = desktop ] && preset="--preset=desktop"
+            npx lighthouse "$BASE_URL/$2" $preset --quiet --output=json --output-path=lh.json --chrome-flags="--headless=new --no-sandbox" >/dev/null 2>&1 || { echo "::warning title=Lighthouse $1 $2::echec d'execution"; continue; }
+            node -e "const r=require('./lh.json');const c=r.categories,a=r.audits;console.log('::notice title=Lighthouse $1 $2::perf='+Math.round(c.performance.score*100)+' a11y='+Math.round(c.accessibility.score*100)+' bonnes_pratiques='+Math.round(c['best-practices'].score*100)+' seo='+Math.round(c.seo.score*100)+' LCP='+a['largest-contentful-paint'].displayValue+' CLS='+a['cumulative-layout-shift'].displayValue+' TBT='+a['total-blocking-time'].displayValue)"
+          done
       - name: Captures
         if: always()
         uses: actions/upload-artifact@v4
