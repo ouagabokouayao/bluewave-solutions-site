@@ -261,8 +261,8 @@
   },
   {
     "path": "assets/js/automation.js",
-    "sha256": "6d8edcceecd275c53ba16c65f304a47eecef18204277be9116834d136d5f8dad",
-    "bytes": 5299
+    "sha256": "16366bddae3af93c28b48ea2eb0af1b473641c970c91d3da1fd93059fcca651d",
+    "bytes": 5893
   },
   {
     "path": "assets/js/experience.js",
@@ -296,8 +296,8 @@
   },
   {
     "path": "assets/js/qualifier.js",
-    "sha256": "c2f901562e2b2ecf47d7f4e4edf657625859f167327dba1fdb935db950bdf1b4",
-    "bytes": 18634
+    "sha256": "638ae1c302efdd8f77fd81320582b2ceea3737ae43bbf32cbab7f2f9b7710585",
+    "bytes": 21521
   },
   {
     "path": "assets/js/trust.js",
@@ -426,8 +426,8 @@
   },
   {
     "path": "qualifier-un-besoin.html",
-    "sha256": "b7b70536e1390b8396327dc8c90e63e7c69a6de7fa6e1565931a855e39524d95",
-    "bytes": 14477
+    "sha256": "07757b81dfdecf0d220f58779f6fd2c7d2b72a252f1fb6a2bebeba4b08729322",
+    "bytes": 14496
   },
   {
     "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
@@ -531,8 +531,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "4ae101aa50c6108276337e36a2026c80a74a5070cf81acac554a35bf89fbd916",
-    "bytes": 5937
+    "sha256": "f94e20b71c0f851c9f861ab1ac1bedc72136b6c20e7d7a72bc60e41c11c6ef87",
+    "bytes": 6361
   },
   {
     "path": "quality/scripts/check_preactivation.py",

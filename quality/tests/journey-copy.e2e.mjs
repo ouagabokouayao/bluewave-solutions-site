@@ -90,5 +90,44 @@ for (const c of CASES) {
   }
   await ctx.close();
 }
+// Parcours Projet (Qualifier) : sept réponses, puis demande préparée.
+{
+  const ctx = await browser.newContext({viewport: {width: 390, height: 900}});
+  const p = await ctx.newPage();
+  const api = []; p.on('request', r => { if (new URL(r.url()).pathname.startsWith('/api/')) api.push(r.url()); });
+  try {
+    await p.goto(`${base}/qualifier-un-besoin.html?parcours=projet`, {waitUntil: 'networkidle'});
+    const steps = ['organisation', 'territoire', 'problematique', 'stade', 'delai', 'donnees', 'resultat'];
+    const chosen = {};
+    for (const [i, n] of steps.entries()) {
+      const sel = p.locator(`#qualifier-form [name="${n}"]`).first();
+      const opts = await sel.evaluate(s => [...s.options].filter(o => o.value).map(o => [o.value, o.textContent.trim()]));
+      await sel.selectOption(opts[1]?.[0] || opts[0][0]); chosen[n] = (opts[1] || opts[0])[1];
+      await p.click(i < steps.length - 1 ? '#next' : '#submit-qualifier');
+    }
+    await p.waitForSelector('#qualifier-result:not([hidden])', {timeout: 5000});
+    assert.ok(await p.isHidden('label[for="lead-newsletter"]'), 'case newsletter affichée alors que la lettre est fermée');
+    const f = '#lead-form';
+    await p.fill(`${f} [name=firstname]`, 'Awa'); await p.fill(`${f} [name=lastname]`, 'Koné');
+    await p.fill(`${f} [name=organisation_name]`, 'Commune test'); await p.fill(`${f} [name=role]`, 'Chargée de mission');
+    await p.fill(`${f} [name=email]`, 'awa@example.invalid'); await p.fill(`${f} [name=description]`, LONG);
+    await p.check(`${f} [name=consent]`); await p.click('#lead-submit');
+    await p.waitForSelector(`${f} [data-mail-copy]:not([hidden])`, {timeout: 5000});
+    const message = await p.inputValue(`${f} [data-mail-copy] textarea`);
+    for (const text of [LONG, 'Fonction : Chargée de mission', ...Object.values(chosen)]) assert.ok(message.includes(text), `réponse absente : ${text.slice(0, 40)}`);
+    assert.equal(await p.getAttribute(`${f} [data-mail-copy] textarea`, 'name'), null, 'le message copiable porte un name');
+    await p.fill(`${f} [name=lastname]`, 'Koné-Traoré');
+    assert.ok(await p.isHidden(`${f} [data-mail-copy]`), 'message périmé encore affiché après modification');
+    await p.click('#lead-submit');
+    await p.waitForSelector(`${f} [data-mail-copy]:not([hidden])`, {timeout: 5000});
+    assert.ok((await p.inputValue(`${f} [data-mail-copy] textarea`)).includes('Koné-Traoré'), 'seconde soumission non prise en compte');
+    assert.equal(await p.locator(`${f} [data-mail-copy]`).count(), 1, 'message copiable dupliqué');
+    assert.deepEqual(api, [], 'appel API alors que la transmission est fermée');
+    console.log('ok - qualifier-un-besoin.html#projet');
+  } catch (error) {
+    failures++; console.log(`not ok - qualifier-un-besoin.html#projet: ${error.message}`);
+  }
+  await ctx.close();
+}
 await browser.close(); server.close();
 process.exit(failures ? 1 : 0);

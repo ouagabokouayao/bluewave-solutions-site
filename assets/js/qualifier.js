@@ -147,6 +147,72 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     autre: 'autre', multi: 'autre', preciser: 'autre'
   };
 
+  // Tant que la transmission automatisée est fermée, le courriel préparé est
+  // le seul canal : il reprend toutes les réponses, et reste copiable dans la
+  // page parce que certaines messageries tronquent un lien mailto long.
+  const answerText = id => document.querySelector(`#${id} option:checked`)?.textContent.trim() || '';
+  const preparedQualifierMessage = (payload, orientation, payloadType) => [
+    'Bonjour,', '',
+    `Nom : ${payload.firstname} ${payload.lastname}`,
+    `Organisation : ${payload.organisation}`,
+    payload.role ? `Fonction : ${payload.role}` : '',
+    `E-mail : ${payload.email}`,
+    `Type de demande : ${payloadType}`,
+    `Préférence de contact : ${payload.contact_preference}`, '',
+    `Type d’organisation : ${answerText('q-organisation')}`,
+    `Territoire : ${answerText('q-territoire')}`,
+    `Problématique : ${answerText('q-problematique')}`,
+    `Stade : ${answerText('q-stade')}`,
+    `Délai : ${answerText('q-delai')}`,
+    `Données disponibles : ${answerText('q-donnees')}`,
+    `Résultat recherché : ${answerText('q-resultat')}`, '',
+    orientation.summary, '',
+    'Description :', payload.need, '',
+    `Orientation indicative : ${orientation.offer}.`, '',
+    'J’ai relu ces informations avant envoi.', '',
+    'Cordialement,'
+  ].filter((line, index, lines) => line !== '' || lines[index - 1] !== '').join('\n');
+  const showCopyBox = text => {
+    let box = leadForm.querySelector('[data-mail-copy]');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'mail-copy';
+      box.dataset.mailCopy = '';
+      box.style.marginTop = '1.25rem';
+      const label = document.createElement('label');
+      label.htmlFor = 'lead-message-prepare';
+      label.textContent = 'Message préparé — si votre messagerie le tronque, copiez-le et collez-le dans un nouveau courriel';
+      const area = document.createElement('textarea');
+      area.id = 'lead-message-prepare';
+      area.readOnly = true;
+      area.rows = 8;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'button secondary';
+      button.textContent = 'Copier le message';
+      const note = document.createElement('p');
+      note.className = 'note';
+      note.setAttribute('aria-live', 'polite');
+      button.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(area.value); } catch { area.select(); document.execCommand?.('copy'); }
+        note.textContent = 'Message copié.';
+      });
+      box.append(label, area, button, note);
+      leadMessage.after(box);
+    }
+    box.querySelector('textarea').value = text;
+    box.querySelector('.note').textContent = '';
+    box.hidden = false;
+  };
+  const hideCopyBox = event => {
+    if (event?.target?.closest?.('[data-mail-copy]')) return;
+    const box = leadForm?.querySelector('[data-mail-copy]');
+    if (box) box.hidden = true;
+  };
+  leadForm?.addEventListener('input', hideCopyBox);
+  leadForm?.addEventListener('change', hideCopyBox);
+  restart.addEventListener('click', () => hideCopyBox());
+
   leadForm?.addEventListener('submit', async event => {
     event.preventDefault();
     if (submitting || !lastOrientation || !leadForm.reportValidity()) return;
@@ -200,10 +266,11 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     window.BlueWaveAutomation?.track('lead_submit_attempt', eventContext);
     const prepareFallback = status => {
       const payloadType = payload.lead_type || payload.type;
-      const subject = encodeURIComponent(`BlueWave — ${payloadType} — ${orientation.offer}`);
-      const body = encodeURIComponent(`Bonjour,\n\nNom : ${payload.firstname} ${payload.lastname}\nOrganisation : ${payload.organisation}\nE-mail : ${payload.email}\nType de demande : ${payloadType}\nPréférence de contact : ${payload.contact_preference}\n\n${orientation.summary}\n\nDescription :\n${payload.need}\n\nOrientation indicative : ${orientation.offer}.\n\nJ’ai relu ces informations avant envoi.\n\nCordialement,`);
+      const plainSubject = `BlueWave — ${payloadType} — ${orientation.offer}`;
+      const text = preparedQualifierMessage(payload, orientation, payloadType);
       const mail = document.getElementById('result-mail');
-      mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
+      mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${encodeURIComponent(plainSubject)}&body=${encodeURIComponent(text)}`;
+      showCopyBox(`À : bluewavesolutions3399@gmail.com\nObjet : ${plainSubject}\n\n${text}`);
       window.BlueWaveAutomation?.track('lead_submit_fallback_email', { ...eventContext, status });
       mail.focus();
     };
