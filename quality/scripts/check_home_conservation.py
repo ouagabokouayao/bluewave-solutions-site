@@ -17,6 +17,8 @@ STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const
 # Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
 # dans sa version exacte épinglée ici. Toute autre modification échoue.
 AUTHORIZED_VERSIONS = {
+    'serverless/cloudflare/tests/production.test.mjs': ('0b8c1cc9bd4e77edeeef193fa9aefb11a23c6e01cfbb76677b14ac47945897a1',
+        'Alias historique sans barre finale'),
     'serverless/a01/reporting.mjs': ('bedb0c2c1d8585294fc0a594b108544bb501e913f49d96b3b2e4ce8f97693a2f',
         'Issue inconnue chez Brevo'),
     'serverless/a01/contracts.mjs': ('d019b3140fc1311faf72cdf890be91bd954e4e24e8c3714c7781cfe4db0b5214',
@@ -91,8 +93,8 @@ AUTHORIZED_VERSIONS = {
         'V3-FIN : textes visiteur, navigation, images et veille'),
     'assets/js/lead-schema.js': ('06640eb09919da8eaaa152852cbaad046c8a46de37eb71f80b70d359081d64a2',
         'W14 : contrat navigateur-serveur et perte de réponse'),
-    'serverless/cloudflare/worker.mjs': ('63180008df2eb4e7c0a9225523d1998c610207b12f6725bd37adf93996968b39',
-        'Lettre de veille : jetons opaques, usage unique en base, retrait exécuté'),
+    'serverless/cloudflare/worker.mjs': ('9003b847ddac444de58530d50a37b4800efdf501c141c5c707b3378c810e73dc',
+        'Alias historique sans barre finale'),
     'serverless/cloudflare/tests/readiness.test.mjs': ('82bd1b62b617ca44d73475beae8b17ddd48a4454046b7a51244e97d8996c1a77',
         'Lettre de veille : jetons opaques, usage unique en base, retrait exécuté'),
     'serverless/cloudflare/tests/operations.test.mjs': ('df4f220e4173c199cc9749bc16589015697e492790fe54afbbc0480fddda01d4',
@@ -127,8 +129,8 @@ AUTHORIZED_VERSIONS = {
         'V3-FIN : textes visiteur, navigation, images et veille'),
     'quality/scripts/build_dist.py': ('f5c2c1bfe334dad6bbe5b0e11cb8f3650c9fe21799ec59fb76b3945468aebe7c',
         '02-E11 : seules les pages suivies par Git entrent dans le site servi'),
-    'serverless/cloudflare/PRODUCTION.md': ('9e28af35b85e13ee00dd8ecb5bc7d12558ee5e898830b3206b34f35a471dfc05',
-        'Issue inconnue chez Brevo'),
+    'serverless/cloudflare/PRODUCTION.md': ('3b7a447cf79d307b17254504388bfe310878367323b5389ac38d824994120e47',
+        'Alias historique sans barre finale'),
     'data/actualites.json': ('dfc7ac62fb5befca4ec0917a78332e47a00021a350b533bb3d70dc736c510cf8',
         '02-E11 : veille actualisée le 16/10/2026 par le collecteur existant (sources vérifiées)'),
     'data/actualites-status.json': ('5f1422c2ac5e4abf2f21ecb736cb22402265f5bd6ce253edeac3c387b239f377',

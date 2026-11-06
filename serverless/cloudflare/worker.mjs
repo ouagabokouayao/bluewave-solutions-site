@@ -97,7 +97,7 @@ export default {
    return Response.json({status:ready?'available':'unavailable'},{status:ready?200:503,headers:noStore});
   }
   if (url.pathname.startsWith('/api/')) return new Response(null,{status:404,headers:noStore});
-  if (url.pathname.startsWith('/bluewave-solutions-site/')) {
+  if (url.pathname==='/bluewave-solutions-site' || url.pathname.startsWith('/bluewave-solutions-site/')) {
    const destination=new URL(url.href);
    destination.pathname=url.pathname.replace(/^\/bluewave-solutions-site/,'') || '/';
    return Response.redirect(destination.href,308);

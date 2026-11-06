@@ -561,8 +561,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "e8cabd00b74f65164dd22ba8ce666366eb9916d013d050fb77aa91ad613c596e",
-    "bytes": 16316
+    "sha256": "1c086c892ee78c7d8cbf65ee7902a21097fe9e173a680a768669724a40c02f06",
+    "bytes": 16456
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -841,8 +841,8 @@
   },
   {
     "path": "serverless/cloudflare/PRODUCTION.md",
-    "sha256": "9e28af35b85e13ee00dd8ecb5bc7d12558ee5e898830b3206b34f35a471dfc05",
-    "bytes": 5816
+    "sha256": "3b7a447cf79d307b17254504388bfe310878367323b5389ac38d824994120e47",
+    "bytes": 6023
   },
   {
     "path": "serverless/cloudflare/README.md",
@@ -921,8 +921,8 @@
   },
   {
     "path": "serverless/cloudflare/tests/production.test.mjs",
-    "sha256": "232868d9b32f7b234f637d13348832fc086a61f1c96ee01127be5da1abbccb60",
-    "bytes": 1989
+    "sha256": "0b8c1cc9bd4e77edeeef193fa9aefb11a23c6e01cfbb76677b14ac47945897a1",
+    "bytes": 2900
   },
   {
     "path": "serverless/cloudflare/tests/readiness.test.mjs",
@@ -951,8 +951,8 @@
   },
   {
     "path": "serverless/cloudflare/worker.mjs",
-    "sha256": "63180008df2eb4e7c0a9225523d1998c610207b12f6725bd37adf93996968b39",
-    "bytes": 7169
+    "sha256": "9003b847ddac444de58530d50a37b4800efdf501c141c5c707b3378c810e73dc",
+    "bytes": 7214
   },
   {
     "path": "serverless/cloudflare/wrangler.jsonc",

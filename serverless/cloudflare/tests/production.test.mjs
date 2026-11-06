@@ -33,3 +33,13 @@ test('traffic page views cannot be stored in the conversion database', async () 
  assert.equal((await worker.fetch(request,env)).status,400);
  assert.equal(writes,0);
 });
+
+test('alias historique : avec ou sans barre finale, redirigé vers la racine ; un nom voisin ne l’est pas',async()=>{
+ const ASSETS={fetch:async()=>new Response('page')};
+ const moved=async path=>{const response=await worker.fetch(new Request(`https://www.bluewavesolutions.fr${path}`),{ASSETS});return [response.status,response.headers.get('location')];};
+ assert.deepEqual(await moved('/bluewave-solutions-site'),[308,'https://www.bluewavesolutions.fr/']);
+ assert.deepEqual(await moved('/bluewave-solutions-site/'),[308,'https://www.bluewavesolutions.fr/']);
+ assert.deepEqual(await moved('/bluewave-solutions-site?utm_source=ancien'),[308,'https://www.bluewavesolutions.fr/?utm_source=ancien']);
+ assert.deepEqual(await moved('/bluewave-solutions-site/solutions.html'),[308,'https://www.bluewavesolutions.fr/solutions.html']);
+ assert.equal((await moved('/bluewave-solutions-site-archive'))[0],200);
+});
