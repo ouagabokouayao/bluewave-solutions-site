@@ -10,7 +10,8 @@ permissions:
 
 jobs:
   quality:
-    runs-on: ubuntu-latest
+    # Playwright 1.56 ne prend pas en charge Ubuntu 26.04.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
