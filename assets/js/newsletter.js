@@ -1,4 +1,4 @@
-// Page de la lettre de veille. Le jeton arrive dans le fragment de l'adresse : il
+// Page de BlueWave Perspectives. Le jeton arrive dans le fragment de l'adresse : il
 // n'est jamais transmis au serveur par l'URL et il disparaît de la barre d'adresse.
 (() => {
   const API = '/api/newsletter/';
@@ -48,7 +48,7 @@
     const preferences = chosen(subscribeForm);
     email.toggleAttribute('aria-invalid', !email.value.trim() || !email.validity.valid);
     if (email.hasAttribute('aria-invalid')) return say('subscribe', 'Indiquez une adresse e-mail valide.');
-    if (!preferences.length) return say('subscribe', 'Choisissez au moins une rubrique.');
+    if (!preferences.length) return say('subscribe', 'Choisissez au moins une préférence.');
     if (!consent.checked) return say('subscribe', 'Votre accord est nécessaire pour demander l’inscription.');
     busy(subscribeForm.querySelector('[type=submit]'), async () => {
       say('subscribe', 'Envoi de votre demande…');
@@ -76,9 +76,9 @@
     } else if (result.reason === 'expired') {
       // Le retrait reste possible même lorsque la gestion des rubriques a expiré.
       preferencesForm.hidden = true;
-      say('manage', 'Ce lien ne permet plus de modifier vos rubriques. Vous pouvez toujours vous désinscrire.');
+      say('manage', 'Ce lien ne permet plus de modifier vos préférences. Vous pouvez toujours vous désinscrire.');
     } else if (result.status === 410) {
-      finish(`Ce lien n’est plus actif. Si vous recevez encore la lettre, écrivez à ${CONTACT}.`);
+      finish(`Ce lien n’est plus actif. Si vous recevez encore BlueWave Perspectives, écrivez à ${CONTACT}.`);
     } else {
       say('manage', UNAVAILABLE);
     }
@@ -87,21 +87,21 @@
   preferencesForm.addEventListener('submit', event => {
     event.preventDefault();
     const preferences = chosen(preferencesForm);
-    if (!preferences.length) return say('manage', 'Choisissez au moins une rubrique, ou désinscrivez-vous.');
+    if (!preferences.length) return say('manage', 'Choisissez au moins une préférence, ou désinscrivez-vous.');
     busy(preferencesForm.querySelector('[type=submit]'), async () => {
       const result = await post('preferences', {token: managementToken, preferences});
-      if (result.status === 200) return say('manage', 'Vos rubriques sont enregistrées.');
-      if (result.status === 0) return say('manage', `${NO_ANSWER}vos rubriques ont peut-être été enregistrées. Rouvrez ce lien pour le vérifier.`);
-      say('manage', result.status === 410 ? 'Ce lien n’est plus actif.' : 'Vos rubriques n’ont pas été modifiées. Réessayez plus tard.');
+      if (result.status === 200) return say('manage', 'Vos préférences sont enregistrées.');
+      if (result.status === 0) return say('manage', `${NO_ANSWER}vos préférences ont peut-être été enregistrées. Rouvrez ce lien pour le vérifier.`);
+      say('manage', result.status === 410 ? 'Ce lien n’est plus actif.' : 'Vos préférences n’ont pas été modifiées. Réessayez plus tard.');
     });
   });
 
   document.querySelector('[data-veille-action="unsubscribe"]').addEventListener('click', event => {
     busy(event.currentTarget, async () => {
       const result = await post('unsubscribe', {token: managementToken});
-      if (result.status === 200) return finish('Votre désinscription est effective. Vous ne recevrez plus la lettre de veille.');
-      if (result.status === 202) return finish('Votre désinscription est enregistrée. Sa répercussion chez notre prestataire d’envoi est en cours : elle sera reprise automatiquement.');
-      if (result.status === 410) return finish(`Ce lien n’est plus actif. Si vous recevez encore la lettre, écrivez à ${CONTACT}.`);
+      if (result.status === 200) return finish('Votre désinscription de BlueWave Perspectives est effective. Vous ne recevrez plus aucune édition.');
+      if (result.status === 202) return finish('Votre désinscription de BlueWave Perspectives est enregistrée. Sa répercussion chez notre prestataire d’envoi est en cours : elle sera reprise automatiquement.');
+      if (result.status === 410) return finish(`Ce lien n’est plus actif. Si vous recevez encore BlueWave Perspectives, écrivez à ${CONTACT}.`);
       if (result.status === 0) return say('manage', `${NO_ANSWER}réessayez, un second essai est sans risque.`);
       say('manage', `La désinscription n’a pas abouti. Réessayez, ou écrivez à ${CONTACT}.`);
     });
@@ -112,7 +112,7 @@
       const result = await post('confirm', {token: confirmationToken});
       if (result.status === 200) {
         await manage(result.management_token);
-        return say('manage', 'Votre inscription est confirmée. Vous pouvez ajuster vos rubriques ici, et chaque lettre contiendra un lien de désinscription.');
+        return say('manage', 'Votre inscription à BlueWave Perspectives est confirmée. Vous pouvez ajuster vos préférences ici, et chaque édition contiendra un lien de désinscription.');
       }
       if (result.status === 0) return say('confirm', `${NO_ANSWER}votre inscription a peut-être été confirmée. Réessayez : si ce lien n’est plus actif, c’est qu’elle l’est.`);
       if (result.status === 503) return say('confirm', 'L’inscription n’a pas pu être finalisée. Ce lien reste valable : réessayez dans quelques minutes.');

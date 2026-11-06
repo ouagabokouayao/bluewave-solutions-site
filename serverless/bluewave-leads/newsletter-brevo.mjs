@@ -3,7 +3,7 @@
 import { attemptKey } from './brevo-client.mjs';
 
 const BREVO_API_BASE = 'https://api.brevo.com/v3';
-const CONFIRMATION_SUBJECT = 'Confirmez votre inscription à la lettre de veille BlueWave';
+const CONFIRMATION_SUBJECT = 'Confirmez votre inscription à BlueWave Perspectives';
 const REQUIRED = Object.freeze(['BREVO_API_KEY', 'BREVO_NEWSLETTER_LIST_ID', 'BREVO_NEWSLETTER_CONFIRM_TEMPLATE_ID', 'BLUEWAVE_SITE_URL']);
 
 export function newsletterTransportMissing(environment = {}) {

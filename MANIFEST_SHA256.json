@@ -51,8 +51,8 @@
   },
   {
     "path": "actualites.html",
-    "sha256": "738cb185062c50aa24892abce7ffdd406658af7340991254b2f579fbbd328cc6",
-    "bytes": 7299
+    "sha256": "827969d36c4026a3fdf6fe0cd0f28b742fb6f09e50da2aa7ef5e5490805b8dfb",
+    "bytes": 7543
   },
   {
     "path": "assets/css/activites-bluewave.css",
@@ -541,8 +541,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "37fd852a2f6488b534081debacf37dfc3b6230b38c8786f229bb4580a7eb6f4a",
-    "bytes": 25350
+    "sha256": "33a7703f8580dc4ac347c25ed15908776678fb5f0e4fed2f36af5e2c4f934b66",
+    "bytes": 25991
   },
   {
     "path": "quality/scripts/check_brand_assets.py",
@@ -561,8 +561,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "bb05a8b97ec16f7e07eb54aa86b09e96d239627a599d64861d79f294508986f8",
-    "bytes": 16367
+    "sha256": "7614d7b2ec8516df3ff156fb94e32733506a021c25b65e1dd65a5647598dafba",
+    "bytes": 16356
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -631,8 +631,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "43951263950a3c2faa960fb63f1637baa7b5786f1645f5d893524edbdde61038",
-    "bytes": 18333
+    "sha256": "7cdfe8d7b669720ef37753c3de330b521dfdc0d3519bd63ad518a33ed7904e95",
+    "bytes": 19653
   },
   {
     "path": "robots.txt",
@@ -641,13 +641,13 @@
   },
   {
     "path": "serverless/OPERATIONS.md",
-    "sha256": "fd5ff186165ec592a602c238d04b0a9add6b7f985cb7fa07e59170c792d3ed6a",
-    "bytes": 15855
+    "sha256": "39c16cb428757f4f75798f835f8dc786c02a2b6cd656dbdd5646275bf5d2b2ab",
+    "bytes": 15866
   },
   {
     "path": "serverless/PROFILS.md",
-    "sha256": "f86705dd78b1b5099b28691204a03660a796de06aa2cd126d761eb29f5b6276a",
-    "bytes": 9693
+    "sha256": "11a49713febbe67afae6ab71cd7e058cab0cb5352097e5521116f96c574bf508",
+    "bytes": 9774
   },
   {
     "path": "serverless/a01/README.md",
@@ -736,8 +736,8 @@
   },
   {
     "path": "serverless/bluewave-leads/newsletter-brevo.mjs",
-    "sha256": "20112ade63875079bef46ad0080aacd62736c3020257050d9c370a0021ea04e9",
-    "bytes": 3516
+    "sha256": "03c298acaa463a33def817ff8450cabc94f5b58efd46a2bbcef37d13dfed894d",
+    "bytes": 3509
   },
   {
     "path": "serverless/bluewave-leads/newsletter.mjs",

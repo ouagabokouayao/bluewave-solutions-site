@@ -38,7 +38,6 @@
     info.hidden = true;
     confirmation.hidden = false;
     say('');
-    confirmation.querySelector('h2').focus();
   };
   window.addEventListener('hashchange', route);
   route();

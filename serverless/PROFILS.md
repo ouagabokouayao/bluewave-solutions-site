@@ -82,7 +82,7 @@ Essais de bout en bout à réussir avant ouverture : demande valide, accusé, no
 
 ## Lettre de veille
 
-Canal distinct des demandes de contact, fermé par défaut. Aucune demande de contact ne produit d'inscription.
+La lettre s'appelle **BlueWave Perspectives — Mer, littoral & opportunités**. Canal distinct des demandes de contact, fermé par défaut. Aucune demande de contact ne produit d'inscription.
 
 | Étape | Route | Effet |
 |---|---|---|

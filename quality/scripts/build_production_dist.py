@@ -35,8 +35,10 @@ LEGAL_FOOTER = '<a href="politique-confidentialite.html">Confidentialité</a>'
 # Une demande de contact ne vaut jamais inscription : la lettre ouverte, cette case
 # n'aurait aucun effet. Elle cède la place à un lien vers la page dédiée.
 LEAD_NEWSLETTER_OPTION = re.compile(r'<label class="consent-check" for="lead-newsletter" hidden>.*?</label>', re.S)
-LEAD_NEWSLETTER_LINK = ('<p class="note">Cette demande ne vous inscrit à aucune liste. Pour recevoir la lettre de veille, '
+LEAD_NEWSLETTER_LINK = ('<p class="note">Cette demande ne vous inscrit à aucune liste. Pour recevoir BlueWave Perspectives, '
     f'utilisez <a href="{NEWSLETTER_PAGE}">sa page dédiée</a>.</p>')
+CLOSED_NEWSLETTER_NOTE = '<p class="note">Les inscriptions ne sont pas encore ouvertes.</p>'
+OPEN_NEWSLETTER_LINK = f'<a class="button" href="{NEWSLETTER_PAGE}">Recevoir BlueWave Perspectives</a>'
 OPEN_FORM_NOTICE = ('Ce formulaire transmet votre demande à BlueWave Solutions. Si la transmission échoue, '
     'un courriel prêt à envoyer vous est proposé.')
 
@@ -105,10 +107,10 @@ def newsletter_page(template, script):
     document, count = re.subn(r'<main id="contenu">.*</main>', lambda _: main, document, flags=re.S)
     if count != 1:
         raise ValueError('Contenu principal absent de la page de référence')
-    description = 'Inscription à la lettre de veille de BlueWave Solutions, confirmée par courriel et retirable à tout moment.'
-    document = re.sub(r'(<title>)[^<]*(</title>)', r'\g<1>Lettre de veille | BlueWave Solutions\g<2>', document, count=1)
+    description = 'BlueWave Perspectives, tous les quinze jours : mer, littoral et opportunités en Méditerranée, en Côte d’Ivoire et en Afrique de l’Ouest.'
+    document = re.sub(r'(<title>)[^<]*(</title>)', r'\g<1>BlueWave Perspectives | BlueWave Solutions\g<2>', document, count=1)
     document = re.sub(r'(<meta (?:name|property)="(?:og:|twitter:)?description" content=")[^"]*', lambda m: m.group(1) + description, document)
-    document = re.sub(r'(<meta property="og:title" content=")[^"]*', r'\g<1>Lettre de veille | BlueWave Solutions', document)
+    document = re.sub(r'(<meta property="og:title" content=")[^"]*', r'\g<1>BlueWave Perspectives | BlueWave Solutions', document)
     document = document.replace(ORIGIN + '/politique-confidentialite.html', ORIGIN + '/' + NEWSLETTER_PAGE)
     return document.replace('</body>', f'<script src="{script}" defer></script></body>')
 
@@ -140,7 +142,7 @@ def privacy(document, leads, events, traffic, newsletter=False):
         'porte sur une mission ou un projet et que leurs conditions sont réunies ;</li><li>intérêt '
         f'légitime de BlueWave à répondre aux contacts professionnels{measured}, sous réserve d’une '
         'mise en balance avec vos intérêts, libertés et droits ;</li><li>' +
-        ('la lettre de veille est un traitement distinct, fondé sur votre consentement spécifique, '
+        ('BlueWave Perspectives est un traitement distinct, fondé sur votre consentement spécifique, '
          'que vous pouvez retirer à tout moment.' if newsletter else
          'la lettre de veille est un traitement distinct, désactivé ; s’il était ouvert, il reposerait '
          'sur votre consentement spécifique.') + '</li></ul>')
@@ -181,11 +183,12 @@ def privacy(document, leads, events, traffic, newsletter=False):
         '<p>Aucun cookie publicitaire, ' + ('' if newsletter else 'newsletter, ') + 'chat ou lien de rendez-vous automatisé n’est activé. '
         'Cloudflare peut traiter des données techniques de connexion pour servir et sécuriser le site.</p>')
     document = article(document, 'Lettre de veille',
-        '<p>L’inscription se fait sur une page dédiée et ne prend effet qu’après confirmation par un lien '
-        'reçu par courriel, valable vingt-quatre heures. BlueWave conserve votre adresse, vos rubriques, '
+        '<p>BlueWave Perspectives paraît tous les quinze jours. L’inscription se fait sur une page dédiée '
+        'et ne prend effet qu’après confirmation par un lien '
+        'reçu par courriel, valable vingt-quatre heures. BlueWave conserve votre adresse, vos préférences, '
         'la version de l’information présentée et les dates de demande, de confirmation et de retrait, '
         'dans une base distincte des demandes de contact. Brevo reçoit votre adresse pour expédier la '
-        'lettre. Chaque lettre permet de se désinscrire ; aucun formulaire de prise de contact ne vaut '
+        'lettre. Chaque édition permet de se désinscrire ; aucun formulaire de prise de contact ne vaut '
         'inscription.</p>' if newsletter else
         '<p>La lettre de veille est désactivée. Aucun formulaire de prise de contact ne vaut '
         'inscription marketing. Une éventuelle activation ultérieure demandera un consentement séparé.</p>')
@@ -198,7 +201,7 @@ def privacy(document, leads, events, traffic, newsletter=False):
     if leads or newsletter:
         durations += '<li>garde anti-abus : fenêtres temporaires d’environ vingt minutes ;</li>'
     if newsletter:
-        durations += ('<li>lettre de veille : jusqu’à votre désinscription ; une adresse jamais confirmée '
+        durations += ('<li>BlueWave Perspectives : jusqu’à votre désinscription ; une adresse jamais confirmée '
             'est supprimée au plus tard trente jours après l’expiration du lien ; la preuve d’un '
             'consentement retiré, selon la durée arrêtée par le responsable ;</li>')
     durations += ('<li>journaux techniques des prestataires : selon leurs paramètres contractuels '
@@ -275,6 +278,10 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
                 'immatriculation sur justificatifs.</p>' if indexable else
                 '<p>Le site reste non indexable pendant sa préparation. Les mentions légales '
                 'seront complétées après immatriculation sur justificatifs.</p>')
+        if newsletter and page.name == 'actualites.html':
+            if document.count(CLOSED_NEWSLETTER_NOTE) != 1:
+                raise ValueError('Mention de fermeture absente ou répétée des actualités')
+            document = document.replace(CLOSED_NEWSLETTER_NOTE, OPEN_NEWSLETTER_LINK)
         if newsletter and page.name == 'qualifier-un-besoin.html':
             document, count = LEAD_NEWSLETTER_OPTION.subn(lambda _: LEAD_NEWSLETTER_LINK, document)
             if count != 1:
@@ -282,7 +289,7 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
         if newsletter:
             if document.count(LEGAL_FOOTER) != 1:
                 raise ValueError(f'Pied de page absent ou répété : {page.name}')
-            document = document.replace(LEGAL_FOOTER, f'{LEGAL_FOOTER} · <a href="{NEWSLETTER_PAGE}">Lettre de veille</a>')
+            document = document.replace(LEGAL_FOOTER, f'{LEGAL_FOOTER} · <a href="{NEWSLETTER_PAGE}">BlueWave Perspectives</a>')
         page.write_text(document, encoding='utf-8')
     template, script = (NEWSLETTER_TEMPLATE, NEWSLETTER_SCRIPT) if newsletter else (WITHDRAWAL_TEMPLATE, WITHDRAWAL_SCRIPT)
     document = newsletter_page(template, script)
@@ -352,7 +359,7 @@ if __name__ == '__main__':
     parser.add_argument('--indexable', action='store_true')
     parser.add_argument('--leads', action='store_true')
     parser.add_argument('--events', action='store_true')
-    parser.add_argument('--newsletter', action='store_true', help='Ajoute la page de la lettre de veille et ses mentions.')
+    parser.add_argument('--newsletter', action='store_true', help='Ouvre la page d’inscription à BlueWave Perspectives et ses mentions.')
     parser.add_argument('--traffic-token')
     parser.add_argument('--campaign', action='append', default=[])
     parser.add_argument('--privacy-simulation', action='store_true',

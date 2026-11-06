@@ -196,8 +196,7 @@ Chaque étape est un GO distinct. Aucune n'est enchaînée automatiquement.
 7. Ouvrir `LEADS_ENABLED` ; contrôler l'enregistrement, l'accusé, la notification.
 8. Valider les mentions de confidentialité, puis `PUBLIC_INDEXABLE` et la route.
 
-La lettre de veille reste fermée : elle demande un canal de double opt-in
-complet, non implémenté.
+BlueWave Perspectives reste fermée. Son ouverture est décrite dans `serverless/PROFILS.md`.
 
 ---
 
@@ -303,7 +302,7 @@ pendant un repli : ils relèvent d'un mandat distinct concernant la messagerie.
 | --- | --- | --- |
 | Durée de conservation des demandes | `LEAD_RETENTION_DAYS` vide ; sélection, purge, compteur et journal prêts et testés | fixer la durée, puis ajuster les mentions |
 | Affirmations juridiques | recensées, non validées | valider ou réécrire, puis passer `approved` à `true` |
-| Lettre de veille | jeton signé, expiration, anti-rejeu, confirmation et révocation implémentés et testés ; interface fournisseur sans implémentation | choisir le fournisseur d'envoi et le modèle de courriel de confirmation |
+| BlueWave Perspectives | double opt-in, jetons opaques, préférences, retrait et supervision prêts et testés en simulation ; canal fermé | décider l'ouverture, faire valider les mentions par 04B, essayer le transport sur un compte Brevo de test |
 | Objets Brevo | inventoriés, non créés | créer et fournir les identifiants |
 | Ressources Cloudflare | aucune | créer bases, secrets, Turnstile, route |
 | Immatriculation | « SASU en cours de constitution » | compléter les mentions sur justificatifs |

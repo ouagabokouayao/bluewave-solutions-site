@@ -238,12 +238,29 @@ class ProductionProfile(unittest.TestCase):
         self.assertIn('content="noindex, nofollow"', (module.OUT / module.NEWSLETTER_PAGE).read_text(encoding='utf-8'))
         self.assertNotIn(module.NEWSLETTER_PAGE, (module.OUT / 'sitemap.xml').read_text(encoding='utf-8'))
 
+    def test_editorial_texts_of_02_in_the_closed_profile(self):
+        module.build()
+        news = (module.OUT / 'actualites.html').read_text(encoding='utf-8')
+        for text in ('BlueWave Perspectives — Mer, littoral &amp; opportunités', 'Tous les quinze jours', 'Méditerranée', 'Côte d’Ivoire', 'Afrique de l’Ouest',
+                     'À la une', 'Afrique de l’Ouest &amp; Méditerranée', 'Opportunités', 'Agenda', 'Regard BlueWave', 'Les inscriptions ne sont pas encore ouvertes.'):
+            self.assertIn(text, news)
+        self.assertNotRegex(news, r'<form[^>]*newsletter|name="consent"')
+        for page in module.OUT.glob('*.html'):
+            self.assertNotIn('Lettre de veille BlueWave', page.read_text(encoding='utf-8'), page.name)
+
     def test_newsletter_opens_only_through_the_privacy_gate(self):
         with self.assertRaisesRegex(ValueError, 'Verrou confidentialité'):
             module.build(newsletter=True)
         module.build(newsletter=True, privacy_simulation=True)
         page = (module.OUT / module.NEWSLETTER_PAGE).read_text(encoding='utf-8')
-        self.assertIn('<title>Lettre de veille | BlueWave Solutions</title>', page)
+        self.assertIn('<title>BlueWave Perspectives | BlueWave Solutions</title>', page)
+        for label in ('Actualités maritimes et littorales', 'Formations et rencontres', 'Études et publications', 'Tous les quinze jours'):
+            self.assertIn(label, page)
+        for value in ('veille', 'formations', 'publications'):
+            self.assertEqual(page.count(f'name="preferences" type="checkbox" value="{value}"'), 2)
+        news = (module.OUT / 'actualites.html').read_text(encoding='utf-8')
+        self.assertNotIn(module.CLOSED_NEWSLETTER_NOTE, news)
+        self.assertIn(module.OPEN_NEWSLETTER_LINK, news)
         self.assertIn(f'href="{module.ORIGIN}/{module.NEWSLETTER_PAGE}"', page)
         self.assertNotIn('data-newsletter-form', page)
         self.assertTrue((module.OUT / module.NEWSLETTER_SCRIPT).is_file())
@@ -251,7 +268,7 @@ class ProductionProfile(unittest.TestCase):
         policy = (module.OUT / 'politique-confidentialite.html').read_text(encoding='utf-8')
         self.assertNotIn('La lettre de veille est désactivée', policy)
         self.assertIn('fondé sur votre consentement spécifique', policy)
-        self.assertIn('lettre de veille : jusqu’à votre désinscription', policy)
+        self.assertIn('BlueWave Perspectives : jusqu’à votre désinscription', policy)
         for form in module.OUT.glob('*.html'):
             self.assertNotIn('data-newsletter-consent', form.read_text(encoding='utf-8'), form.name)
 

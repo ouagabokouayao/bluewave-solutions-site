@@ -87,7 +87,7 @@ await check('saisie incomplète : aucun appel, message clair', async () => {
   await expectText(message(page, 'subscribe'), /adresse e-mail valide/);
   await page.fill('#veille-email', EMAIL);
   await page.click('[data-veille-form="subscribe"] [type=submit]');
-  await expectText(message(page, 'subscribe'), /au moins une rubrique/);
+  await expectText(message(page, 'subscribe'), /au moins une préférence/);
   await page.check('[data-veille-view="subscribe"] [name=preferences][value=veille]');
   await page.click('[data-veille-form="subscribe"] [type=submit]');
   await expectText(message(page, 'subscribe'), /accord est nécessaire/);
@@ -115,7 +115,7 @@ await check('confirmation : un clic délibéré, jeton retiré de l’adresse et
   assert.equal(new URL(page.url()).hash, '');
   assert.equal(api.length, 0, 'ouvrir le lien ne confirme rien : les scanners de messagerie restent sans effet');
   await page.click('[data-veille-action="confirm"]');
-  await expectText(message(page, 'manage'), /inscription est confirmée/);
+  await expectText(message(page, 'manage'), /inscription à BlueWave Perspectives est confirmée/);
   assert.equal(await page.isChecked('[data-veille-form="preferences"] [value=veille]'), true);
   assert.ok(api.every(item => item.search === ''));
   assert.equal((await state(EMAIL)).state, 'CONFIRMED');
@@ -139,10 +139,10 @@ await check('préférences : modifiées, conservées à la réouverture, jamais 
   assert.equal((await page.content()).includes(EMAIL), false);
   await page.uncheck('[data-veille-form="preferences"] [value=veille]');
   await page.click('[data-veille-form="preferences"] [type=submit]');
-  await expectText(message(page, 'manage'), /au moins une rubrique/);
+  await expectText(message(page, 'manage'), /au moins une préférence/);
   await page.check('[data-veille-form="preferences"] [value=formations]');
   await page.click('[data-veille-form="preferences"] [type=submit]');
-  await expectText(message(page, 'manage'), /rubriques sont enregistrées/);
+  await expectText(message(page, 'manage'), /préférences sont enregistrées/);
   await page.goto('about:blank');
   await page.goto(managementLink);
   await page.locator('[data-veille-form="preferences"] [value=formations]:checked').waitFor();
@@ -155,7 +155,7 @@ await check('désinscription : effective chez le fournisseur et en base', async 
   await page.goto(managementLink);
   await page.locator('[data-veille-form="preferences"] [value=formations]:checked').waitFor();
   await page.click('[data-veille-action="unsubscribe"]');
-  await expectText(message(page, 'done'), /désinscription est effective/);
+  await expectText(message(page, 'done'), /désinscription de BlueWave Perspectives est effective/);
   assert.equal(brevo.at(-1).method, 'PUT');
   assert.deepEqual(brevo.at(-1).body, {unlinkListIds: [7]});
   assert.equal((await state(EMAIL)).state, 'REVOKED');
@@ -196,10 +196,10 @@ await check('panne Brevo : à la demande rien n’est promis, au retrait le retr
   await expectText(message(page, 'done'), /Demande reçue/);
   await page.goto(links());
   await page.click('[data-veille-action="confirm"]');
-  await expectText(message(page, 'manage'), /inscription est confirmée/);
+  await expectText(message(page, 'manage'), /inscription à BlueWave Perspectives est confirmée/);
   brevoDown = true;
   await page.click('[data-veille-action="unsubscribe"]');
-  await expectText(message(page, 'done'), /désinscription est enregistrée/);
+  await expectText(message(page, 'done'), /désinscription de BlueWave Perspectives est enregistrée/);
   brevoDown = false;
   assert.equal((await state('panne@example.invalid')).state, 'REVOKING');
   await worker.scheduled({}, env);
@@ -222,7 +222,7 @@ for (const width of [320, 390, 1440]) await check(`accessibilité et largeur à 
   await page.locator('[data-veille-action="confirm"]').waitFor();
   await verify();
   await page.click('[data-veille-action="confirm"]');
-  await expectText(message(page, 'manage'), /inscription est confirmée/);
+  await expectText(message(page, 'manage'), /inscription à BlueWave Perspectives est confirmée/);
   await verify();
   await ctx.close();
 });
@@ -237,6 +237,9 @@ await check('les mentions décrivent le canal ouvert et le pied de page y condui
   await page.locator('#veille-email').waitFor();
   await page.goto(`${ORIGIN}/qualifier-un-besoin.html`);
   assert.equal(await page.locator('[name=newsletter_consent]').count(), 0, 'aucune case d’inscription dans une demande de contact');
+  await page.goto(`${ORIGIN}/actualites.html`);
+  await page.click('.newsletter-panel a[href="lettre-de-veille.html"]');
+  await page.locator('#veille-email').waitFor();
   await ctx.close();
 });
 
