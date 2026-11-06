@@ -100,6 +100,8 @@ await check('aucun texte interne visible sur les pages', async () => {
     const text = await p.evaluate(() => `${document.title} ${document.querySelector('meta[name="description"]')?.content || ''} ${document.body.innerText}`);
     const match = text.match(INTERNAL_TEXT);
     if (match) found.push(`${name}: ${match[0]}`);
+    if (!text.includes('bluewavesolutions3399@gmail.com')) found.push(`${name}: adresse de contact absente`);
+    if (!text.includes('SASU en cours de constitution')) found.push(`${name}: statut juridique absent`);
   }
   await ctx.close();
   assert.deepEqual(found, []);
@@ -151,6 +153,23 @@ await check('clavier : lien d’évitement, foyer visible et menu mobile', async
         assert.equal(await p.evaluate(() => document.activeElement.className), 'menu-toggle', 'foyer non rendu au bouton');
       }
     }
+    await ctx.close();
+  }
+});
+
+await check('accueil : les ancres atterrissent sur leur section malgré la mise en page différée', async () => {
+  for (const width of [390, 1440]) {
+    const ctx = await browser.newContext({viewport: {width, height: 844}, reducedMotion: 'reduce'});
+    const p = await ctx.newPage();
+    await p.goto(`${base}/index.html`, {waitUntil: 'networkidle'});
+    await p.click('.hero-actions a[href="#expertises"]');
+    await p.waitForTimeout(500);
+    const top = await p.evaluate(() => document.querySelector('#expertises').getBoundingClientRect().top);
+    assert.ok(Math.abs(top) < 120, `#expertises à ${Math.round(top)} px en ${width}`);
+    await p.goto(`${base}/index.html#parcours`, {waitUntil: 'networkidle'});
+    await p.waitForTimeout(500);
+    const hash = await p.evaluate(() => document.querySelector('#parcours').getBoundingClientRect().top);
+    assert.ok(Math.abs(hash) < 120, `#parcours à ${Math.round(hash)} px en ${width}`);
     await ctx.close();
   }
 });

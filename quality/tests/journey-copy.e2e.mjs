@@ -123,6 +123,7 @@ for (const c of CASES) {
     assert.ok(await p.isHidden('label[for="lead-newsletter"]'), 'case newsletter affichée alors que la lettre est fermée');
     const f = '#lead-form';
     assert.doesNotMatch(await p.textContent('#result-confirm'), /^À confirmer/, 'préfixe répété sous le titre');
+    assert.equal(await p.evaluate(() => document.activeElement.id), 'result-title', 'foyer non placé sur le résultat');
     await p.click('#lead-submit');
     assert.match(await p.textContent('#lead-message'), /Vérifiez les champs signalés/);
     assert.ok(await p.locator(`${f} [aria-invalid="true"]`).count() > 0, 'champ refusé non signalé');

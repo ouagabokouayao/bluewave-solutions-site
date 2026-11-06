@@ -135,6 +135,8 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     window.BlueWaveAutomation?.track('lead_form_open', { offer: offerId, journey: activeJourney });
     result.hidden = false;
     result.scrollIntoView({behavior:'smooth',block:'start'});
+    // Le clavier et les lecteurs d'écran suivent l'affichage du résultat.
+    document.getElementById('result-title').focus({preventScroll:true});
   });
   restart.addEventListener('click', () => {
     result.hidden = true;

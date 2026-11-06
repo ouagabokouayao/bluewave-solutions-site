@@ -94,3 +94,5 @@
 /* Actualités de l'accueil : trois cartes égales, titre sur toute la largeur utile. */
 @media(min-width:900px){.home-premium .home-news-section .news-featured{grid-template-columns:repeat(3,minmax(0,1fr))}.home-premium .home-news-section .news-card-main{grid-row:auto}}
 .home-premium .home-news-section .news-heading-row{align-items:flex-end;gap:32px}.home-premium .home-news-section .news-heading-row>div{max-width:760px}.home-premium .home-news-section .news-heading-row h2+p{margin-top:14px}
+/* Sections hors écran : mise en page différée, le premier rendu ne calcule que le haut de page. */
+.home-premium .approach,.home-premium .offerings,.home-premium .proof-section,.home-premium .geographies,.home-premium .paths,.home-premium .preserved-section,.home-premium .home-news-section,.home-premium .closing{content-visibility:auto;contain-intrinsic-size:auto 900px}
