@@ -14,6 +14,11 @@
   },
   "vars": {
     "LEADS_ENABLED": "false",
+    "LEADS_CONTACT_SYNC_ENABLED": "false",
+    "LEADS_ACK_ENABLED": "false",
+    "LEADS_NOTIFY_ENABLED": "false",
+    "LEADS_REPLAY_ENABLED": "false",
+    "CAMPAIGNS_ENABLED": "false",
     "EVENTS_ENABLED": "false",
     "NEWSLETTER_ENABLED": "false",
     "TURNSTILE_ENABLED": "false",

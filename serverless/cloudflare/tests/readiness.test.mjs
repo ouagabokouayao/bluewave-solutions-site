@@ -8,7 +8,7 @@ const assets = { fetch: async () => new Response('static') };
 
 const leadsComplete = Object.freeze({
   ASSETS: assets,
-  LEADS_ENABLED: 'true',
+  LEADS_CONTACT_SYNC_ENABLED: 'true', LEADS_ACK_ENABLED: 'true', LEADS_NOTIFY_ENABLED: 'true', LEADS_REPLAY_ENABLED: 'true', LEADS_ENABLED: 'true',
   LEADS_DB: { prepare() {} },
   LEAD_RETENTION_DAYS: '30',
   LEAD_GUARD: {},

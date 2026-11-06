@@ -1,4 +1,4 @@
-import {createLeadHandler} from '../bluewave-leads/handler.mjs';
+import {allowedCampaigns, createLeadHandler} from '../bluewave-leads/handler.mjs';
 import {purgeExpiredLeads} from '../bluewave-leads/lead-store.mjs';
 import {createDistributedGuard, LeadGuard} from './guard.mjs';
 import {createTurnstileVerifier} from './turnstile.mjs';
@@ -46,7 +46,7 @@ async function conversion(request, env, url) {
   if (body.invalid) return new Response(null,{status:400,headers:noStore});
   let input;
   try {input=JSON.parse(body.raw);} catch {return new Response(null,{status:400,headers:noStore});}
-  const campaigns=(env.ALLOWED_CAMPAIGNS || '').split(',').filter(code=>/^[a-z0-9][a-z0-9_-]{0,39}$/.test(code));
+  const campaigns=allowedCampaigns(env).split(',').filter(code=>/^[a-z0-9][a-z0-9_-]{0,39}$/.test(code));
   const clean=sanitizeEvent(input,campaigns);
   if (!clean || clean.event_name==='page_view') return new Response(null,{status:400,headers:noStore});
   const day=new Date().toISOString().slice(0,10);

@@ -8,15 +8,11 @@
 // Ce module n'est appelé par aucune route. Il est destiné à une exécution
 // d'exploitation explicite, documentée dans serverless/OPERATIONS.md.
 
-import { BrevoClient } from './brevo-client.mjs';
-import { canDeliverLeads, getLeadRecord, markDelivery } from './lead-store.mjs';
+import { BrevoClient, DELIVERY_STEPS, enabledSteps } from './brevo-client.mjs';
+import { canReplayLeads, getLeadRecord, markDelivery, retentionCutoff } from './lead-store.mjs';
 import { createLogger } from './observability.mjs';
 
-const STEPS = Object.freeze([
-  { field: 'brevo_contact_status', code: 'brevo_contact', method: 'upsertContact', event: 'brevo_contact_failed' },
-  { field: 'ack_status', code: 'ack', method: 'sendAcknowledgement', event: 'ack_failed' },
-  { field: 'notification_status', code: 'internal_notification', method: 'sendInternalNotification', event: 'internal_notification_failed' }
-]);
+const STEPS = DELIVERY_STEPS;
 
 // Reconstitue la charge attendue par le client Brevo à partir de la ligne
 // stockée. Aucune donnée n'est inventée : seuls les champs enregistrés et la
@@ -63,15 +59,20 @@ export async function replayDelivery(database, id, {
   const pending = stepsToReplay(record);
   if (!pending.length) return { ok: true, reason: 'nothing_to_replay', steps: [] };
   if (dryRun) return { ok: true, reason: 'dry_run', steps: pending };
-  if (!canDeliverLeads(environment, database)) return { ok: false, reason: 'delivery_closed', steps: pending };
+  if (!canReplayLeads(environment, database)) return { ok: false, reason: 'delivery_closed', steps: pending };
+  // Une demande hors durée de conservation doit être purgée, jamais réémise.
+  if (record.created_at < retentionCutoff(environment.LEAD_RETENTION_DAYS, now())) return { ok: false, reason: 'retention_expired', steps: pending };
+  // Une étape fermée n'est pas réémise : son interrupteur reste souverain.
+  const open = enabledSteps(environment).filter(step => record[step.field] !== 'OK');
+  if (!open.length) return { ok: false, reason: 'steps_closed', steps: pending };
 
-  logger.log('replay_started', { journey: record.journey, lead_type: record.lead_type, count: pending.length });
+  logger.log('replay_started', { journey: record.journey, lead_type: record.lead_type, count: open.length });
   const lead = leadFromRecord(record);
   const patch = {};
   let firstFailure = '';
   let client;
   try {
-    client = new BrevoClient({ environment, fetchImpl });
+    client = new BrevoClient({ environment, fetchImpl, steps: open });
   } catch {
     logger.log('replay_failed', { reason: 'client_unavailable' });
     return { ok: false, reason: 'client_unavailable', steps: pending };
@@ -79,7 +80,7 @@ export async function replayDelivery(database, id, {
 
   for (const step of STEPS) {
     // Garde anti-double envoi : une étape déjà aboutie est sautée, pas rejouée.
-    if (record[step.field] === 'OK') { patch[step.field] = 'OK'; continue; }
+    if (!open.includes(step)) { patch[step.field] = record[step.field]; continue; }
     try {
       await client[step.method](lead);
       patch[step.field] = 'OK';
@@ -90,7 +91,7 @@ export async function replayDelivery(database, id, {
     }
   }
 
-  const values = STEPS.map(step => patch[step.field]);
+  const values = STEPS.map(step => patch[step.field]).filter(value => value !== 'SKIPPED');
   const delivery = values.every(value => value === 'OK') ? 'DELIVERED'
     : values.some(value => value === 'OK') ? 'PARTIAL_FAILURE' : 'FAILED';
   try {
@@ -100,7 +101,7 @@ export async function replayDelivery(database, id, {
     return { ok: false, reason: 'status_write_failed', delivery_status: delivery, steps: pending };
   }
   if (delivery !== 'DELIVERED') logger.log('replay_failed', { status: delivery });
-  return { ok: delivery === 'DELIVERED', delivery_status: delivery, steps: pending };
+  return { ok: delivery === 'DELIVERED', delivery_status: delivery, steps: open.map(step => step.code) };
 }
 
 export { STEPS };

@@ -30,7 +30,7 @@ const assets = {fetch: async request => {
 const guard = {idFromName: name => name, get: () => ({fetch: async () => Response.json({ok: true})})};
 const environment = database => ({ASSETS: assets, LEADS_DB: database, LEAD_GUARD: guard, GUARD_HMAC_KEY: 'c'.repeat(40),
   LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30', EVENTS_ENABLED: 'false', TURNSTILE_ENABLED: 'false', NEWSLETTER_ENABLED: 'false',
-  LEADS_ACK_ENABLED: 'true', LEADS_NOTIFY_ENABLED: 'true',
+  LEADS_CONTACT_SYNC_ENABLED: 'true', LEADS_ACK_ENABLED: 'true', LEADS_NOTIFY_ENABLED: 'true',
   BREVO_API_KEY: 'cle-synthetique', BREVO_LEADS_LIST_ID: '11', BREVO_ACK_TEMPLATE_ID: '12', BREVO_INTERNAL_TEMPLATE_ID: '13',
   BLUEWAVE_INTERNAL_EMAIL: 'interne@example.invalid', ALLOWED_ORIGIN: ORIGIN, BLUEWAVE_SITE_URL: ORIGIN});
 

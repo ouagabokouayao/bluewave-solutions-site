@@ -7,21 +7,29 @@ function positiveInteger(value, name) {
   return parsed;
 }
 
-export function validateEnvironment(environment) {
-  const required = [
-    'BREVO_API_KEY',
-    'BREVO_LEADS_LIST_ID',
-    'BREVO_ACK_TEMPLATE_ID',
-    'BREVO_INTERNAL_TEMPLATE_ID',
-    'BLUEWAVE_INTERNAL_EMAIL',
-    'ALLOWED_ORIGIN'
-  ];
+// Chaque diffusion a son interrupteur : collecter ne vaut pas accuser réception,
+// notifier ou alimenter la liste de contacts. Une étape non ouverte est sautée.
+export const DELIVERY_STEPS = Object.freeze([
+  Object.freeze({ field: 'brevo_contact_status', code: 'brevo_contact', method: 'upsertContact', event: 'brevo_contact_failed',
+    flag: 'LEADS_CONTACT_SYNC_ENABLED', requires: Object.freeze(['BREVO_API_KEY', 'BREVO_LEADS_LIST_ID']) }),
+  Object.freeze({ field: 'ack_status', code: 'ack', method: 'sendAcknowledgement', event: 'ack_failed',
+    flag: 'LEADS_ACK_ENABLED', requires: Object.freeze(['BREVO_API_KEY', 'BREVO_ACK_TEMPLATE_ID', 'BLUEWAVE_INTERNAL_EMAIL']) }),
+  Object.freeze({ field: 'notification_status', code: 'internal_notification', method: 'sendInternalNotification', event: 'internal_notification_failed',
+    flag: 'LEADS_NOTIFY_ENABLED', requires: Object.freeze(['BREVO_API_KEY', 'BREVO_INTERNAL_TEMPLATE_ID', 'BLUEWAVE_INTERNAL_EMAIL']) })
+]);
+
+export function enabledSteps(environment) {
+  return DELIVERY_STEPS.filter(step => environment?.[step.flag] === 'true');
+}
+
+const INTEGER_PARAMETERS = Object.freeze(['BREVO_LEADS_LIST_ID', 'BREVO_ACK_TEMPLATE_ID', 'BREVO_INTERNAL_TEMPLATE_ID']);
+
+export function validateEnvironment(environment, steps = DELIVERY_STEPS) {
+  const required = [...new Set(['ALLOWED_ORIGIN', ...steps.flatMap(step => step.requires)])];
   const missing = required.filter(name => !String(environment[name] ?? '').trim());
   if (missing.length) throw new Error(`Configuration incomplète : ${missing.join(', ')}`);
-  positiveInteger(environment.BREVO_LEADS_LIST_ID, 'BREVO_LEADS_LIST_ID');
-  positiveInteger(environment.BREVO_ACK_TEMPLATE_ID, 'BREVO_ACK_TEMPLATE_ID');
-  positiveInteger(environment.BREVO_INTERNAL_TEMPLATE_ID, 'BREVO_INTERNAL_TEMPLATE_ID');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(environment.BLUEWAVE_INTERNAL_EMAIL)) {
+  for (const name of INTEGER_PARAMETERS) if (required.includes(name)) positiveInteger(environment[name], name);
+  if (required.includes('BLUEWAVE_INTERNAL_EMAIL') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(environment.BLUEWAVE_INTERNAL_EMAIL)) {
     throw new Error('Configuration invalide : BLUEWAVE_INTERNAL_EMAIL');
   }
   const origin = new URL(environment.ALLOWED_ORIGIN);
@@ -36,8 +44,8 @@ export function validateEnvironment(environment) {
 }
 
 export class BrevoClient {
-  constructor({ environment, fetchImpl = globalThis.fetch }) {
-    validateEnvironment(environment);
+  constructor({ environment, fetchImpl = globalThis.fetch, steps = DELIVERY_STEPS }) {
+    validateEnvironment(environment, steps);
     if (typeof fetchImpl !== 'function') throw new Error('Client HTTP indisponible');
     this.environment = environment;
     // Cloudflare Workers requires the host fetch function's global receiver.

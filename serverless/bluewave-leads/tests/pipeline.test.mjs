@@ -6,7 +6,7 @@ import { createMemoryGuard } from '../security.mjs';
 import { createD1Double } from './d1-double.mjs';
 
 const environment = Object.freeze({
-  LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30',
+  LEADS_CONTACT_SYNC_ENABLED: 'true', LEADS_ACK_ENABLED: 'true', LEADS_NOTIFY_ENABLED: 'true', LEADS_REPLAY_ENABLED: 'true', LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30',
   BREVO_API_KEY: 'test-credential',
   BREVO_LEADS_LIST_ID: '11',
   BREVO_ACK_TEMPLATE_ID: '33',

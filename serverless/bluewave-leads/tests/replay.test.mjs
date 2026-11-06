@@ -7,7 +7,7 @@ import { anonymiseRecord, exportRecord, findByEmail } from '../data-rights.mjs';
 import { createD1Double } from './d1-double.mjs';
 
 const environment = Object.freeze({
-  LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30',
+  LEADS_CONTACT_SYNC_ENABLED: 'true', LEADS_ACK_ENABLED: 'true', LEADS_NOTIFY_ENABLED: 'true', LEADS_REPLAY_ENABLED: 'true', LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30',
   BREVO_API_KEY: 'test-credential',
   BREVO_LEADS_LIST_ID: '11',
   BREVO_ACK_TEMPLATE_ID: '33',
@@ -140,7 +140,7 @@ test('une reprise réelle est refusée si les envois sont fermés ou D1 est abse
   const record = await seed(database);
   const fetchImpl = async () => assert.fail('Aucun envoi ne doit être tenté');
   assert.equal((await replayDelivery(database, record.id, {
-    environment: {...environment, LEADS_ENABLED: 'false'}, fetchImpl, dryRun: false
+    environment: {...environment, LEADS_REPLAY_ENABLED: 'false'}, fetchImpl, dryRun: false
   })).reason, 'delivery_closed');
   assert.equal((await replayDelivery(null, record.id, {environment, fetchImpl, dryRun: false})).reason, 'storage_unavailable');
 });

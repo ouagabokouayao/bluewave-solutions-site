@@ -175,9 +175,18 @@ export async function markDelivery(database, id, patch = {}) {
   return { updated: true };
 }
 
-// Conditions communes à une collecte et à une reprise d’envoi réelles.
+// Collecte publique : accepter de nouvelles demandes.
 export function canDeliverLeads(environment, database) {
   return environment?.LEADS_ENABLED === 'true' &&
+    typeof database?.prepare === 'function' &&
+    retentionCutoff(environment.LEAD_RETENTION_DAYS) !== null;
+}
+
+// Réémission : reprendre une demande déjà reçue. Elle ne dépend pas de la
+// collecte publique : fermer le formulaire ne doit pas bloquer une notification
+// due à une personne qui a déjà écrit. Elle exige son propre interrupteur.
+export function canReplayLeads(environment, database) {
+  return environment?.LEADS_REPLAY_ENABLED === 'true' &&
     typeof database?.prepare === 'function' &&
     retentionCutoff(environment.LEAD_RETENTION_DAYS) !== null;
 }

@@ -14,6 +14,27 @@ Deux configurations séparées. Aucune n'est activée par ce dépôt : toute mis
 
 Les deux profils gardent le site non indexable tant que l'indexation n'a pas été autorisée.
 
+## Interrupteurs
+
+Chaque canal s'ouvre seul, avec la valeur `"true"`. Sans cette valeur, il reste fermé.
+
+| Variable | Effet | Exige |
+|---|---|---|
+| `LEADS_ENABLED` | Collecte publique sur `/api/leads` | `LEADS_DB`, `LEAD_RETENTION_DAYS`, garde anti-abus |
+| `LEADS_CONTACT_SYNC_ENABLED` | Ajout à la liste de contacts Brevo | `BREVO_API_KEY`, `BREVO_LEADS_LIST_ID` |
+| `LEADS_ACK_ENABLED` | Accusé de réception au demandeur | `BREVO_API_KEY`, `BREVO_ACK_TEMPLATE_ID`, `BLUEWAVE_INTERNAL_EMAIL` |
+| `LEADS_NOTIFY_ENABLED` | Notification interne | `BREVO_API_KEY`, `BREVO_INTERNAL_TEMPLATE_ID`, `BLUEWAVE_INTERNAL_EMAIL` |
+| `LEADS_REPLAY_ENABLED` | Réémission de demandes déjà reçues | `LEADS_DB`, `LEAD_RETENTION_DAYS` |
+| `CAMPAIGNS_ENABLED` | Conservation des codes campagne | `ALLOWED_CAMPAIGNS` |
+
+Trois décisions restent distinctes :
+
+- **Collecte publique** : fermer `LEADS_ENABLED` arrête les nouvelles demandes.
+- **Conservation** : la purge quotidienne continue selon `LEAD_RETENTION_DAYS`, que la collecte soit ouverte ou fermée.
+- **Réémission** : `LEADS_REPLAY_ENABLED` autorise la reprise d'une demande déjà reçue, même collecte fermée. Une étape dont l'interrupteur est fermé n'est pas réémise, et une demande hors durée de conservation est refusée.
+
+Une demande stockée sans diffusion ouverte garde le statut `STORED` et ses étapes `SKIPPED`.
+
 ## Profil A
 
 ```sh
@@ -49,7 +70,7 @@ Prérequis, dans cet ordre, sur un environnement de préproduction séparé :
 
 ```sh
 python quality/scripts/build_production_dist.py --leads --turnstile-site-key <CLÉ_PUBLIQUE>
-python quality/scripts/render_production_wrangler.py --database-id <UUID> --leads-database-id <UUID> --leads --turnstile --retention-days <JOURS>
+python quality/scripts/render_production_wrangler.py --database-id <UUID> --leads-database-id <UUID> --leads --turnstile --retention-days <JOURS> --contact-sync --ack --notifications --replay
 python quality/scripts/check_profile.py B
 npx wrangler deploy --config serverless/cloudflare/.wrangler-production.generated.json --dry-run
 ```

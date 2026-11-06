@@ -35,7 +35,8 @@ def _database_id(value, label):
 
 
 def render(database_id, leads_database_id, *, indexable=False, leads=False, events=False,
-           route=False, campaigns=(), turnstile=False, retention_days=None):
+           route=False, campaigns=(), turnstile=False, retention_days=None,
+           contact_sync=False, ack=False, notifications=False, replay=False):
     conversion_id = _database_id(database_id, 'CONVERSION_DB')
     leads_id = _database_id(leads_database_id, 'LEADS_DB')
     if conversion_id.lower() == leads_id.lower():
@@ -67,6 +68,11 @@ def render(database_id, leads_database_id, *, indexable=False, leads=False, even
         {'binding': 'LEADS_DB', 'database_name': 'bluewave-leads-production',
          'database_id': leads_id},
     ]
+    if (leads or replay) and retention_days is None:
+        raise ValueError('LEAD_RETENTION_DAYS doit être choisi avant la collecte ou la réémission')
+    config['vars'].update(LEADS_CONTACT_SYNC_ENABLED=str(contact_sync).lower(), LEADS_ACK_ENABLED=str(ack).lower(),
+        LEADS_NOTIFY_ENABLED=str(notifications).lower(), LEADS_REPLAY_ENABLED=str(replay).lower(),
+        CAMPAIGNS_ENABLED=str(bool(campaigns)).lower())
     config['vars'].update(LEADS_ENABLED=str(leads).lower(), EVENTS_ENABLED=str(events).lower(),
         PUBLIC_INDEXABLE=str(indexable).lower(), ALLOWED_CAMPAIGNS=','.join(campaigns),
         TURNSTILE_ENABLED=str(turnstile).lower(), LEAD_RETENTION_DAYS=retention)
@@ -87,8 +93,13 @@ if __name__ == '__main__':
     parser.add_argument('--turnstile', action='store_true')
     parser.add_argument('--retention-days', type=int, default=None)
     parser.add_argument('--route', action='store_true')
+    parser.add_argument('--contact-sync', action='store_true', help='Alimenter la liste de contacts Brevo.')
+    parser.add_argument('--ack', action='store_true', help='Envoyer les accusés de réception.')
+    parser.add_argument('--notifications', action='store_true', help='Envoyer les notifications internes.')
+    parser.add_argument('--replay', action='store_true', help='Autoriser la réémission des demandes déjà reçues.')
     parser.add_argument('--campaign', action='append', default=[])
     opts = parser.parse_args()
     print(render(opts.database_id, opts.leads_database_id, indexable=opts.indexable,
         leads=opts.leads, events=opts.events, route=opts.route, campaigns=opts.campaign,
-        turnstile=opts.turnstile, retention_days=opts.retention_days))
+        turnstile=opts.turnstile, retention_days=opts.retention_days, contact_sync=opts.contact_sync,
+        ack=opts.ack, notifications=opts.notifications, replay=opts.replay))

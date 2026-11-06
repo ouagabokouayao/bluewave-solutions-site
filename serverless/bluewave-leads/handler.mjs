@@ -1,8 +1,13 @@
-import { BrevoClient, validateEnvironment } from './brevo-client.mjs';
+import { BrevoClient, DELIVERY_STEPS, enabledSteps, validateEnvironment } from './brevo-client.mjs';
 import { buildLeadRecord, canDeliverLeads, markDelivery, storeLead } from './lead-store.mjs';
 import { createLogger, newCorrelationId } from './observability.mjs';
 import { createMemoryGuard, requestClientKey, submissionFingerprint } from './security.mjs';
 import { validateLeadPayload } from './validation.mjs';
+
+// Sans interrupteur ouvert, aucun code campagne n'est retenu, même listé.
+export function allowedCampaigns(environment) {
+  return environment.CAMPAIGNS_ENABLED === 'true' ? (environment.ALLOWED_CAMPAIGNS || '') : '';
+}
 
 const MAX_PAYLOAD_BYTES = 16 * 1024;
 const SUCCESS_MESSAGE = 'Votre demande a bien été transmise à BlueWave Solutions.';
@@ -49,7 +54,7 @@ export function createLeadHandler({
     }
     let allowedOrigin;
     try {
-      validateEnvironment(environment);
+      validateEnvironment(environment, enabledSteps(environment));
       allowedOrigin = environment.ALLOWED_ORIGIN;
     } catch {
       return responseJson(500, { success: false, message: ERROR_MESSAGE });
@@ -94,7 +99,7 @@ export function createLeadHandler({
     } catch {
       return responseJson(400, { success: false, message: ERROR_MESSAGE }, origin);
     }
-    const validated = validateLeadPayload(input, {campaigns: environment.ALLOWED_CAMPAIGNS || ''});
+    const validated = validateLeadPayload(input, {campaigns: allowedCampaigns(environment)});
     if (!validated.ok) {
       // Seul le nom du champ fautif est journalisé, jamais sa valeur.
       logger.log('lead_rejected', { reason: 'validation' });
@@ -138,46 +143,34 @@ export function createLeadHandler({
       return responseJson(503, { success: false, message: ERROR_MESSAGE }, origin);
     }
 
-    const steps = { brevo_contact_status: 'PENDING', ack_status: 'PENDING', notification_status: 'PENDING' };
+    const active = enabledSteps(environment);
+    const steps = Object.fromEntries(DELIVERY_STEPS.map(step => [step.field, active.includes(step) ? 'PENDING' : 'SKIPPED']));
     let firstFailure = '';
-    try {
-      const brevo = new BrevoClient({ environment, fetchImpl });
+    if (active.length) {
       try {
-        await brevo.upsertContact(lead);
-        steps.brevo_contact_status = 'OK';
+        const brevo = new BrevoClient({ environment, fetchImpl, steps: active });
+        for (const step of active) {
+          try {
+            await brevo[step.method](lead);
+            steps[step.field] = 'OK';
+          } catch {
+            steps[step.field] = 'FAILED';
+            firstFailure = firstFailure || step.code;
+            logger.log(step.event, { correlation_id: correlationId, journey: lead.journey });
+          }
+        }
       } catch {
-        steps.brevo_contact_status = 'FAILED';
-        firstFailure = firstFailure || 'brevo_contact';
-        logger.log('brevo_contact_failed', { correlation_id: correlationId, journey: lead.journey });
+        // Client Brevo inconstructible : les étapes ouvertes restent à reprendre.
+        for (const step of active) steps[step.field] = 'FAILED';
+        firstFailure = 'brevo_client';
+        logger.log('brevo_contact_failed', { correlation_id: correlationId, reason: 'client_unavailable' });
       }
-      try {
-        await brevo.sendAcknowledgement(lead);
-        steps.ack_status = 'OK';
-      } catch {
-        steps.ack_status = 'FAILED';
-        firstFailure = firstFailure || 'ack';
-        logger.log('ack_failed', { correlation_id: correlationId, journey: lead.journey });
-      }
-      try {
-        await brevo.sendInternalNotification(lead);
-        steps.notification_status = 'OK';
-      } catch {
-        steps.notification_status = 'FAILED';
-        firstFailure = firstFailure || 'internal_notification';
-        logger.log('internal_notification_failed', { correlation_id: correlationId, journey: lead.journey });
-      }
-    } catch {
-      // Client Brevo inconstructible : les trois étapes restent à reprendre.
-      steps.brevo_contact_status = 'FAILED';
-      steps.ack_status = 'FAILED';
-      steps.notification_status = 'FAILED';
-      firstFailure = 'brevo_client';
-      logger.log('brevo_contact_failed', { correlation_id: correlationId, reason: 'client_unavailable' });
     }
 
-    const delivered = Object.values(steps).every(status => status === 'OK');
-    const deliveryStatus = delivered ? 'DELIVERED'
-      : Object.values(steps).some(status => status === 'OK') ? 'PARTIAL_FAILURE' : 'FAILED';
+    const attempted = active.map(step => steps[step.field]);
+    const deliveryStatus = !attempted.length ? 'STORED'
+      : attempted.every(status => status === 'OK') ? 'DELIVERED'
+        : attempted.some(status => status === 'OK') ? 'PARTIAL_FAILURE' : 'FAILED';
     // Le statut est consigné pour que la reprise sache exactement quoi rejouer.
     try {
       await markDelivery(leadStore, record.id, { ...steps, delivery_status: deliveryStatus, last_error_code: firstFailure, now: now() });

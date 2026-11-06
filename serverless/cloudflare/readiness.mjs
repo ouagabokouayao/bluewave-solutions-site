@@ -8,15 +8,12 @@
 // La fonction retourne un booléen et rien d'autre : les motifs restent
 // internes et ne sont jamais exposés sur la route publique.
 
+import { enabledSteps, validateEnvironment } from '../bluewave-leads/brevo-client.mjs';
 import { retentionCutoff } from '../bluewave-leads/lead-store.mjs';
 import { newsletterEnabled } from '../bluewave-leads/newsletter.mjs';
 import { turnstileEnabled } from './turnstile.mjs';
 
 const filled = (environment, name) => String(environment[name] ?? '').trim().length > 0;
-const positiveInteger = (environment, name) => {
-  const parsed = Number(environment[name]);
-  return Number.isSafeInteger(parsed) && parsed > 0;
-};
 
 // Motifs internes, utiles aux tests et au diagnostic hors ligne. Jamais servis.
 export function readinessReasons(environment = {}) {
@@ -34,15 +31,19 @@ export function readinessReasons(environment = {}) {
       const origin = new URL(environment.ALLOWED_ORIGIN);
       if (origin.protocol !== 'https:' || origin.origin !== environment.ALLOWED_ORIGIN) reasons.push('allowed_origin_invalid');
     } catch { reasons.push('allowed_origin_invalid'); }
-    for (const name of ['BREVO_API_KEY', 'BLUEWAVE_INTERNAL_EMAIL']) {
-      if (!filled(environment, name)) reasons.push('brevo_config_missing');
-    }
-    for (const name of ['BREVO_LEADS_LIST_ID', 'BREVO_ACK_TEMPLATE_ID', 'BREVO_INTERNAL_TEMPLATE_ID']) {
-      if (!positiveInteger(environment, name)) reasons.push('brevo_config_missing');
-    }
-    if (filled(environment, 'BLUEWAVE_INTERNAL_EMAIL') &&
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(environment.BLUEWAVE_INTERNAL_EMAIL)) reasons.push('brevo_config_missing');
   }
+
+  // Chaque diffusion ouverte doit avoir ses paramètres, y compris pour la
+  // reprise lorsque la collecte publique est fermée.
+  if (environment.LEADS_ENABLED === 'true' || environment.LEADS_REPLAY_ENABLED === 'true') {
+    try { validateEnvironment({ALLOWED_ORIGIN: 'https://bluewave.invalid', ...environment}, enabledSteps(environment)); }
+    catch { reasons.push('brevo_config_missing'); }
+  }
+  if (environment.LEADS_REPLAY_ENABLED === 'true') {
+    if (typeof environment.LEADS_DB?.prepare !== 'function') reasons.push('leads_db_missing');
+    if (!filled(environment, 'LEAD_RETENTION_DAYS')) reasons.push('lead_retention_missing');
+  }
+  if (environment.CAMPAIGNS_ENABLED === 'true' && !filled(environment, 'ALLOWED_CAMPAIGNS')) reasons.push('campaigns_missing');
 
   if (turnstileEnabled(environment) && !filled(environment, 'TURNSTILE_SECRET_KEY')) {
     reasons.push('turnstile_secret_missing');

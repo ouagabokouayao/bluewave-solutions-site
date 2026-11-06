@@ -62,7 +62,8 @@ def indexing_closed(config, site):
 def profile_a(config, site):
     errors = common(config, site) + indexing_closed(config, site)
     variables = config.get('vars', {})
-    for name in ('LEADS_ENABLED', 'EVENTS_ENABLED', 'TURNSTILE_ENABLED'):
+    for name in ('LEADS_ENABLED', 'LEADS_CONTACT_SYNC_ENABLED', 'LEADS_ACK_ENABLED', 'LEADS_NOTIFY_ENABLED',
+                 'LEADS_REPLAY_ENABLED', 'CAMPAIGNS_ENABLED', 'EVENTS_ENABLED', 'TURNSTILE_ENABLED'):
         if variables.get(name) != 'false': errors.append(f'{name} doit valoir false')
     for key in ('d1_databases', 'durable_objects', 'migrations', 'triggers', 'routes', 'kv_namespaces', 'r2_buckets'):
         if key in config: errors.append(f'ressource interdite au profil A : {key}')
