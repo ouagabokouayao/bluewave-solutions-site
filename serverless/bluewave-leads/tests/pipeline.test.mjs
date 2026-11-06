@@ -111,6 +111,16 @@ test('diffusion complète : statut DELIVERED et aucun code d’erreur', async ()
   assert.equal(brevo.calls.length, 3);
 });
 
+test('W14 : un seul territoire modifié est une nouvelle demande, aussitôt acceptée', async () => {
+  const database = createD1Double();
+  const brevo = brevoAlways(201);
+  const handle = handler(brevo.fetchImpl, database);
+  assert.equal((await handle(request())).status, 201);
+  assert.equal((await handle(request({ ...payload, territory: 'france-mediterranee' }))).status, 201);
+  assert.equal(database.size, 2);
+  assert.equal(brevo.calls.length, 6);
+});
+
 test('une reprise immédiate reçoit un succès et ne crée rien', async () => {
   const database = createD1Double();
   const brevo = brevoAlways(201);
