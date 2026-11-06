@@ -50,15 +50,13 @@ def social(document, name):
     return document.replace('</head>', tags + '</head>')
 
 
-def privacy_gate(indexable, simulation):
+def privacy_gate(requires_approval, simulation):
     """Interdit un artefact publiable tant que les mentions ne sont pas validées.
 
-    Le profil non indexable et les simulations restent libres : la CI doit
-    pouvoir exercer le profil complet. Seul un artefact destiné à être indexé
-    exige une validation explicite des affirmations juridiques recensées dans
-    quality/privacy-approval.json.
+    Le profil fermé et les simulations restent disponibles. L’indexation
+    ou l’activation d’une collecte exige une validation explicite.
     """
-    if not indexable or simulation:
+    if not requires_approval or simulation:
         return
     if not APPROVAL.is_file():
         raise ValueError('Verrou confidentialité : quality/privacy-approval.json absent')
@@ -67,7 +65,7 @@ def privacy_gate(indexable, simulation):
                if item.get('statut') != 'VALIDE']
     if approval.get('approved') is not True or pending:
         raise ValueError(
-            'Verrou confidentialité : artefact indexable refusé. '
+            'Verrou confidentialité : artefact indexable ou avec collecte refusé. '
             f'Affirmations non validées : {", ".join(sorted(set(pending))) or "approbation absente"}. '
             'Utiliser --privacy-simulation pour un artefact de test.')
 
@@ -173,7 +171,7 @@ def privacy(document, leads, events, traffic):
 
 def build(indexable=False, leads=False, events=False, token=None, campaigns=(), privacy_simulation=False,
           turnstile_site_key=None):
-    privacy_gate(indexable, privacy_simulation)
+    privacy_gate(indexable or leads or events or token is not None, privacy_simulation)
     # Turnstile ne s'active pas à moitié : sans clé publique, le navigateur ne
     # peut obtenir aucun jeton et toute demande serait refusée côté serveur.
     if turnstile_site_key is not None and not re.fullmatch(r'[A-Za-z0-9_-]{8,64}', turnstile_site_key):
@@ -229,8 +227,18 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
         ('User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ' + ORIGIN + '/sitemap.xml\n')
         if indexable else 'User-agent: *\nDisallow: /\n', encoding='utf-8')
     if indexable:
-        links = ''.join(f'<url><loc>{html.escape(ORIGIN + "/" + p.name)}</loc></url>'
-            for p in pages if p.name != '404.html')
+        canonicals = []
+        for page in pages:
+            if page.name == '404.html':
+                continue
+            document = page.read_text(encoding='utf-8')
+            hrefs = re.findall(r'<link rel="canonical" href="([^"]+)">', document)
+            if len(hrefs) != 1:
+                raise ValueError(f'Canonical absente ou ambiguë : {page.name}')
+            url = f'{ORIGIN}/{page.name}'
+            if html.unescape(hrefs[0]) == url:
+                canonicals.append(url)
+        links = ''.join(f'<url><loc>{html.escape(url)}</loc></url>' for url in canonicals)
         (OUT / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>'
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + links + '</urlset>', encoding='utf-8')
     (OUT / 'data/automation-config.json').write_text(json.dumps({

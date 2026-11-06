@@ -257,6 +257,7 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     const validation = activeJourney === 'projet' ? validateLead(canonicalPayload) : {ok: true, value: legacyPayload};
     if (!validation.ok) {
       submitting = false;
+      leadSubmit.disabled = false;
       leadMessage.textContent = 'Certains champs doivent être vérifiés avant de préparer la demande.';
       window.BlueWaveAutomation?.track('lead_validation_error', {journey: activeJourney, offer: orientation.offerId, status: 'invalid'});
       return;
@@ -278,8 +279,8 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     try {
       // Jeton à usage unique, demandé au moment de l'envoi puis réarmé.
       if (guard?.enabled) payload.captcha_token = await guard.token(leadForm);
-      const response = await window.BlueWaveAutomation.submit('lead', payload);
-      if (response.configured && response.ok) {
+      const response = await window.BlueWaveAutomation?.submit?.('lead', payload);
+      if (response?.configured && response.ok) {
         leadForm.reset();
         leadMessage.textContent = 'Votre demande a bien été transmise à BlueWave Solutions. Un message de confirmation a été demandé au service d’envoi.';
         window.BlueWaveAutomation.track('lead_submit_success', { ...eventContext, status: 'success' });
@@ -337,4 +338,7 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     window.BlueWaveAutomation?.track('offer_contact_transition', {journey: activeJourney, offer: sourceOffer});
   }, {once: true});
   show(0);
+  // Ne rendre les formulaires interactifs qu’après installation des gestionnaires.
+  form.removeAttribute('inert');
+  leadForm?.removeAttribute('inert');
 })();

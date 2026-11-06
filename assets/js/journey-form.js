@@ -235,8 +235,8 @@ function wireForm(form) {
       // le défi est réarmé, que la transmission ait abouti ou non. Les réponses
       // déjà saisies ne sont jamais perdues par ce renouvellement.
       if (guard?.enabled) payload.captcha_token = await guard.token(form);
-      const response = await window.BlueWaveAutomation.submit('lead', payload);
-      if (response.configured && response.ok) {
+      const response = await window.BlueWaveAutomation?.submit?.('lead', payload);
+      if (response?.configured && response.ok) {
         form.reset();
         form.querySelectorAll('[aria-invalid="true"]').forEach(control => control.removeAttribute('aria-invalid'));
         form.elements.namedItem('training_format')?.dispatchEvent(new Event('change', {bubbles: true}));
@@ -292,7 +292,8 @@ export function wireTrainingLocation() {
 }
 
 if (typeof document !== 'undefined') {
-  document.querySelectorAll('[data-lead-form]').forEach(wireForm);
+  const forms = [...document.querySelectorAll('[data-lead-form]')];
+  forms.forEach(wireForm);
   wireCollaborationChoice();
   wireTrainingLocation();
   document.querySelectorAll('[data-project-start]').forEach(link => {
@@ -304,4 +305,6 @@ if (typeof document !== 'undefined') {
     document.querySelectorAll('[data-source-offer]').forEach(node => { node.hidden = false; node.textContent = `Offre d’origine conservée : ${sourceOffer}.`; });
     window.BlueWaveAutomation?.track('offer_contact_transition', {journey: document.body.dataset.journey, offer: sourceOffer});
   }
+  // Le formulaire n’est interactif qu’après installation de l’interception.
+  forms.forEach(form => form.removeAttribute('inert'));
 }

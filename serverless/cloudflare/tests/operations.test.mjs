@@ -29,7 +29,7 @@ test('/api/health signale l’indisponibilité quand une dépendance annoncée m
     assert.deepEqual(await response.json(), { status: 'unavailable' });
   }
   const complete = {
-    ASSETS: assets, LEADS_ENABLED: 'true', LEADS_DB: {}, LEAD_GUARD: {},
+    ASSETS: assets, LEADS_ENABLED: 'true', LEADS_DB: { prepare() {} }, LEAD_GUARD: {}, LEAD_RETENTION_DAYS: '30',
     GUARD_HMAC_KEY: 'g'.repeat(40), ALLOWED_ORIGIN: 'https://www.example.invalid',
     BREVO_API_KEY: 'clé de test', BREVO_LEADS_LIST_ID: '11',
     BREVO_ACK_TEMPLATE_ID: '33', BREVO_INTERNAL_TEMPLATE_ID: '44',

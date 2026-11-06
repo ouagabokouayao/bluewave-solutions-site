@@ -7,6 +7,7 @@ import { anonymiseRecord, exportRecord, findByEmail } from '../data-rights.mjs';
 import { createD1Double } from './d1-double.mjs';
 
 const environment = Object.freeze({
+  LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30',
   BREVO_API_KEY: 'test-credential',
   BREVO_LEADS_LIST_ID: '11',
   BREVO_ACK_TEMPLATE_ID: '33',
@@ -132,4 +133,14 @@ test('le journal des opérations sur les droits ne porte aucune identité', asyn
   await anonymiseRecord(database, record.id, { logger });
   assert.deepEqual(records.map(entry => entry.details.operation), ['find', 'export', 'anonymise']);
   assert.equal(JSON.stringify(records).includes('awa.kone'), false);
+});
+
+test('une reprise réelle est refusée si les envois sont fermés ou D1 est absent', async () => {
+  const database = createD1Double();
+  const record = await seed(database);
+  const fetchImpl = async () => assert.fail('Aucun envoi ne doit être tenté');
+  assert.equal((await replayDelivery(database, record.id, {
+    environment: {...environment, LEADS_ENABLED: 'false'}, fetchImpl, dryRun: false
+  })).reason, 'delivery_closed');
+  assert.equal((await replayDelivery(null, record.id, {environment, fetchImpl, dryRun: false})).reason, 'storage_unavailable');
 });

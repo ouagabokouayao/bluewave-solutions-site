@@ -16,8 +16,8 @@ const testEnvironment={
   LEADS_ENABLED:'false', EVENTS_ENABLED:'false', NEWSLETTER_ENABLED:'false'
 };
 const validLead={firstname:'Test',lastname:'Local',email:'lead@example.invalid',organisation:'BlueWave test',type:'projet-mission',geography:'cote-divoire',themes:['littoral-adaptation'],need:'Besoin local',deadline:'3-6m',contact_preference:'email',source:'SITE_QUALIFIER',newsletter_consent:false,privacy_acknowledged:true,website:'bot'};
-function runtime(flags={}) {
- return new Miniflare({cf:false,workers:[{modules:true,script:compiled,compatibilityDate:'2026-08-06',assets:{directory:assets,binding:'ASSETS',routerConfig:{invoke_user_worker_ahead_of_assets:true,has_user_worker:true},assetConfig:{html_handling:'none',not_found_handling:'404-page'}},d1Databases:['CONVERSION_DB'],durableObjects:{LEAD_GUARD:{className:'LeadGuard',useSQLite:true}},bindings:{...testEnvironment,...flags}}]});
+function runtime(flags={}, leads=false) {
+ return new Miniflare({cf:false,workers:[{modules:true,script:compiled,compatibilityDate:'2026-08-06',assets:{directory:assets,binding:'ASSETS',routerConfig:{invoke_user_worker_ahead_of_assets:true,has_user_worker:true},assetConfig:{html_handling:'none',not_found_handling:'404-page'}},d1Databases:leads?['CONVERSION_DB','LEADS_DB']:['CONVERSION_DB'],durableObjects:{LEAD_GUARD:{className:'LeadGuard',useSQLite:true}},bindings:{...testEnvironment,...flags}}]});
 }
 function post(path,body,headers={}) {
  return {method:'POST',headers:{origin,'content-type':'application/json','cf-connecting-ip':'192.0.2.42',...headers},body:JSON.stringify(body)};
@@ -39,7 +39,11 @@ try {
  console.log('PASS: workerd, static assets, bindings, noindex, APIs OFF');
 } finally {await off.dispose();}
 
-const on=runtime({LEADS_ENABLED:'true',EVENTS_ENABLED:'true'});
+const missingD1=runtime({LEADS_ENABLED:'true',LEAD_RETENTION_DAYS:'30'});
+try {
+ assert.equal((await missingD1.dispatchFetch(`${origin}/api/leads`,post('/api/leads',{...validLead,website:''}))).status,503);
+} finally { await missingD1.dispose(); }
+const on=runtime({LEADS_ENABLED:'true',EVENTS_ENABLED:'true',LEAD_RETENTION_DAYS:'30'},true);
 try {
  const db=await on.getD1Database('CONVERSION_DB');
  await db.prepare(schema).run();

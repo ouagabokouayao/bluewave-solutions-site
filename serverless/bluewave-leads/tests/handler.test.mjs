@@ -4,8 +4,10 @@ import test from 'node:test';
 import { createLeadHandler, ERROR_MESSAGE, SUCCESS_MESSAGE } from '../handler.mjs';
 import { BrevoClient } from '../brevo-client.mjs';
 import { createMemoryGuard } from '../security.mjs';
+import { createD1Double } from './d1-double.mjs';
 
 const environment = Object.freeze({
+  LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30',
   BREVO_API_KEY: 'test-credential',
   BREVO_LEADS_LIST_ID: '11',
   BREVO_NEWSLETTER_LIST_ID: '22',
@@ -53,7 +55,7 @@ function mockBrevo({ status = 201 } = {}) {
 }
 
 function handler(fetchImpl, guard = createMemoryGuard({ rateLimit: 20 })) {
-  return createLeadHandler({ environment, fetchImpl, guard });
+  return createLeadHandler({ environment, fetchImpl, guard, leadStore: createD1Double() });
 }
 
 test('le fetch natif conserve son receveur dans le client Brevo', async () => {
@@ -109,7 +111,7 @@ test('newsletter false : seule la liste Leads est transmise', async () => {
 
 test('newsletter true : aucun ajout direct, même si un ancien drapeau serveur est activé', async () => {
   const brevo = mockBrevo();
-  const response = await createLeadHandler({ environment: {...environment, NEWSLETTER_ENABLED: 'true'}, fetchImpl: brevo.fetchImpl, guard: createMemoryGuard() })(request({ ...validPayload, newsletter_consent: true }));
+  const response = await createLeadHandler({ environment: {...environment, NEWSLETTER_ENABLED: 'true'}, fetchImpl: brevo.fetchImpl, guard: createMemoryGuard(), leadStore: createD1Double() })(request({ ...validPayload, newsletter_consent: true }));
   assert.equal(response.status, 400);
   assert.equal(brevo.calls.length, 0);
 });
@@ -118,7 +120,7 @@ test('la liste newsletter n’est pas nécessaire lorsque le canal reste fermé'
   const brevo = mockBrevo();
   const environmentSansListe = { ...environment };
   delete environmentSansListe.BREVO_NEWSLETTER_LIST_ID;
-  const response = await createLeadHandler({environment: environmentSansListe, fetchImpl: brevo.fetchImpl, guard:createMemoryGuard()})(request());
+  const response = await createLeadHandler({environment: environmentSansListe, fetchImpl: brevo.fetchImpl, guard:createMemoryGuard(),leadStore:createD1Double()})(request());
   assert.equal(response.status,201);
 });
 
@@ -136,40 +138,19 @@ test('contact existant : updateEnabled évite la création d’un doublon', asyn
   assert.equal(brevo.calls[0].url, 'https://api.brevo.com/v3/contacts');
 });
 
-test('API Brevo indisponible : erreur générique sans réponse brute', async () => {
-  const brevo = mockBrevo({ status: 503 });
-  const response = await handler(brevo.fetchImpl)(request());
-  assert.equal(response.status, 502);
-  const body = await response.json();
-  assert.deepEqual(body, { success: false, message: ERROR_MESSAGE });
-  assert.equal(JSON.stringify(body).includes('private-upstream-detail'), false);
-});
-
-test('échec accusé après contact : pas de notification et rapprochement nécessaire', async () => {
-  const calls = [];
-  const fetchImpl = async (url, options) => {
-    calls.push({url, body:JSON.parse(options.body)});
-    return new Response(null,{status:calls.length===2?503:201});
-  };
-  const response = await handler(fetchImpl)(request());
-  assert.equal(response.status,502);
-  assert.equal(calls.length,2);
-  assert.equal(calls[0].url,'https://api.brevo.com/v3/contacts');
-  assert.equal(calls[1].body.templateId,33);
-  assert.deepEqual(await response.json(),{success:false,message:ERROR_MESSAGE});
-});
-
-test('échec notification après contact et accusé : réponse neutre et aucune reprise automatique', async () => {
-  const calls = [];
-  const fetchImpl = async (url, options) => {
-    calls.push({url, body:JSON.parse(options.body)});
-    return new Response(null,{status:calls.length===3?503:201});
-  };
-  const response = await handler(fetchImpl)(request());
-  assert.equal(response.status,502);
-  assert.equal(calls.length,3);
-  assert.equal(calls[2].body.templateId,44);
-  assert.deepEqual(await response.json(),{success:false,message:ERROR_MESSAGE});
+test('absence de D1, collecte fermée ou conservation invalide : aucun appel Brevo', async () => {
+  const brevo = mockBrevo();
+  for (const [leadStore, overrides] of [
+    [null, {}], [{}, {}], [createD1Double(), { LEADS_ENABLED: 'false' }],
+    [createD1Double(), { LEAD_RETENTION_DAYS: '' }], [createD1Double(), { LEAD_RETENTION_DAYS: '-1' }],
+    [createD1Double(), { TURNSTILE_ENABLED: 'true' }]
+  ]) {
+    const handle = createLeadHandler({ environment: { ...environment, ...overrides }, leadStore, fetchImpl: brevo.fetchImpl });
+    const response = await handle(request());
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { success: false, message: ERROR_MESSAGE });
+  }
+  assert.equal(brevo.calls.length, 0);
 });
 
 test('double soumission rapprochée rejetée', async () => {
@@ -217,7 +198,7 @@ test('hook captcha préservé : un jeton refusé bloque avant Brevo', async () =
   const brevo = mockBrevo();
   let checked = false;
   const captchaVerifier = async (token) => { checked = true; assert.equal(token, 'future-token'); return false; };
-  const response = await createLeadHandler({environment, fetchImpl:brevo.fetchImpl, guard:createMemoryGuard(), captchaVerifier})(request({...validPayload, captcha_token:'future-token'}));
+  const response = await createLeadHandler({environment, fetchImpl:brevo.fetchImpl, guard:createMemoryGuard(), leadStore:createD1Double(), captchaVerifier})(request({...validPayload, captcha_token:'future-token'}));
   assert.equal(response.status, 403);
   assert.equal(checked, true);
   assert.equal(brevo.calls.length, 0);

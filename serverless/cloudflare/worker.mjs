@@ -82,11 +82,11 @@ export default {
  async fetch(request, env) {
   const url=new URL(request.url);
   if (url.pathname==='/api/leads') {
-   if (env.LEADS_ENABLED!=='true') return off();
+   if (env.LEADS_ENABLED!=='true' || !isReady(env)) return off();
    try {
     const guard=createDistributedGuard(env,request);
     const captchaVerifier=createTurnstileVerifier(env);
-    return await createLeadHandler({environment:env,guard,captchaVerifier,leadStore:env.LEADS_DB ?? null})(request);
+    return await createLeadHandler({environment:env,guard,captchaVerifier,leadStore:env.LEADS_DB})(request);
    } catch {return off();}
   }
   if (url.pathname==='/api/events') return conversion(request,env,url);
@@ -114,7 +114,7 @@ export default {
   const turnstileOn = env.TURNSTILE_ENABLED === 'true';
   const scriptSrc = "script-src 'self' https://static.cloudflareinsights.com" + (turnstileOn ? ' https://challenges.cloudflare.com' : '');
   const frameSrc = turnstileOn ? "; frame-src https://challenges.cloudflare.com" : "; frame-src 'none'";
-  headers.set('content-security-policy', "default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; " + scriptSrc + "; connect-src 'self' https://cloudflareinsights.com" + frameSrc);
+  headers.set('content-security-policy', "default-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; " + scriptSrc + "; connect-src 'self' https://cloudflareinsights.com" + frameSrc);
   headers.set('referrer-policy','strict-origin-when-cross-origin');
   headers.set('permissions-policy','camera=(), microphone=(), geolocation=()');
   return new Response(response.body,{status:response.status,statusText:response.statusText,headers});

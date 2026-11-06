@@ -144,7 +144,16 @@ class ProductionProfile(unittest.TestCase):
         self.assertEqual(json.loads((out / 'data/analytics-config.json').read_text())['campaigns'], ['salon_2026'])
         self.assertFalse(json.loads((out / 'data/automation-config.json').read_text())['newsletter_enabled'])
         self.assertEqual(len(list(out.glob('*.xml'))), 1)
-        self.assertNotIn('404.html', (out / 'sitemap.xml').read_text())
+        sitemap = (out / 'sitemap.xml').read_text()
+        self.assertNotIn('404.html', sitemap)
+        urls = re.findall(r'<loc>(.*?)</loc>', sitemap)
+        self.assertEqual(len(urls), 16)
+        self.assertEqual(len(urls), len(set(urls)))
+        for alias in ('contact', 'domaines', 'notes-demonstrateurs', 'services'):
+            self.assertNotIn(f'{module.ORIGIN}/{alias}.html', urls)
+        for url in urls:
+            page = (out / url.rsplit('/', 1)[1]).read_text()
+            self.assertIn(f'<link rel="canonical" href="{url}">', page)
         for entry in json.loads((out / 'MANIFEST_SHA256.json').read_text()):
             self.assertEqual(hashlib.sha256((out / entry['path']).read_bytes()).hexdigest(), entry['sha256'])
 
@@ -171,6 +180,8 @@ class ProductionProfile(unittest.TestCase):
         bindings = {entry['binding']: entry['database_id'] for entry in closed['d1_databases']}
         self.assertEqual(bindings['CONVERSION_DB'], real)
         self.assertEqual(bindings['LEADS_DB'], leads)
+        with self.assertRaisesRegex(ValueError, 'LEAD_RETENTION_DAYS'):
+            config.render(real, leads, leads=True)
         config.render(real, leads, indexable=True, leads=True, events=True, route=True, retention_days=30)
         opened = json.loads(target.read_text())
         self.assertEqual(opened['routes'][0]['pattern'], 'www.bluewavesolutions.fr')
@@ -185,6 +196,9 @@ class ProductionProfile(unittest.TestCase):
         # sont pas validées.
         with self.assertRaises(ValueError):
             module.build(indexable=True, leads=True, events=True)
+        for options in ({'leads': True}, {'events': True}, {'token': 'a'*32}):
+            with self.assertRaisesRegex(ValueError, 'Verrou confidentialité'):
+                module.build(**options)
         # Le profil fermé et la simulation restent constructibles.
         module.build()
         module.build(indexable=True, leads=True, events=True, privacy_simulation=True)

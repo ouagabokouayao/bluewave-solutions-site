@@ -8,6 +8,7 @@
 // La fonction retourne un booléen et rien d'autre : les motifs restent
 // internes et ne sont jamais exposés sur la route publique.
 
+import { retentionCutoff } from '../bluewave-leads/lead-store.mjs';
 import { newsletterEnabled } from '../bluewave-leads/newsletter.mjs';
 import { turnstileEnabled } from './turnstile.mjs';
 
@@ -23,7 +24,8 @@ export function readinessReasons(environment = {}) {
   if (!environment.ASSETS) reasons.push('assets_missing');
 
   if (environment.LEADS_ENABLED === 'true') {
-    if (!environment.LEADS_DB) reasons.push('leads_db_missing');
+    if (typeof environment.LEADS_DB?.prepare !== 'function') reasons.push('leads_db_missing');
+    if (!filled(environment, 'LEAD_RETENTION_DAYS')) reasons.push('lead_retention_missing');
     if (!environment.LEAD_GUARD) reasons.push('lead_guard_missing');
     // La garde distribuée refuse déjà une clé plus courte : l'annoncer ici
     // évite d'ouvrir le formulaire sur une garde qui lèvera à chaque appel.
@@ -53,7 +55,7 @@ export function readinessReasons(environment = {}) {
   if (newsletterEnabled(environment)) reasons.push('newsletter_channel_not_implemented');
 
   // Une purge configurée doit l'être avec une valeur exploitable.
-  if (filled(environment, 'LEAD_RETENTION_DAYS') && !positiveInteger(environment, 'LEAD_RETENTION_DAYS')) {
+  if (filled(environment, 'LEAD_RETENTION_DAYS') && retentionCutoff(environment.LEAD_RETENTION_DAYS) === null) {
     reasons.push('lead_retention_invalid');
   }
 

@@ -51,6 +51,8 @@ def render(database_id, leads_database_id, *, indexable=False, leads=False, even
         public = json.loads(PUBLIC_AUTOMATION.read_text(encoding='utf-8')).get('turnstile') or {}
         if public.get('enabled') is not True or not public.get('site_key'):
             raise ValueError('Turnstile activé sans clé publique dans dist-production/data/automation-config.json')
+    if leads and retention_days is None:
+        raise ValueError('LEAD_RETENTION_DAYS est obligatoire lorsque les demandes sont activées')
     if retention_days is not None:
         days = int(retention_days)
         if days <= 0:

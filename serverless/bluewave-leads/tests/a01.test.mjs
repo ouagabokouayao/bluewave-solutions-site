@@ -23,7 +23,7 @@ const base = {journey:'projet',lead_type:'projet-mission',firstname:'Test',lastn
 const organisation = {...base,journey:'collaboration',lead_type:'collaboration-organisation',collaboration_subject:'Étude fictive',domains:['gouvernance-maritime'],collaboration_expectation:'Cadrage fictif'};
 const expertise = {...base,journey:'collaboration',lead_type:'expertise-offer',professional_status:'chercheur',expertise_domains:['gouvernance-maritime'],intervention_types:['recherche'],work_languages:['francais'],availability:'ponctuelle',expertise_evidence:'Preuve fictive',motivation:'Contribution fictive'};
 const formation = {...base,journey:'formation',lead_type:'formation',audience:'Public fictif',training_subject:'Sujet fictif',learning_objectives:'Objectif fictif',training_format:'distance',period:'Période fictive'};
-const env = {BREVO_API_KEY:'synthetic',BREVO_LEADS_LIST_ID:'11',BREVO_ACK_TEMPLATE_ID:'33',BREVO_INTERNAL_TEMPLATE_ID:'44',BLUEWAVE_INTERNAL_EMAIL:'internal@example.invalid',ALLOWED_ORIGIN:'https://example.invalid',ALLOWED_CAMPAIGNS:campaigns.join(',')};
+const env = {LEADS_ENABLED:'true',LEAD_RETENTION_DAYS:'30',BREVO_API_KEY:'synthetic',BREVO_LEADS_LIST_ID:'11',BREVO_ACK_TEMPLATE_ID:'33',BREVO_INTERNAL_TEMPLATE_ID:'44',BLUEWAVE_INTERNAL_EMAIL:'internal@example.invalid',ALLOWED_ORIGIN:'https://example.invalid',ALLOWED_CAMPAIGNS:campaigns.join(',')};
 const request = (body, origin = env.ALLOWED_ORIGIN) => new Request('https://example.invalid/api/leads',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify(body)});
 const logger = {log:()=>null};
 async function databaseTest(run) {

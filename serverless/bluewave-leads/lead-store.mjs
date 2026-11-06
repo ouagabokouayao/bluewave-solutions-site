@@ -175,12 +175,20 @@ export async function markDelivery(database, id, patch = {}) {
   return { updated: true };
 }
 
+// Conditions communes à une collecte et à une reprise d’envoi réelles.
+export function canDeliverLeads(environment, database) {
+  return environment?.LEADS_ENABLED === 'true' &&
+    typeof database?.prepare === 'function' &&
+    retentionCutoff(environment.LEAD_RETENTION_DAYS) !== null;
+}
+
 // La durée de conservation n'est pas décidée ici : elle est fournie par la
 // configuration. Sans valeur explicite, aucune purge n'a lieu.
 export function retentionCutoff(retentionDays, now = new Date()) {
   const days = Number(retentionDays);
   if (!Number.isSafeInteger(days) || days <= 0) return null;
-  return new Date(new Date(now).getTime() - days * 86400000).toISOString();
+  const cutoff = new Date(new Date(now).getTime() - days * 86400000);
+  return Number.isFinite(cutoff.getTime()) ? cutoff.toISOString() : null;
 }
 
 export async function selectExpiredLeads(database, retentionDays, now = new Date()) {

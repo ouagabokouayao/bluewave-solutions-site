@@ -9,7 +9,7 @@
 // d'exploitation explicite, documentée dans serverless/OPERATIONS.md.
 
 import { BrevoClient } from './brevo-client.mjs';
-import { getLeadRecord, markDelivery } from './lead-store.mjs';
+import { canDeliverLeads, getLeadRecord, markDelivery } from './lead-store.mjs';
 import { createLogger } from './observability.mjs';
 
 const STEPS = Object.freeze([
@@ -55,6 +55,7 @@ export function stepsToReplay(record) {
 export async function replayDelivery(database, id, {
   environment, fetchImpl = globalThis.fetch, logger = createLogger(), dryRun = true, now = () => new Date()
 } = {}) {
+  if (typeof database?.prepare !== 'function') return { ok: false, reason: 'storage_unavailable' };
   const record = await getLeadRecord(database, id);
   if (!record) return { ok: false, reason: 'not_found' };
   if (record.delivery_status === 'DELIVERED') return { ok: true, reason: 'already_delivered', steps: [] };
@@ -62,6 +63,7 @@ export async function replayDelivery(database, id, {
   const pending = stepsToReplay(record);
   if (!pending.length) return { ok: true, reason: 'nothing_to_replay', steps: [] };
   if (dryRun) return { ok: true, reason: 'dry_run', steps: pending };
+  if (!canDeliverLeads(environment, database)) return { ok: false, reason: 'delivery_closed', steps: pending };
 
   logger.log('replay_started', { journey: record.journey, lead_type: record.lead_type, count: pending.length });
   const lead = leadFromRecord(record);

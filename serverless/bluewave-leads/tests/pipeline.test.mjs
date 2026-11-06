@@ -6,6 +6,7 @@ import { createMemoryGuard } from '../security.mjs';
 import { createD1Double } from './d1-double.mjs';
 
 const environment = Object.freeze({
+  LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30',
   BREVO_API_KEY: 'test-credential',
   BREVO_LEADS_LIST_ID: '11',
   BREVO_ACK_TEMPLATE_ID: '33',
@@ -150,11 +151,12 @@ test('stockage indisponible : aucun accusé expédié, l’envoi est à refaire'
   assert.equal(brevo.calls.length, 0);
 });
 
-test('sans LEADS_DB, le comportement antérieur est conservé : panne Brevo = erreur', async () => {
-  const brevo = brevoAlways(503);
+test('sans LEADS_DB, la demande est refusée avant tout appel Brevo', async () => {
+  const brevo = brevoAlways(201);
   const response = await handler(brevo.fetchImpl, null)(request());
-  assert.equal(response.status, 502);
+  assert.equal(response.status, 503);
   assert.deepEqual(await response.json(), { success: false, message: ERROR_MESSAGE });
+  assert.equal(brevo.calls.length, 0);
 });
 
 test('aucune donnée personnelle ne quitte le service dans la réponse', async () => {

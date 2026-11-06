@@ -15,11 +15,11 @@ Le commit de préparation ne publie rien. `wrangler.production.jsonc` est distin
 
 1. `npm ci && npm run build` produit `dist/` Preview fermé et contrôlé.
 2. `python quality/scripts/build_production_dist.py` produit `dist-production/` fermé avec canonical `www` et politique de production. Le profil public indexable utilise `--indexable`; les flux n'y sont activés que par `--leads`, `--events`, `--traffic-token` et une liste fermée `--campaign code`.
-3. Les valeurs doivent être cohérentes entre le build client et Wrangler. `python quality/scripts/render_production_wrangler.py --database-id UUID` crée un fichier **ignoré par Git**, avec binding D1. N'ajouter `--route`, `--indexable`, `--leads`, `--events` qu'après accord, tests et secret(s) installés ; `NEWSLETTER_ENABLED=false` reste obligatoire.
+3. Les valeurs doivent être cohérentes entre le build client et Wrangler. `python quality/scripts/render_production_wrangler.py --database-id UUID` crée un fichier **ignoré par Git**, avec binding D1. N'ajouter `--route`, `--indexable`, `--leads`, `--events` qu'après accord, tests et secret(s) installés ; `NEWSLETTER_ENABLED=false` reste obligatoire. L’ouverture des demandes requiert aussi une durée de conservation approuvée (`--retention-days`), une base D1 Leads et une configuration prête.
 4. `npx wrangler deploy --config serverless/cloudflare/.wrangler-production.generated.json --dry-run` vérifie l'assemblage ; `--dry-run` n'envoie rien.
 5. Le déploiement réel, les routes et la bascule DNS n'ont lieu qu'après GO. Une URL `workers.dev` n'est pas ouverte implicitement.
 
-Le profil production `--indexable` produit les 21 pages sur la nouvelle origine, `404.html` non indexable, `robots.txt` ouvert, un sitemap de 20 URLs, canonical et OG corrigés, image de partage 1200×630 et données structurées Organization/WebSite sur l’accueil (faits publiés uniquement). Le Worker ajoute `X-Robots-Tag: index, follow` aux réponses publiques réussies uniquement si `PUBLIC_INDEXABLE=true`; les erreurs/404 restent noindex. Le profil fermé conserve `Disallow: /` et aucun beacon ni endpoint client.
+Le profil production `--indexable` produit les 21 pages sur la nouvelle origine, `404.html` non indexable, `robots.txt` ouvert, un sitemap de 16 URL canoniques, canonical et OG corrigés, image de partage 1200×630 et données structurées Organization/WebSite sur l’accueil (faits publiés uniquement). Le Worker ajoute `X-Robots-Tag: index, follow` aux réponses publiques réussies uniquement si `PUBLIC_INDEXABLE=true`; les erreurs/404 restent noindex. Le profil fermé conserve `Disallow: /` et aucun beacon ni endpoint client.
 
 ## Paramètres Brevo et contrôle des erreurs
 

@@ -9,7 +9,8 @@ const assets = { fetch: async () => new Response('static') };
 const leadsComplete = Object.freeze({
   ASSETS: assets,
   LEADS_ENABLED: 'true',
-  LEADS_DB: {},
+  LEADS_DB: { prepare() {} },
+  LEAD_RETENTION_DAYS: '30',
   LEAD_GUARD: {},
   GUARD_HMAC_KEY: 'g'.repeat(40),
   ALLOWED_ORIGIN: 'https://www.example.invalid',
@@ -28,6 +29,7 @@ test('tous services fermés : disponible dès que les pages sont servies', () =>
 test('leads ouvert mais incomplet : chaque dépendance manquante est détectée', () => {
   const cases = {
     leads_db_missing: 'LEADS_DB',
+    lead_retention_missing: 'LEAD_RETENTION_DAYS',
     lead_guard_missing: 'LEAD_GUARD',
     guard_key_missing: 'GUARD_HMAC_KEY',
     allowed_origin_invalid: 'ALLOWED_ORIGIN'
@@ -156,4 +158,18 @@ test('cron : aucune purge de demandes sans durée configurée', async () => {
   const leads = { prepare() { calls += 1; return { bind() { return { async run() { return { meta: { changes: 0 } }; } }; } }; } };
   await worker.scheduled({}, { LEADS_DB: leads });
   assert.equal(calls, 0);
+});
+
+test('la route refuse une configuration incomplète sans contacter Brevo', async t => {
+  const outbound = t.mock.method(globalThis, 'fetch', async () => assert.fail('aucun appel distant'));
+  for (const missing of ['LEADS_DB', 'LEAD_RETENTION_DAYS', 'BREVO_API_KEY']) {
+    const request = new Request('https://www.example.invalid/api/leads', {
+      method: 'POST', headers: { origin: leadsComplete.ALLOWED_ORIGIN, 'content-type': 'application/json' },
+      body: '{}'
+    });
+    const response = await worker.fetch(request, { ...leadsComplete, [missing]: undefined });
+    assert.equal(response.status, 503, missing);
+    assert.equal(request.bodyUsed, false, missing);
+  }
+  assert.equal(outbound.mock.callCount(), 0);
 });

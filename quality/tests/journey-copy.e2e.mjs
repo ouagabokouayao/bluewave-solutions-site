@@ -129,5 +129,73 @@ for (const c of CASES) {
   }
   await ctx.close();
 }
+// Régression P0 : le réseau n'est jamais un repli de soumission native.
+const safeCases = [
+  ['formation.html', 'form[data-lead-form]', 'journey-form.js'],
+  ['collaboration.html', 'form[data-lead-form]', 'journey-form.js'],
+  ['qualifier-un-besoin.html', 'form', 'qualifier.js'],
+  ['actualites.html', 'form', 'automation.js']
+];
+for (const mode of ['sans JavaScript', 'script bloqué']) {
+  const ctx = await browser.newContext({viewport: {width: 390, height: 844}, javaScriptEnabled: mode !== 'sans JavaScript'});
+  const p = await ctx.newPage();
+  p.setDefaultTimeout(5000);
+  const unexpected = [];
+  let blocked;
+  await p.route('**/*', async route => {
+    const request = route.request();
+    const url = new URL(request.url());
+    if (request.method() !== 'GET' || url.searchParams.size || url.pathname.startsWith('/api/')) {
+      unexpected.push(request.method() + ' ' + url.pathname);
+      return route.abort();
+    }
+    if (url.origin !== base || (mode === 'script bloqué' && url.pathname.endsWith('/' + blocked))) return route.abort();
+    return route.continue();
+  });
+  for (const [name, selector, script] of safeCases) {
+    try {
+      blocked = script;
+      unexpected.length = 0;
+      const url = `${base}/${name}`;
+      await p.goto(url, {waitUntil: 'load'});
+      const forms = p.locator(selector);
+      if (name === 'actualites.html') {
+        assert.equal(await forms.count(), 0, 'la veille fermée ne doit rendre aucun formulaire');
+      } else {
+        assert.ok(await forms.count() > 0);
+        assert.equal(await forms.locator('input[type=email]').count(), name === 'collaboration.html' ? 2 : 1);
+        assert.equal(await p.locator('main a[href^="mailto:"]').first().isVisible(), true, 'contact de secours absent');
+        for (const f of await forms.all()) {
+          assert.notEqual(await f.getAttribute('inert'), null, 'formulaire non verrouillé dans le HTML');
+          const control = f.locator('input[type=email], select').first();
+          assert.equal(await control.evaluate(e => { e.focus(); return document.activeElement === e; }), false);
+          await p.keyboard.press('Enter');
+        }
+        if (mode === 'script bloqué') {
+          // Un essai natif par page : Chromium laisse une navigation annulée
+          // en attente après le signal CSP. Tous les formulaires de la page
+          // sont déjà vérifiés inertes ci-dessus.
+          const target = forms.filter({has: p.locator('input[type=email]')}).first();
+          const directive = await target.evaluate(form => new Promise(resolve => {
+            const timeout = setTimeout(() => resolve(null), 2000);
+            document.addEventListener('securitypolicyviolation', e => {
+              clearTimeout(timeout);
+              resolve(e.effectiveDirective);
+            }, {once:true});
+            form.querySelector('input[type=email]').value = 'synthetique@example.invalid';
+            HTMLFormElement.prototype.submit.call(form);
+          }));
+          assert.equal(directive, 'form-action');
+        }
+      }
+      assert.equal(p.url(), url, 'navigation inattendue');
+      assert.deepEqual(unexpected, [], 'soumission native arrivée sur le réseau');
+      console.log(`ok - ${name} / ${mode} / mobile`);
+    } catch (error) {
+      failures++; console.log(`not ok - ${name} / ${mode}: ${error.message}`);
+    }
+  }
+  await ctx.close();
+}
 await browser.close(); server.close();
 process.exit(failures ? 1 : 0);

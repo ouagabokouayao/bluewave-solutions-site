@@ -1,5 +1,5 @@
 import { BrevoClient, validateEnvironment } from './brevo-client.mjs';
-import { buildLeadRecord, markDelivery, storeLead } from './lead-store.mjs';
+import { buildLeadRecord, canDeliverLeads, markDelivery, storeLead } from './lead-store.mjs';
 import { createLogger, newCorrelationId } from './observability.mjs';
 import { createMemoryGuard, requestClientKey, submissionFingerprint } from './security.mjs';
 import { validateLeadPayload } from './validation.mjs';
@@ -38,13 +38,15 @@ export function createLeadHandler({
   fetchImpl = globalThis.fetch,
   guard = defaultGuard,
   captchaVerifier = null,
-  // Base métier. Absente, le pipeline garde le comportement antérieur :
-  // Brevo fait foi, et son échec est une erreur.
   leadStore = null,
   logger = createLogger(),
   now = () => new Date()
 } = {}) {
   return async function handleLead(request) {
+    if (!canDeliverLeads(environment, leadStore) ||
+        (environment.TURNSTILE_ENABLED === 'true' && typeof captchaVerifier !== 'function')) {
+      return responseJson(503, { success: false, message: ERROR_MESSAGE });
+    }
     let allowedOrigin;
     try {
       validateEnvironment(environment);
@@ -115,21 +117,6 @@ export function createLeadHandler({
     }
 
     const correlationId = newCorrelationId();
-
-    // Sans base métier, le comportement reste celui du P0 : la demande ne
-    // survit pas à une panne Brevo, et l'échec est signalé comme tel.
-    if (!leadStore) {
-      try {
-        const brevo = new BrevoClient({ environment, fetchImpl });
-        await brevo.upsertContact(lead);
-        await brevo.sendAcknowledgement(lead);
-        await brevo.sendInternalNotification(lead);
-        return responseJson(201, { success: true, message: SUCCESS_MESSAGE }, origin);
-      } catch {
-        logger.log('brevo_contact_failed', { correlation_id: correlationId, reason: 'no_store', journey: lead.journey });
-        return responseJson(502, { success: false, message: ERROR_MESSAGE }, origin);
-      }
-    }
 
     // La demande validée est enregistrée AVANT toute dépendance externe.
     let record;
