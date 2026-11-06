@@ -2,6 +2,8 @@
 
 Le commit de préparation ne publie rien. `wrangler.production.jsonc` est distinct du Preview, ferme les flags et ne contient ni route ni identifiant D1. Le domaine `bluewavesolutions.fr` était disponible au panier OVHcloud le 29 septembre 2026 ; disponibilité et prix sont à confirmer avant paiement. Il n'est pas acquis.
 
+Les deux configurations de publication sont décrites dans `serverless/PROFILS.md` : profil A sans collecte, profil B avec automatisation.
+
 ## Conditions de départ
 
 - `main` et branche du candidat vérifiés ; CI du SHA final PASS ; Preview du même SHA PASS.

@@ -130,7 +130,8 @@ class ProductionProfile(unittest.TestCase):
             body = page.read_text()
             source = (module.SOURCE / page.name).read_text()
             original_canonical = source.split('<link rel="canonical" href="', 1)[1].split('"', 1)[0]
-            self.assertIn(original_canonical.replace(module.OLD, module.ORIGIN + '/'), body)
+            expected = original_canonical.replace(module.OLD, module.ORIGIN + '/').removesuffix('index.html')
+            self.assertIn(f'<link rel="canonical" href="{expected}">', body)
             self.assertNotIn(module.OLD, body)
             self.assertIn('index, follow' if page.name != '404.html' else 'noindex, nofollow', body)
         self.assertIn('Sitemap: ' + module.ORIGIN, (out / 'robots.txt').read_text())
@@ -151,8 +152,10 @@ class ProductionProfile(unittest.TestCase):
         self.assertEqual(len(urls), len(set(urls)))
         for alias in ('contact', 'domaines', 'notes-demonstrateurs', 'services'):
             self.assertNotIn(f'{module.ORIGIN}/{alias}.html', urls)
+        self.assertIn(f'{module.ORIGIN}/', urls)
+        self.assertNotIn(f'{module.ORIGIN}/index.html', urls)
         for url in urls:
-            page = (out / url.rsplit('/', 1)[1]).read_text()
+            page = (out / (url.rsplit('/', 1)[1] or 'index.html')).read_text()
             self.assertIn(f'<link rel="canonical" href="{url}">', page)
         for entry in json.loads((out / 'MANIFEST_SHA256.json').read_text()):
             self.assertEqual(hashlib.sha256((out / entry['path']).read_bytes()).hexdigest(), entry['sha256'])
@@ -169,6 +172,20 @@ class ProductionProfile(unittest.TestCase):
             page = (module.OUT / name).read_text(encoding='utf-8')
             self.assertIn(module.OPEN_FORM_NOTICE, page)
             self.assertNotIn(module.CLOSED_FORM_NOTICE, page)
+        module.build()
+
+    def test_profile_a_refuses_any_opening(self):
+        spec = importlib.util.spec_from_file_location('check_profile', ROOT / 'quality/scripts/check_profile.py')
+        profile = importlib.util.module_from_spec(spec); spec.loader.exec_module(profile)
+        module.build()
+        closed = profile.load_config(profile.CONFIG_A)
+        self.assertEqual(profile.profile_a(closed, module.OUT), [])
+        for change in ({'routes': [{'pattern': 'www.bluewavesolutions.fr'}]}, {'d1_databases': []}, {'triggers': {}},
+                       {'vars': {**closed['vars'], 'LEADS_ENABLED': 'true'}}, {'vars': {**closed['vars'], 'PUBLIC_INDEXABLE': 'true'}},
+                       {'vars': {**closed['vars'], 'BREVO_API_KEY': 'x'}}):
+            self.assertTrue(profile.profile_a({**closed, **change}, module.OUT), change)
+        module.build(leads=True, privacy_simulation=True)
+        self.assertTrue(profile.profile_a(closed, module.OUT))
         module.build()
 
     def test_config_requires_real_d1_binding_and_route_is_explicit(self):

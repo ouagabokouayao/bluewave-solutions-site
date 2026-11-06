@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "53eeb025b35bbd7d5b33e914f57804cb83f4641c2c24fa5523dc509ba584d4d6",
-    "bytes": 5679
+    "sha256": "d492b912a0b6a20e3fefb149f2b46e30f93c1708c917c9a31ad51cb9eee06ec3",
+    "bytes": 6065
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -541,8 +541,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "eef3d4aaa1a8b97c5753320065e65506eed3f3d533c5c32220f3ff7fe291c546",
-    "bytes": 20297
+    "sha256": "201307113c1883074a4cd4b9b8eee7a03ddec5d066f736eff0009b619e19bc5b",
+    "bytes": 20523
   },
   {
     "path": "quality/scripts/check_brand_assets.py",
@@ -561,8 +561,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "47ce46b6135e156e1a714819e4161f5297f2e5f89f78678eddb9ff3a4b0bc747",
-    "bytes": 12658
+    "sha256": "59ee862b5674f8a90f0419a7dfb261fa52c91b80bf0e23070d2dc78f58e33700",
+    "bytes": 12670
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -631,8 +631,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "0cd7f784bca3e833a8b65633b2019a5dd4a5f0d3d277a1507bb7b1a4934449af",
-    "bytes": 12652
+    "sha256": "b9ca15a2b945c9adb0aaf0ea7d42924bd8cb68c8f0bb0306bb64550f1430a5c1",
+    "bytes": 13839
   },
   {
     "path": "robots.txt",
@@ -643,6 +643,11 @@
     "path": "serverless/OPERATIONS.md",
     "sha256": "9a813d14d7fcb01b52118e142410297b06321fb529468b4f74c0f6d80cbccd7a",
     "bytes": 13987
+  },
+  {
+    "path": "serverless/PROFILS.md",
+    "sha256": "395565981fd8a1b70806368bde4f53c67b9e17946f9a02e995033d8c524abd29",
+    "bytes": 3491
   },
   {
     "path": "serverless/a01/README.md",
@@ -816,8 +821,8 @@
   },
   {
     "path": "serverless/cloudflare/PRODUCTION.md",
-    "sha256": "25d3493b05439f6630d932b2eca8c297d8390a600a7488bdf524f714ac827331",
-    "bytes": 5747
+    "sha256": "4546f82f44d37c2f90ab12de981e6e15b13249a03e13392d2d0f8d7d11bbf356",
+    "bytes": 5887
   },
   {
     "path": "serverless/cloudflare/README.md",
@@ -885,6 +890,11 @@
     "bytes": 8770
   },
   {
+    "path": "serverless/cloudflare/tests/redirects.test.mjs",
+    "sha256": "a40373205d63346c3f74d11ac332b8ae860cff1298b85a393b1cfea0d0f05eb7",
+    "bytes": 1574
+  },
+  {
     "path": "serverless/cloudflare/tests/turnstile-front.test.mjs",
     "sha256": "3bf7f4267611d143346346a6421061393772376d6e502f5e20ccb7cea1601ed3",
     "bytes": 4335
@@ -901,8 +911,8 @@
   },
   {
     "path": "serverless/cloudflare/worker.mjs",
-    "sha256": "d5966270c7f7c563f8ddc51fbf18f0f2a0a05bb49014d685eb4c4484ec07f450",
-    "bytes": 6880
+    "sha256": "e2dbf6f7404886c0cd8b1b5422c0be4c2bc7acbbb02a580b9e4ed36d0090f7f6",
+    "bytes": 7377
   },
   {
     "path": "serverless/cloudflare/wrangler.jsonc",
@@ -918,6 +928,11 @@
     "path": "serverless/cloudflare/wrangler.production.jsonc",
     "sha256": "672df503720ddd64d9b4816df9c5614ef6bc6503473a902bbe4705344b10062e",
     "bytes": 957
+  },
+  {
+    "path": "serverless/cloudflare/wrangler.profil-a.jsonc",
+    "sha256": "8d1e706aad7d0886729a6720be9698348d96176b70ae6ee8902bc77535f957ca",
+    "bytes": 875
   },
   {
     "path": "services.html",

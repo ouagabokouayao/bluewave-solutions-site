@@ -10,6 +10,13 @@ export {LeadGuard};
 const noStore = {'cache-control':'no-store','x-content-type-options':'nosniff','x-robots-tag':'noindex, nofollow'};
 const off = () => Response.json({success:false}, {status:503,headers:noStore});
 const allowOrigin = (request, url) => request.headers.get('origin') === url.origin;
+// Anciennes adresses : la redirection permanente remplace la page de transfert.
+const MOVED_PAGES = Object.freeze({
+ '/contact.html':'/qualifier-un-besoin.html',
+ '/domaines.html':'/solutions.html',
+ '/services.html':'/solutions.html',
+ '/notes-demonstrateurs.html':'/preuves-demonstrateurs.html'
+});
 
 async function readLimited(request, max) {
  const length = Number(request.headers.get('content-length') || 0);
@@ -102,6 +109,11 @@ export default {
    const destination=new URL(url.href);
    destination.pathname=url.pathname.replace(/^\/bluewave-solutions-site/,'') || '/';
    return Response.redirect(destination.href,308);
+  }
+  if (Object.hasOwn(MOVED_PAGES,url.pathname)) {
+   const destination=new URL(url.href);
+   destination.pathname=MOVED_PAGES[url.pathname];
+   return Response.redirect(destination.href,301);
   }
   if (url.pathname==='/') url.pathname='/index.html';
   const response=await env.ASSETS.fetch(new Request(url,request));

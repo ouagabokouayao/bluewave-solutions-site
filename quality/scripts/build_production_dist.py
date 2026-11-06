@@ -200,6 +200,9 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
         if document.count(OLD) < 2:
             raise ValueError(f'Canonical/OG absent : {page.name}')
         document = document.replace(OLD, ORIGIN + '/')
+        if page.name == 'index.html':
+            # La racine est l'adresse publique de l'accueil.
+            document = document.replace(ORIGIN + '/index.html"', ORIGIN + '/"')
         # La page 404 de GitHub Pages fixe <base> sur le chemin du projet.
         # Servie à la racine du domaine, elle perdrait styles, logos et liens.
         document = document.replace(OLD_PATH, '/')
@@ -249,7 +252,7 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
             hrefs = re.findall(r'<link rel="canonical" href="([^"]+)">', document)
             if len(hrefs) != 1:
                 raise ValueError(f'Canonical absente ou ambiguë : {page.name}')
-            url = f'{ORIGIN}/{page.name}'
+            url = f'{ORIGIN}/' if page.name == 'index.html' else f'{ORIGIN}/{page.name}'
             if html.unescape(hrefs[0]) == url:
                 canonicals.append(url)
         links = ''.join(f'<url><loc>{html.escape(url)}</loc></url>' for url in canonicals)
