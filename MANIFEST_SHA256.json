@@ -561,8 +561,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "c80165f8d32bfacd4cf3387e200232af22477881c9257a825c4fb9793ee6ddd5",
-    "bytes": 16342
+    "sha256": "a8263ef79ad795350abd88e20880a12599cf965f0def78dba1c1d7e3fe149f77",
+    "bytes": 16369
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -651,8 +651,8 @@
   },
   {
     "path": "serverless/RECETTE-W14.md",
-    "sha256": "de557412bd991803236f6425a044c252450152825064158881db03b784bac74b",
-    "bytes": 5957
+    "sha256": "0c951a44b321078344d1f168e36091c7e4f01b40421b30b3e4d09d4c48549999",
+    "bytes": 6217
   },
   {
     "path": "serverless/a01/README.md",
@@ -811,8 +811,8 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/pipeline.test.mjs",
-    "sha256": "0f6f629e2b7b8ecb750ebc0963f89022825672fdefb94276d25cac9098c9d2a9",
-    "bytes": 7478
+    "sha256": "dccf813a00a5ea5e6561a2c0c585a64f6bca3b8c603a259a5ead15df327a34e8",
+    "bytes": 8096
   },
   {
     "path": "serverless/bluewave-leads/tests/prepared-message.test.mjs",

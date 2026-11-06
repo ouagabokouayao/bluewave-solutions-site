@@ -31,7 +31,7 @@ python quality/scripts/check_profile.py A
 node quality/tests/newsletter-retrait.e2e.mjs dist-production
 ```
 
-Les essais navigateur passent par le vrai Worker et une vraie base D1 locale. Brevo y est simulé, et toute autre sortie réseau fait échouer le test.
+Les essais navigateur passent par le vrai Worker, la vraie garde anti-abus sur un stockage en mémoire et une vraie base D1 locale. Brevo y est simulé, et toute autre sortie réseau fait échouer le test.
 
 ## 3. Scénarios
 
@@ -41,6 +41,7 @@ Le résultat se note PASS, FAIL ou BLOQUÉ. W14 est libre de reproduire chaque c
 |---|---|---|---|---|
 | R1 | Quatre parcours réels : collaboration (deux branches), formation, projet, qualification | 201, une ligne en base, trois appels Brevo simulés | `lead-api.e2e.mjs` | |
 | R2 | Réponse perdue, reprise après plus de 5 minutes | 200 à la reprise, une ligne, un accusé | `lead-api.e2e.mjs` | |
+| R2 bis | Panne D1, première requête 503, puis relance immédiate du même envoi | 503 sans ligne ni appel Brevo, puis 201, une ligne, un accusé, aucun 409 | `lead-api.e2e.mjs`, `pipeline.test.mjs` | |
 | R3 | Réponse perdue, reprise après minuit UTC | 200 à la reprise, une ligne, un accusé | `lead-api.e2e.mjs` | |
 | R4 | Page rechargée et formulaire ressaisi le lendemain | 200, une ligne, un accusé | `lead-api.e2e.mjs` | |
 | R5 | Même demande avec un seul territoire modifié | 201, deux lignes, deux accusés | `lead-api.e2e.mjs`, `pipeline.test.mjs` | |

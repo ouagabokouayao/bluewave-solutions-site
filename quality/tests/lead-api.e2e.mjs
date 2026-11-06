@@ -6,6 +6,7 @@ import {readFile} from 'node:fs/promises';
 import {extname, join, normalize} from 'node:path';
 import assert from 'node:assert/strict';
 import worker from '../../serverless/cloudflare/worker.mjs';
+import {LeadGuard} from '../../serverless/cloudflare/guard.mjs';
 import {replayDelivery} from '../../serverless/bluewave-leads/replay.mjs';
 import {Miniflare} from 'miniflare';
 
@@ -51,7 +52,17 @@ const assets = {fetch: async request => {
   try { return new Response(await readFile(join(ROOT, path)), {status: 200, headers: {'content-type': TYPES[extname(path)] || 'application/octet-stream'}}); }
   catch { return new Response('introuvable', {status: 404}); }
 }};
-const guard = {idFromName: name => name, get: () => ({fetch: async () => Response.json({ok: true})})};
+// La vraie garde, sur un stockage en mémoire : une garde simulée masquerait ses effets.
+const guardStorage = () => {
+  const store = new Map();
+  const txn = {get: async key => store.get(key), put: async (key, value) => { store.set(key, value); }};
+  return {storage: {transaction: run => run(txn), setAlarm: async () => {}, deleteAll: async () => store.clear()}};
+};
+const guards = new Map();
+const guard = {idFromName: name => name, get: id => {
+  if (!guards.has(id)) guards.set(id, new LeadGuard(guardStorage()));
+  return {fetch: (url, init) => guards.get(id).fetch(new Request(url, init))};
+}};
 const environment = database => ({ASSETS: assets, LEADS_DB: database, LEAD_GUARD: guard, GUARD_HMAC_KEY: 'c'.repeat(40),
   LEADS_ENABLED: 'true', LEAD_RETENTION_DAYS: '30', EVENTS_ENABLED: 'false', TURNSTILE_ENABLED: 'false', NEWSLETTER_ENABLED: 'false',
   LEADS_CONTACT_SYNC_ENABLED: 'true', LEADS_ACK_ENABLED: 'true', LEADS_NOTIFY_ENABLED: 'true',
@@ -59,7 +70,9 @@ const environment = database => ({ASSETS: assets, LEADS_DB: database, LEAD_GUARD
   BLUEWAVE_INTERNAL_EMAIL: 'interne@example.invalid', ALLOWED_ORIGIN: ORIGIN, BLUEWAVE_SITE_URL: ORIGIN});
 
 const browser = await chromium.launch();
+let visitors = 0;
 async function session(env, {loseResponse = () => false} = {}) {
+  const address = `192.0.2.${++visitors}`;
   const ctx = await browser.newContext({viewport: {width: 390, height: 900}});
   const statuses = [];
   await ctx.route('**/*', async route => {
@@ -67,7 +80,7 @@ async function session(env, {loseResponse = () => false} = {}) {
     const url = new URL(request.url());
     if (url.origin !== ORIGIN) return route.abort();
     const response = await worker.fetch(new Request(url, {method: request.method(), body: request.postData() ?? undefined,
-      headers: {...request.headers(), 'cf-connecting-ip': '192.0.2.10'}}), env);
+      headers: {...request.headers(), 'cf-connecting-ip': address}}), env);
     if (url.pathname === '/api/leads') {
       statuses.push(response.status);
       if (loseResponse()) return route.abort('connectionreset');
@@ -248,6 +261,29 @@ await check('W14 : un seul territoire modifié : une seconde demande, pas un dou
   assert.deepEqual(statuses, [201, 201]);
   assert.deepEqual((await rows()).map(row => row.territory).sort(), ['cote-divoire', 'france-mediterranee']);
   assert.equal(acknowledgements(), 2);
+  await ctx.close();
+});
+
+await check('W14 : panne D1, puis relance immédiate : pas de 409, la demande est enregistrée', async () => {
+  const journey = JOURNEYS.formation;
+  const database = await freshDatabase();
+  let down = true;
+  const flaky = {prepare: sql => { if (down) throw new Error('D1 indisponible'); return database.prepare(sql); }};
+  const {ctx, page, statuses} = await session(environment(flaky));
+  await page.goto(`${ORIGIN}${journey.url}`, {waitUntil: 'networkidle'});
+  await journey.run(page, journey.form);
+  await page.click(submitOf(journey));
+  await page.waitForFunction(selector => document.querySelector(selector)?.textContent.includes('enregistrée'), journey.message);
+  assert.deepEqual(statuses, [503]);
+  assert.match(await page.textContent(journey.message), REFUSED);
+  assert.equal((await rows()).length, 0);
+  assert.equal(brevo.length, 0, 'aucun envoi sans enregistrement');
+  down = false;
+  await page.click(submitOf(journey));
+  await page.waitForFunction(selector => document.querySelector(selector)?.textContent.includes('a bien été'), journey.message);
+  assert.deepEqual(statuses, [503, 201]);
+  assert.equal((await rows()).length, 1);
+  assert.equal(acknowledgements(), 1);
   await ctx.close();
 });
 

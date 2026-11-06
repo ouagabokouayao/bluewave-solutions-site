@@ -111,6 +111,21 @@ test('diffusion complète : statut DELIVERED et aucun code d’erreur', async ()
   assert.equal(brevo.calls.length, 3);
 });
 
+test('W14 : panne D1 puis relance immédiate : 503, puis 201, sans 409', async () => {
+  const database = createD1Double();
+  const brevo = brevoAlways(201);
+  let down = true;
+  const flaky = { prepare(sql) { if (down) throw new Error('D1 indisponible'); return database.prepare(sql); } };
+  const handle = handler(brevo.fetchImpl, flaky);
+  assert.equal((await handle(request())).status, 503);
+  assert.equal(database.size, 0);
+  assert.equal(brevo.calls.length, 0);
+  down = false;
+  assert.equal((await handle(request())).status, 201);
+  assert.equal(database.size, 1);
+  assert.equal(brevo.calls.length, 3);
+});
+
 test('W14 : un seul territoire modifié est une nouvelle demande, aussitôt acceptée', async () => {
   const database = createD1Double();
   const brevo = brevoAlways(201);
