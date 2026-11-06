@@ -29,11 +29,15 @@ const browser = await chromium.launch();
 let failures = 0;
 const check = async (label, run) => {
   try { await run(); console.log(`ok - ${label}`); }
-  catch (error) { failures++; console.log(`not ok - ${label}: ${error.message}`); }
+  catch (error) {
+    failures++; console.log(`not ok - ${label}: ${error.message}`);
+    if (process.env.GITHUB_ACTIONS) console.log(`::error title=${label.slice(0, 80)}::${error.message.replace(/\s+/g, ' ').slice(0, 900)}`);
+  }
 };
 
-for (const width of WIDTHS) {
-  await check(`${pages.length} pages à ${width} px : aucun débordement, aucune erreur, aucune requête externe`, async () => {
+// La police de remplacement varie selon l'appareil : une police large est essayée à la plus petite largeur.
+for (const [width, wideFont] of [...WIDTHS.map(value => [value, false]), [320, true]]) {
+  await check(`${pages.length} pages à ${width} px${wideFont ? ', police large' : ''} : aucun débordement, aucune erreur, aucune requête externe`, async () => {
     const ctx = await browser.newContext({viewport: {width, height: 900}});
     const p = await ctx.newPage();
     const problems = [];
@@ -45,6 +49,11 @@ for (const width of WIDTHS) {
     for (const name of pages) {
       current = name;
       await p.goto(`${base}/${name}`, {waitUntil: 'networkidle'});
+      if (wideFont) await p.evaluate(() => {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync('*{font-family:Verdana,"DejaVu Sans",sans-serif!important}');
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+      });
       const info = await p.evaluate(async () => {
         for (let y = 0; y < document.documentElement.scrollHeight; y += 700) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 20)); }
         const limit = document.documentElement.clientWidth;

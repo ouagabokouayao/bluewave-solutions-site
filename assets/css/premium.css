@@ -421,3 +421,6 @@ summary:focus-visible,[tabindex]:focus-visible{
 
 /* Un champ refusé reste signalé après la disparition de la bulle du navigateur. */
 .lead-form [aria-invalid="true"]{border-color:#b42318;box-shadow:0 0 0 2px rgba(180,35,24,.2)}
+
+/* Une adresse insécable ne doit pas élargir la page sur un écran étroit. */
+a[href^="mailto:"]{overflow-wrap:anywhere}

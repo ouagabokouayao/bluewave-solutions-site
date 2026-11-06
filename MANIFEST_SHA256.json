@@ -66,8 +66,8 @@
   },
   {
     "path": "assets/css/premium.css",
-    "sha256": "3174097d86fcb9bd6de8ca185b7b33c6ee2bed5ea9304fccf459f16a1f13b90d",
-    "bytes": 20707
+    "sha256": "04d3cd4a77f3572000b774940b4abc55aaebe23e3b13f9369fb8578a410e7790",
+    "bytes": 20832
   },
   {
     "path": "assets/css/style.css",
@@ -561,8 +561,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "7e901e27f2359cb95ac61212267322b355df3c3398e9157acc78352358ba11c9",
-    "bytes": 12666
+    "sha256": "8debd885a1a3db3c89f99ad3635c0a8faaee15479b7a1eb000e8c03ba6f7215b",
+    "bytes": 12657
   },
   {
     "path": "quality/scripts/check_preactivation.py",
