@@ -52,7 +52,7 @@ ne contiennent jamais de `lead_id`. Aucun changement d'allowlist ni tracking act
 ## T02-03 — Parcours
 
 Projet, Organisation, Expertise, Formation et sortie de qualification testés sur
-D1 natif local. Tests 201, 400, 403, 409, 429, 503, échec partiel Brevo, idempotence
+D1 natif local. Tests 200, 201, 400, 403, 429, 503, échec partiel Brevo, idempotence
 D1 après perte de garde, reprise ciblée et absence de double ACK. Le front OFF
 n'émet pas de POST ; le mailto reste une préparation de courriel, pas une réception.
 La QA visuelle des pages validées n'est pas refaite ; aucun HTML/CSS modifié.

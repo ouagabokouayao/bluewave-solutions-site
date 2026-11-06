@@ -70,9 +70,6 @@ try {
  const id=guard.idFromName('concurrency-test');
  const stub=guard.get(id);
  const key='a'.repeat(64);
- const claims=await Promise.all(Array.from({length:12},()=>stub.fetch('https://guard.internal/',{method:'POST',body:JSON.stringify({action:'claim',key})})));
- const outcomes=await Promise.all(claims.map(response=>response.json()));
- assert.equal(outcomes.filter(x=>x.ok).length,1);
  const rates=await Promise.all(Array.from({length:12},()=>stub.fetch('https://guard.internal/',{method:'POST',body:JSON.stringify({action:'rate',key})})));
  const windows=await Promise.all(rates.map(response=>response.json()));
  assert.equal(windows.filter(x=>x.ok).length,5);

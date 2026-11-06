@@ -37,15 +37,18 @@ La **limite de débit** borne le nombre d'envois d'un même client sur une
 fenêtre glissante. Elle protège le service, ne regarde pas le contenu, et
 répond 429.
 
-L'**anti-doublon court** empêche deux envois identiques rapprochés et répond
-409 : la première demande a bien été reçue, la seconde est écartée.
+L'**idempotence** se décide en base, par une contrainte d'unicité. L'empreinte
+couvre toute la demande validée : qualification, identité et charge propre au
+parcours. Elle ne contient aucune date.
 
-L'**idempotence métier** est la seconde défense, en base. L'empreinte couvre
-toute la demande validée — qualification, identité et charge propre au
-parcours — plus le jour UTC. Deux demandes réellement différentes ne se
-confondent donc jamais, même déposées la même journée par la même personne ;
-une reprise strictement identique, elle, retombe sur la ligne existante sans
-produire de seconde ligne ni de second accusé.
+- Une reprise strictement identique retombe sur la ligne existante et reçoit un
+  succès (200), sans seconde ligne ni second accusé. Peu importe le délai ou le
+  passage de minuit UTC, dans la limite de 30 jours.
+- Un seul champ métier modifié, par exemple le territoire, fait une autre demande.
+- Après 30 jours, un contenu identique est une nouvelle demande : le même besoin
+  peut revenir. L'ancienne ligne reste en base et libère sa clé.
+
+Le service ne répond plus 409 : un doublon n'est pas une erreur.
 
 **Brevo n'est pas la base métier.** C'est un carnet de contacts opérationnel et
 un expéditeur transactionnel. La source de vérité est `LEADS_DB`.

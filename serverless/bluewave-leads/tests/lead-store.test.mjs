@@ -47,13 +47,26 @@ test('une demande d’expertise entre au premier échelon, jamais à MOBILISABLE
   assert.equal(projet.qualification_status, '');
 });
 
-test('idempotence : même demande le même jour, une seule clé ; un autre jour, une autre', async () => {
-  const first = await idempotencyKey(lead, new Date('2026-10-04T08:00:00Z'));
-  const same = await idempotencyKey(lead, new Date('2026-10-04T22:30:00Z'));
-  const later = await idempotencyKey(lead, new Date('2026-10-05T08:00:00Z'));
-  assert.equal(first, same);
-  assert.notEqual(first, later);
+test('idempotence : la clé ne dépend que du contenu, ni de l’heure ni du jour', async () => {
+  const first = await idempotencyKey(lead);
+  assert.equal(first, await idempotencyKey({ ...lead }));
   assert.match(first, /^[0-9a-f]{64}$/);
+  const morning = await buildLeadRecord(lead, { now: new Date('2026-10-04T23:59:00Z') });
+  const nextDay = await buildLeadRecord(lead, { now: new Date('2026-10-05T00:01:00Z') });
+  assert.equal(morning.idempotency_key, nextDay.idempotency_key);
+});
+
+test('reprise après minuit UTC : une seule ligne ; après 30 jours : une nouvelle demande', async () => {
+  const database = createD1Double();
+  const at = when => buildLeadRecord(lead, { now: new Date(when) });
+  assert.equal((await storeLead(database, await at('2026-10-04T23:59:00Z'))).stored, true);
+  assert.equal((await storeLead(database, await at('2026-10-05T00:01:00Z'))).duplicate, true);
+  assert.equal((await storeLead(database, await at('2026-11-03T23:58:00Z'))).duplicate, true);
+  assert.equal(database.size, 1);
+  assert.equal((await storeLead(database, await at('2026-11-04T00:00:00Z'))).stored, true);
+  assert.equal(database.size, 2, 'la demande ancienne reste en base');
+  assert.equal((await storeLead(database, await at('2026-11-04T00:01:00Z'))).duplicate, true);
+  assert.equal(database.size, 2);
 });
 
 test('un renvoi identique n’ajoute pas de seconde ligne', async () => {
@@ -133,8 +146,8 @@ test('A — demande identique le même jour : même clé', async () => {
   assert.equal(await keyFor(), await keyFor());
 });
 
-test('B — demande identique le jour suivant : clé différente', async () => {
-  assert.notEqual(await keyFor(), await keyFor({}, NEXT));
+test('B — demande identique le jour suivant : même clé', async () => {
+  assert.equal(await keyFor({}, DAY), await keyFor({}, new Date('2026-10-05T00:01:00Z')));
 });
 
 test('C — même e-mail et même besoin, territoire différent : clé différente', async () => {

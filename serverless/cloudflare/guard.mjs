@@ -1,6 +1,5 @@
 // One SQLite-backed object per HMAC client key; no raw IP or lead is persisted.
 const RATE_WINDOW_MS = 15 * 60 * 1000;
-const DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
 export class LeadGuard {
   constructor(state) { this.state = state; }
   async fetch(request) {
@@ -15,18 +14,10 @@ export class LeadGuard {
         await txn.put('rates', recent);
         return true;
       }
-      if (action === 'claim') {
-        const recent = await txn.get('duplicates') || {};
-        for (const [fingerprint, expiry] of Object.entries(recent)) if (expiry <= now) delete recent[fingerprint];
-        if ((recent[key] || 0) > now) return false;
-        recent[key] = now + DUPLICATE_WINDOW_MS;
-        await txn.put('duplicates', recent);
-        return true;
-      }
       return null;
     });
     if (allowed === null) return new Response(null, {status:400});
-    if (allowed) await this.state.storage.setAlarm(now + RATE_WINDOW_MS + DUPLICATE_WINDOW_MS);
+    if (allowed) await this.state.storage.setAlarm(now + RATE_WINDOW_MS);
     return Response.json({ok:allowed});
   }
   async alarm() {
@@ -50,5 +41,5 @@ export function createDistributedGuard(env, request) {
     if (!response.ok) throw new Error('Garde indisponible');
     return (await response.json()).ok === true;
   };
-  return {allowRate: async () => send('rate',await hash('rate')), claimSubmission: async fingerprint => send('claim',await hash(fingerprint))};
+  return {allowRate: async () => send('rate',await hash('rate'))};
 }

@@ -1,7 +1,7 @@
 import { BrevoClient, DELIVERY_STEPS, enabledSteps, validateEnvironment } from './brevo-client.mjs';
 import { buildLeadRecord, canDeliverLeads, markDelivery, storeLead } from './lead-store.mjs';
 import { createLogger, newCorrelationId } from './observability.mjs';
-import { createMemoryGuard, requestClientKey, submissionFingerprint } from './security.mjs';
+import { createMemoryGuard, requestClientKey } from './security.mjs';
 import { validateLeadPayload } from './validation.mjs';
 
 // Sans interrupteur ouvert, aucun code campagne n'est retenu, même listé.
@@ -117,9 +117,6 @@ export function createLeadHandler({
       logger.log('turnstile_failed', { journey: lead.journey });
       return responseJson(403, { success: false, message: ERROR_MESSAGE }, origin);
     }
-    if (!(await guard.claimSubmission(await submissionFingerprint(lead)))) {
-      return responseJson(409, { success: false, message: ERROR_MESSAGE }, origin);
-    }
 
     const correlationId = newCorrelationId();
 
@@ -129,8 +126,8 @@ export function createLeadHandler({
       record = await buildLeadRecord(lead, { now: now(), correlationId });
       const stored = await storeLead(leadStore, record);
       if (!stored.stored) {
-        // Même demande, même jour : déjà enregistrée et déjà accusée.
-        // On renvoie un succès sans réexpédier quoi que ce soit.
+        // Reprise d'une demande déjà enregistrée, souvent après une réponse
+        // perdue : on confirme sa réception sans rien réexpédier.
         logger.log('lead_duplicate', { correlation_id: correlationId, journey: lead.journey, lead_type: lead.lead_type });
         return responseJson(200, { success: true, message: SUCCESS_MESSAGE }, origin);
       }

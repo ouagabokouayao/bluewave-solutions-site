@@ -94,18 +94,22 @@ export function canonicalRepresentation(lead) {
   return canonical;
 }
 
-// La fenêtre reste le jour UTC : elle n'est plus qu'une seconde défense, car
-// deux demandes métier différentes ne partagent plus la même empreinte.
-export async function idempotencyKey(lead, now = new Date()) {
-  const day = new Date(now).toISOString().slice(0, 10);
-  return sha256Hex(JSON.stringify({ day, request: canonicalRepresentation(lead) }));
+// La clé ne dépend que du contenu validé. Une réponse perdue peut être reprise
+// après plusieurs minutes ou le lendemain : ni l'heure ni le jour n'y entrent.
+// Un seul champ métier modifié donne une autre clé, donc une autre demande.
+export async function idempotencyKey(lead) {
+  return sha256Hex(JSON.stringify(canonicalRepresentation(lead)));
 }
+
+// Au-delà, un envoi au contenu identique n'est plus une reprise mais une nouvelle
+// demande : le même besoin peut revenir, il ne doit pas disparaître en silence.
+export const DUPLICATE_WINDOW_DAYS = 30;
 
 export async function buildLeadRecord(lead, { now = new Date(), correlationId = '' } = {}) {
   const stamp = new Date(now).toISOString();
   return {
     id: crypto.randomUUID(),
-    idempotency_key: await idempotencyKey(lead, now),
+    idempotency_key: await idempotencyKey(lead),
     created_at: stamp,
     updated_at: stamp,
     journey: text(lead.journey),
@@ -142,17 +146,24 @@ export async function buildLeadRecord(lead, { now = new Date(), correlationId = 
   };
 }
 
+const changed = result => (result?.meta?.changes ?? result?.changes ?? 0) > 0;
+
 // Retourne {stored:true} à la première insertion, {stored:false, duplicate:true}
 // si la demande a déjà été enregistrée : le pipeline s'arrête alors sans
-// réexpédier d'accusé.
+// réexpédier d'accusé. La contrainte d'unicité décide, y compris entre instances.
 export async function storeLead(database, record) {
   const placeholders = COLUMNS.map(() => '?').join(',');
-  const statement = database
+  const insert = () => database
     .prepare(`INSERT INTO lead_records (${COLUMNS.join(',')}) VALUES (${placeholders}) ON CONFLICT(idempotency_key) DO NOTHING`)
-    .bind(...COLUMNS.map(column => record[column]));
-  const result = await statement.run();
-  const changes = result?.meta?.changes ?? result?.changes ?? 0;
-  return changes > 0 ? { stored: true, id: record.id } : { stored: false, duplicate: true, id: record.id };
+    .bind(...COLUMNS.map(column => record[column])).run();
+  if (changed(await insert())) return { stored: true, id: record.id };
+  // Passée la fenêtre, la ligne ancienne libère sa clé : elle reste en base, intacte.
+  const oldest = new Date(new Date(record.created_at).getTime() - DUPLICATE_WINDOW_DAYS * 86400000).toISOString();
+  const released = await database
+    .prepare(`UPDATE lead_records SET idempotency_key=idempotency_key||':'||id WHERE idempotency_key=? AND created_at<?`)
+    .bind(record.idempotency_key, oldest).run();
+  if (changed(released) && changed(await insert())) return { stored: true, id: record.id };
+  return { stored: false, duplicate: true, id: record.id };
 }
 
 export async function getLeadRecord(database, id) {

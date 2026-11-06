@@ -69,7 +69,7 @@ test('A01 E2E local natif : Projet, Organisation, Expertise, Formation et qualif
     for(const payload of [base,organisation,expertise,formation,{...formation,email:'presentiel@example.invalid',training_format:'presentiel',location:'Lieu fictif'},{...formation,email:'hybride@example.invalid',training_format:'hybride',location:'Lieu fictif'},{...base,recommended_offer:'atelier-cadrage',need:'Qualification fictive'}]) {
       const response=await handle(request(payload));assert.equal(response.status,201);
       assert.equal((await response.json()).success,true);
-      assert.equal((await handle(request(payload))).status,409);
+      assert.equal((await handle(request(payload))).status,200);
     }
     const rows=(await leads.prepare('SELECT * FROM lead_records').all()).results;
     assert.equal(rows.length,7);assert.equal(calls,21);
@@ -80,7 +80,7 @@ test('A01 E2E local natif : Projet, Organisation, Expertise, Formation et qualif
     }
     await assert.rejects(()=>conversions.prepare('SELECT * FROM lead_records').all());
     for(const field of ['email','ip','lead_id','journey_payload']) await assert.rejects(()=>conversions.prepare(`SELECT ${field} FROM conversion_counts`).all());
-    const permissive={allowRate:()=>true,claimSubmission:()=>true};
+    const permissive={allowRate:()=>true};
     assert.equal((await makeHandler(leads,{guard:permissive})(request({...base,campaign_code:'unknown'}))).status,200);
     assert.equal((await leads.prepare('SELECT COUNT(*) AS count FROM lead_records').all()).results[0].count,7);
   });

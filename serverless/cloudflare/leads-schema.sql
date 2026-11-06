@@ -10,8 +10,9 @@
 
 CREATE TABLE IF NOT EXISTS lead_records (
  id TEXT PRIMARY KEY,
- -- Empreinte métier de la demande : deux envois identiques le même jour
- -- produisent une seule ligne, donc un seul accusé.
+ -- Empreinte du contenu de la demande, sans date : une reprise après une réponse
+ -- perdue retombe sur cette ligne, donc sur un seul accusé. Passé le délai de
+ -- reprise, une ligne libère sa clé en lui ajoutant son identifiant.
  idempotency_key TEXT NOT NULL UNIQUE,
  created_at TEXT NOT NULL,
  updated_at TEXT NOT NULL,

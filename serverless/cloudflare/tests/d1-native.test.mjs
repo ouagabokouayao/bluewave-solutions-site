@@ -64,7 +64,7 @@ test('D1 natif : schéma, idempotence, statuts, purge et séparation des bases',
       const count = await leads.prepare('SELECT COUNT(*) AS total FROM lead_records').all();
       assert.equal(count.results[0].total, 1);
 
-      // Une demande métier différente le même jour reste une seconde ligne.
+      // Une demande métier différente reste une seconde ligne.
       const other = await buildLeadRecord({ ...lead, territory: 'france-mediterranee' }, { now });
       assert.equal((await storeLead(leads, other)).stored, true);
       assert.equal((await leads.prepare('SELECT COUNT(*) AS total FROM lead_records').all()).results[0].total, 2);

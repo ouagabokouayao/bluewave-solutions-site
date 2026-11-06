@@ -19,6 +19,16 @@ export function createD1Double({ failOn = null } = {}) {
       return { meta: { changes: 1 } };
     }
 
+    if (sql.startsWith('UPDATE lead_records SET idempotency_key=')) {
+      const [key, cutoff] = values;
+      const row = rows.get(byKey.get(key));
+      if (!row || !(row.created_at < cutoff)) return { meta: { changes: 0 } };
+      byKey.delete(key);
+      row.idempotency_key = `${key}:${row.id}`;
+      byKey.set(row.idempotency_key, row.id);
+      return { meta: { changes: 1 } };
+    }
+
     if (sql.startsWith('UPDATE lead_records SET')) {
       const assignments = sql.slice(sql.indexOf('SET ') + 4, sql.indexOf(' WHERE')).split(',');
       const id = values[values.length - 1];

@@ -111,23 +111,20 @@ test('diffusion complète : statut DELIVERED et aucun code d’erreur', async ()
   assert.equal(brevo.calls.length, 3);
 });
 
-test('la garde anti-doublon arrête une reprise immédiate avant tout stockage', async () => {
+test('une reprise immédiate reçoit un succès et ne crée rien', async () => {
   const database = createD1Double();
   const brevo = brevoAlways(201);
   const handle = handler(brevo.fetchImpl, database);
   assert.equal((await handle(request())).status, 201);
-  assert.equal((await handle(request())).status, 409);
+  assert.equal((await handle(request())).status, 200);
   assert.equal(database.size, 1);
   assert.equal(brevo.calls.length, 3);
 });
 
-test('seconde ligne de défense : garde passée, le stockage collapse quand même la reprise', async () => {
-  // Fenêtre anti-doublon écoulée, ou état de garde perdu entre deux instances :
-  // l'idempotence de la base doit encore empêcher une seconde ligne et un
-  // second accusé.
+test('la base seule fait l’idempotence, même entre instances sans mémoire commune', async () => {
   const database = createD1Double();
   const brevo = brevoAlways(201);
-  const permissive = { allowRate: () => true, claimSubmission: () => true };
+  const permissive = { allowRate: () => true };
   const handle = createLeadHandler({
     environment, fetchImpl: brevo.fetchImpl, leadStore: database,
     guard: permissive, logger: { log: () => null }

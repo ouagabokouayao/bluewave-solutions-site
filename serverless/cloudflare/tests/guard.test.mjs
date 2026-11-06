@@ -45,12 +45,9 @@ test('limite de débit : cinq passages, le sixième est refusé', async () => {
   assert.deepEqual(await (await call(guard, { action: 'rate', key: KEY })).json(), { ok: false });
 });
 
-test('anti-doublon : une empreinte ne peut être réclamée qu’une fois dans sa fenêtre', async () => {
+test('la garde ne juge plus les doublons : seule la base le fait', async () => {
   const guard = new LeadGuard(fakeState());
-  assert.deepEqual(await (await call(guard, { action: 'claim', key: KEY })).json(), { ok: true });
-  assert.deepEqual(await (await call(guard, { action: 'claim', key: KEY })).json(), { ok: false });
-  // Une autre empreinte reste libre.
-  assert.deepEqual(await (await call(guard, { action: 'claim', key: 'b'.repeat(64) })).json(), { ok: true });
+  assert.equal((await call(guard, { action: 'claim', key: KEY })).status, 400);
 });
 
 test('une alarme de purge est armée, et elle efface tout', async () => {
@@ -67,7 +64,6 @@ test('aucune adresse brute n’est conservée : seule une empreinte est stockée
   const state = fakeState();
   const guard = new LeadGuard(state);
   await call(guard, { action: 'rate', key: KEY });
-  await call(guard, { action: 'claim', key: KEY });
   const serialised = JSON.stringify([...state.store.entries()]);
   assert.equal(serialised.includes('192.0.2'), false);
   assert.equal(serialised.includes('@'), false);

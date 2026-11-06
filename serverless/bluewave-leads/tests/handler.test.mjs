@@ -153,12 +153,12 @@ test('absence de D1, collecte fermée ou conservation invalide : aucun appel Bre
   assert.equal(brevo.calls.length, 0);
 });
 
-test('double soumission rapprochée rejetée', async () => {
+test('double soumission rapprochée : un succès, sans second envoi', async () => {
   const brevo = mockBrevo();
   const guard = createMemoryGuard({ rateLimit: 20 });
   const handle = handler(brevo.fetchImpl, guard);
   assert.equal((await handle(request())).status, 201);
-  assert.equal((await handle(request())).status, 409);
+  assert.equal((await handle(request())).status, 200);
   assert.equal(brevo.calls.length, 3);
 });
 
