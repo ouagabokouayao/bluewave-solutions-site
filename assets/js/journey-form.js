@@ -278,9 +278,11 @@ function wireForm(form) {
         fallbackMail(form, payload, 'not-configured');
         message.textContent = PREPARED_MESSAGE;
       }
-    } catch {
+    } catch (error) {
       fallbackMail(form, payload, 'unavailable');
-      message.textContent = 'La transmission est indisponible et rien n’a été envoyé. Relisez le courriel préparé, puis envoyez-le vous-même.';
+      message.textContent = error?.outcome === 'refused'
+        ? 'La transmission n’a pas abouti et votre demande n’a pas été enregistrée. Relisez le courriel préparé, puis envoyez-le vous-même.'
+        : 'Nous n’avons pas reçu de confirmation : votre demande a peut-être bien été transmise. Attendez l’accusé de réception avant de renvoyer ; le courriel préparé reste disponible si vous n’en recevez pas.';
     } finally {
       if (guard?.enabled) guard.reset(form);
       payload.captcha_token = '';

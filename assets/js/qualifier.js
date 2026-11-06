@@ -315,7 +315,9 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
       }
     } catch (error) {
       prepareFallback('unavailable');
-      leadMessage.textContent = 'La transmission est indisponible et rien n’a été envoyé. Relisez le courriel préparé, puis envoyez-le vous-même.';
+      leadMessage.textContent = error?.outcome === 'refused'
+        ? 'La transmission n’a pas abouti et votre demande n’a pas été enregistrée. Relisez le courriel préparé, puis envoyez-le vous-même.'
+        : 'Nous n’avons pas reçu de confirmation : votre demande a peut-être bien été transmise. Attendez l’accusé de réception avant de renvoyer ; le courriel préparé reste disponible si vous n’en recevez pas.';
     } finally {
       if (guard?.enabled) guard.reset(leadForm);
       payload.captcha_token = '';

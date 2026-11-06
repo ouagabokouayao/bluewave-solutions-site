@@ -131,8 +131,10 @@ export function validateLead(input, {campaigns = []} = {}) {
 
   for (const [field, enumName] of Object.entries(ARRAY_ENUMS)) {
     const raw = input[field];
-    if (raw === undefined) { value[field] = []; continue; }
-    if (!Array.isArray(raw) || raw.length > 8 || raw.length < 1 || raw.some(item => typeof item !== 'string' || !ENUMS[enumName].includes(item))) {
+    // Une liste facultative vide est valide : le serveur revalide la valeur
+    // produite ici. Les listes obligatoires sont contrôlées par CONDITIONAL_RULES.
+    if (raw === undefined || (Array.isArray(raw) && raw.length === 0)) { value[field] = []; continue; }
+    if (!Array.isArray(raw) || raw.length > 8 || raw.some(item => typeof item !== 'string' || !ENUMS[enumName].includes(item))) {
       pushError(errors, field);
     } else value[field] = [...new Set(raw)];
   }

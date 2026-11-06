@@ -38,6 +38,8 @@
     if (!config.lead_endpoint) return { configured: false };
     const endpoint = new URL(config.lead_endpoint, location.origin);
     if (endpoint.protocol !== 'https:' || endpoint.origin !== location.origin || endpoint.pathname !== '/api/leads' || endpoint.search || endpoint.hash) throw new Error('Endpoint non sécurisé');
+    // Sans réponse exploitable, la demande a pu être enregistrée : l'issue reste inconnue.
+    const unknownOutcome = () => Object.assign(new Error('Réponse perdue'), { outcome: 'unknown' });
     const response = await fetch(endpoint.href, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -45,11 +47,13 @@
       referrerPolicy: 'no-referrer',
       signal: AbortSignal.timeout(25000),
       body: JSON.stringify({...payload, ...await provenanceReady})
-    });
+    }).catch(() => { throw unknownOutcome(); });
     let result = {};
     try { result = await response.json(); } catch (error) { result = {}; }
-    if (!response.ok || result.success !== true) throw new Error('Transmission indisponible');
-    return { configured: true, ok: true, message: result.message };
+    if (response.ok && result.success === true) return { configured: true, ok: true, message: result.message };
+    // 4xx et 503 sont des refus du Worker, avant tout enregistrement.
+    if (response.ok || (response.status >= 500 && response.status !== 503)) throw unknownOutcome();
+    throw Object.assign(new Error('Transmission refusée'), { outcome: 'refused' });
   };
 
   const PROVENANCE_MODULE = 'assets/js/provenance.js';
