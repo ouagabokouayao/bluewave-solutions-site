@@ -71,10 +71,19 @@ test('événements ouverts sans base : indisponible', () => {
   assert.equal(isReady({ ASSETS: assets, EVENTS_ENABLED: 'true', CONVERSION_DB: {} }), true);
 });
 
-test('lettre de veille ouverte : indisponible tant que le canal n’est pas complet', () => {
-  const environment = { ASSETS: assets, NEWSLETTER_ENABLED: 'true' };
-  assert.equal(isReady(environment), false);
-  assert.ok(readinessReasons(environment).includes('newsletter_channel_not_implemented'));
+test('lettre de veille ouverte : chaque composant manquant est signalé', () => {
+  const complete = { ASSETS: assets, NEWSLETTER_ENABLED: 'true', NEWSLETTER_DB: { prepare() {} }, NEWSLETTER_TOKEN_SECRET: 's'.repeat(40),
+    NEWSLETTER_NOTICE_VERSION: 'veille-v1', NEWSLETTER_PROOF_RETENTION_DAYS: '1095', BREVO_API_KEY: 'cle', BREVO_NEWSLETTER_LIST_ID: '7',
+    BREVO_NEWSLETTER_CONFIRM_TEMPLATE_ID: '8', BLUEWAVE_SITE_URL: 'https://bluewave.invalid', ALLOWED_ORIGIN: 'https://bluewave.invalid',
+    LEAD_GUARD: {}, GUARD_HMAC_KEY: 'g'.repeat(40) };
+  assert.deepEqual(readinessReasons(complete), []);
+  for (const [name, reason] of [['NEWSLETTER_DB', 'newsletter_db_missing'], ['NEWSLETTER_TOKEN_SECRET', 'newsletter_secret_missing'],
+    ['BREVO_NEWSLETTER_LIST_ID', 'newsletter_transport_missing'], ['NEWSLETTER_NOTICE_VERSION', 'newsletter_notice_missing'],
+    ['NEWSLETTER_PROOF_RETENTION_DAYS', 'newsletter_retention_missing'], ['LEAD_GUARD', 'lead_guard_missing'], ['ALLOWED_ORIGIN', 'allowed_origin_invalid']]) {
+    const environment = { ...complete };
+    delete environment[name];
+    assert.ok(readinessReasons(environment).includes(reason), reason);
+  }
 });
 
 test('durée de conservation invalide : indisponible ; vide : sans effet', () => {

@@ -21,6 +21,8 @@
     "CAMPAIGNS_ENABLED": "false",
     "EVENTS_ENABLED": "false",
     "NEWSLETTER_ENABLED": "false",
+    "NEWSLETTER_NOTICE_VERSION": "",
+    "NEWSLETTER_PROOF_RETENTION_DAYS": "",
     "TURNSTILE_ENABLED": "false",
     "PUBLIC_INDEXABLE": "false",
     "ALLOWED_CAMPAIGNS": "",

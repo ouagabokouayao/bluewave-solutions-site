@@ -561,8 +561,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "884a5abdc3dd55f10406a63556579a6217e383f660d36e0688006565eb1b5c8f",
-    "bytes": 13618
+    "sha256": "368e6541ae0f6801edd08817bb314355416b3861c2b1cea44632471fd9faf26a",
+    "bytes": 14788
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -676,13 +676,13 @@
   },
   {
     "path": "serverless/a01/newsletter-test-channel.mjs",
-    "sha256": "853470659dee8db4d4ade96e360c920f2037a4032e317b2895e6747f41271861",
-    "bytes": 9152
+    "sha256": "db4c7757c0ce7eb9c6ee35a5ae8b1d486def2b83c26429f7cf487641ddf12753",
+    "bytes": 946
   },
   {
     "path": "serverless/a01/newsletter-test-schema.sql",
-    "sha256": "89d99a107e5caaa7b2c36feef87a13fa75a487cae0e4f51b82b9828ae93a0cb7",
-    "bytes": 458
+    "sha256": "d458e0ca74c4a717e0d03f206f1f4d05ef6f843d0711ba5837038b7aa067fb6b",
+    "bytes": 786
   },
   {
     "path": "serverless/a01/prepare.mjs",
@@ -701,8 +701,8 @@
   },
   {
     "path": "serverless/bluewave-leads/.env.example",
-    "sha256": "161a882593aa257b65d3f601f99f632e5a0eacaba65d9bc4e00d905b348ce832",
-    "bytes": 1547
+    "sha256": "2fff0663e6764bfd77b431d32a3b6d5d59335efa8bcd1f2303ee0f88cd6d3246",
+    "bytes": 1671
   },
   {
     "path": "serverless/bluewave-leads/BREVO-EXTERNAL.md",
@@ -735,14 +735,19 @@
     "bytes": 10279
   },
   {
+    "path": "serverless/bluewave-leads/newsletter-brevo.mjs",
+    "sha256": "87c32ba402765c6454b7ee043d884f9861c95ae6014603af71320660f16a0a94",
+    "bytes": 2919
+  },
+  {
     "path": "serverless/bluewave-leads/newsletter.mjs",
-    "sha256": "ba72bf7fad1732d2d295e10e92cce89244166a9e6a413cfd39ddd638e2dd7894",
-    "bytes": 6280
+    "sha256": "58a73c22510e66bc2851f8ef4debb7a4be45425b981d2a0007e118a7a8ee604c",
+    "bytes": 16205
   },
   {
     "path": "serverless/bluewave-leads/observability.mjs",
-    "sha256": "514e1be0888bd4b59e88f9462724adad02de1a201f583262e2222c095401c710",
-    "bytes": 2520
+    "sha256": "bccfb2cc752fc4cba84e2689b687e24e3fe4e02d0b4ee3a7f7e221bcb10d8fa5",
+    "bytes": 2612
   },
   {
     "path": "serverless/bluewave-leads/replay.mjs",
@@ -796,8 +801,8 @@
   },
   {
     "path": "serverless/bluewave-leads/tests/newsletter.test.mjs",
-    "sha256": "667040840772762ec61f40c00a8fc4488ad4c20df108cbe343baf5dc102a011c",
-    "bytes": 4756
+    "sha256": "a1f83892f891fda47391a672291595663e6207876cc41b93e117dd44897d7f75",
+    "bytes": 15884
   },
   {
     "path": "serverless/bluewave-leads/tests/pipeline.test.mjs",
@@ -850,9 +855,24 @@
     "bytes": 2961
   },
   {
+    "path": "serverless/cloudflare/newsletter-route.mjs",
+    "sha256": "6d9099839c575b2f119d2f6cfc120531374743eb7f64440fbf02e4d72d887ba3",
+    "bytes": 5861
+  },
+  {
+    "path": "serverless/cloudflare/newsletter-schema.sql",
+    "sha256": "fb531169f46cdf7901251ea208d17d526ca49d4290d6e8a3159744ccc44a7f42",
+    "bytes": 1051
+  },
+  {
+    "path": "serverless/cloudflare/read-limited.mjs",
+    "sha256": "43b6a90ab83413afb902e8a10b44c69009e50bfc672e02f2fd61bf27fdcf4598",
+    "bytes": 723
+  },
+  {
     "path": "serverless/cloudflare/readiness.mjs",
-    "sha256": "13fb6419189d7231ac792b4fa0057d71e72a78db169683b6c6ec26b98042bbe2",
-    "bytes": 3475
+    "sha256": "a96dd9560a269d96cc726ff68718d4fe3ad16af29dbd719ffdf8772a34dc085b",
+    "bytes": 4142
   },
   {
     "path": "serverless/cloudflare/report.sql",
@@ -880,6 +900,11 @@
     "bytes": 6190
   },
   {
+    "path": "serverless/cloudflare/tests/newsletter-route.test.mjs",
+    "sha256": "5d7932344e25b513b18a11bf080070fd31e88c5f783809b271fb261a47fb1e9d",
+    "bytes": 11137
+  },
+  {
     "path": "serverless/cloudflare/tests/operations.test.mjs",
     "sha256": "df4f220e4173c199cc9749bc16589015697e492790fe54afbbc0480fddda01d4",
     "bytes": 5372
@@ -896,8 +921,8 @@
   },
   {
     "path": "serverless/cloudflare/tests/readiness.test.mjs",
-    "sha256": "78e605a423fcf9fd936d6cb0ab322657597b17ca5440f1c82cf0099097287cc9",
-    "bytes": 8893
+    "sha256": "82bd1b62b617ca44d73475beae8b17ddd48a4454046b7a51244e97d8996c1a77",
+    "bytes": 9762
   },
   {
     "path": "serverless/cloudflare/tests/redirects.test.mjs",
@@ -921,28 +946,28 @@
   },
   {
     "path": "serverless/cloudflare/worker.mjs",
-    "sha256": "093dba7b38a1656265acf49503a761d11de5665072d1d61cc7d7efaaa0a28f45",
-    "bytes": 7387
+    "sha256": "63180008df2eb4e7c0a9225523d1998c610207b12f6725bd37adf93996968b39",
+    "bytes": 7169
   },
   {
     "path": "serverless/cloudflare/wrangler.jsonc",
-    "sha256": "bb4deb676c736795f55101573d54f71eefca5590c07d4d794da04ef4f8e2ebb6",
-    "bytes": 876
+    "sha256": "619cb1b3f36a722535e9f56f3c9f6768d3bfec6f899718cb2f077a2cca188e2b",
+    "bytes": 956
   },
   {
     "path": "serverless/cloudflare/wrangler.preproduction.jsonc",
-    "sha256": "66ca34c75f03f13bd65a59d473c29d6fa1707dd883e3010ac8c1413d262fc11d",
-    "bytes": 975
+    "sha256": "fbff2992d0f75358351e1f1159497ef4c7f50f104876c3046c369d69d1967641",
+    "bytes": 1055
   },
   {
     "path": "serverless/cloudflare/wrangler.production.jsonc",
-    "sha256": "fc462cfd9c5a6d9f91f845d90c9c9724931c0d10fde7f63f2d20c5a8eb6048e0",
-    "bytes": 1142
+    "sha256": "830fa47468cf25ba1835769915efc4cde68cee7e30fc6f6680b3ace39f29ce23",
+    "bytes": 1222
   },
   {
     "path": "serverless/cloudflare/wrangler.profil-a.jsonc",
-    "sha256": "491c83aa2512d4e3159ebd9210a76b5c28e9cd3d2d2a4b899c5f3a0e77f21057",
-    "bytes": 1060
+    "sha256": "b1300ea3787e505aad3f52bc10edac8bde63553de99fcff583030a17899883cb",
+    "bytes": 1140
   },
   {
     "path": "services.html",

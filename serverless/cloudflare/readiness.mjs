@@ -11,6 +11,7 @@
 import { enabledSteps, validateEnvironment } from '../bluewave-leads/brevo-client.mjs';
 import { retentionCutoff } from '../bluewave-leads/lead-store.mjs';
 import { newsletterEnabled } from '../bluewave-leads/newsletter.mjs';
+import { newsletterTransportMissing } from '../bluewave-leads/newsletter-brevo.mjs';
 import { turnstileEnabled } from './turnstile.mjs';
 
 const filled = (environment, name) => String(environment[name] ?? '').trim().length > 0;
@@ -23,6 +24,10 @@ export function readinessReasons(environment = {}) {
   if (environment.LEADS_ENABLED === 'true') {
     if (typeof environment.LEADS_DB?.prepare !== 'function') reasons.push('leads_db_missing');
     if (!filled(environment, 'LEAD_RETENTION_DAYS')) reasons.push('lead_retention_missing');
+  }
+
+  // Tout point d'entrée public repose sur la garde et sur une origine stricte.
+  if (environment.LEADS_ENABLED === 'true' || newsletterEnabled(environment)) {
     if (!environment.LEAD_GUARD) reasons.push('lead_guard_missing');
     // La garde distribuée refuse déjà une clé plus courte : l'annoncer ici
     // évite d'ouvrir le formulaire sur une garde qui lèvera à chaque appel.
@@ -51,9 +56,14 @@ export function readinessReasons(environment = {}) {
 
   if (environment.EVENTS_ENABLED === 'true' && !environment.CONVERSION_DB) reasons.push('conversion_db_missing');
 
-  // Le canal de veille n'a pas d'implémentation complète : l'ouvrir ne peut
-  // pas aboutir, et le dire ici vaut mieux que de le découvrir en production.
-  if (newsletterEnabled(environment)) reasons.push('newsletter_channel_not_implemented');
+  // La lettre de veille a sa propre base, son secret et sa preuve de consentement.
+  if (newsletterEnabled(environment)) {
+    if (typeof environment.NEWSLETTER_DB?.prepare !== 'function') reasons.push('newsletter_db_missing');
+    if (String(environment.NEWSLETTER_TOKEN_SECRET ?? '').length < 32) reasons.push('newsletter_secret_missing');
+    if (newsletterTransportMissing(environment).length) reasons.push('newsletter_transport_missing');
+    if (!filled(environment, 'NEWSLETTER_NOTICE_VERSION')) reasons.push('newsletter_notice_missing');
+    if (!(Number(environment.NEWSLETTER_PROOF_RETENTION_DAYS) > 0)) reasons.push('newsletter_retention_missing');
+  }
 
   // Une purge configurée doit l'être avec une valeur exploitable.
   if (filled(environment, 'LEAD_RETENTION_DAYS') && retentionCutoff(environment.LEAD_RETENTION_DAYS) === null) {

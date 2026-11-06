@@ -11,7 +11,8 @@ export const LOG_EVENTS = Object.freeze([
   'brevo_contact_failed', 'ack_failed', 'internal_notification_failed',
   'delivery_status_write_failed',
   'event_storage_failed', 'lead_purged', 'lead_purge_failed',
-  'replay_started', 'replay_failed', 'data_rights_operation'
+  'replay_started', 'replay_failed', 'data_rights_operation',
+  'newsletter_transport_failed', 'newsletter_maintenance', 'newsletter_maintenance_failed'
 ]);
 
 // Seules ces clés peuvent accompagner un événement, et seules des valeurs

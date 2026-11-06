@@ -3,6 +3,8 @@ import {purgeExpiredLeads} from '../bluewave-leads/lead-store.mjs';
 import {createDistributedGuard, LeadGuard} from './guard.mjs';
 import {createTurnstileVerifier} from './turnstile.mjs';
 import {isReady} from './readiness.mjs';
+import {handleNewsletter, newsletterMaintenance} from './newsletter-route.mjs';
+import {readLimited} from './read-limited.mjs';
 import {createLogger} from '../bluewave-leads/observability.mjs';
 import {sanitizeEvent} from '../../assets/js/analytics.js';
 export {LeadGuard};
@@ -17,24 +19,6 @@ const MOVED_PAGES = Object.freeze({
  '/services.html':'/solutions.html',
  '/notes-demonstrateurs.html':'/preuves-demonstrateurs.html'
 });
-
-async function readLimited(request, max) {
- const length = Number(request.headers.get('content-length') || 0);
- if (length > max) return {tooLarge:true};
- const reader = request.body?.getReader();
- if (!reader) return {invalid:true};
- const chunks=[]; let size=0;
- for (;;) {
-  const {done,value}=await reader.read();
-  if (done) break;
-  size+=value.byteLength;
-  if (size>max) {await reader.cancel();return {tooLarge:true};}
-  chunks.push(value);
- }
- const bytes=new Uint8Array(size);let offset=0;
- for(const chunk of chunks) {bytes.set(chunk,offset);offset+=chunk.length;}
- return {raw:new TextDecoder('utf-8',{fatal:true}).decode(bytes)};
-}
 
 async function conversion(request, env, url) {
  if (env.EVENTS_ENABLED !== 'true' || !env.CONVERSION_DB) return off();
@@ -85,6 +69,13 @@ export default {
     logger.log('lead_purge_failed',{});
    }
   }
+  if (env.NEWSLETTER_DB) {
+   try {
+    logger.log('newsletter_maintenance',{count:await newsletterMaintenance(env,now.getTime())});
+   } catch {
+    logger.log('newsletter_maintenance_failed',{});
+   }
+  }
  },
  async fetch(request, env) {
   const url=new URL(request.url);
@@ -97,6 +88,7 @@ export default {
    } catch {return off();}
   }
   if (url.pathname==='/api/events') return conversion(request,env,url);
+  if (url.pathname.startsWith('/api/newsletter/')) return handleNewsletter(request,env,url);
   // Diagnostic d'exploitation : disponibilité seule. Ni binding, ni
   // identifiant de base, ni secret, ni version n'y transparaissent.
   if (url.pathname==='/api/health') {
