@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "d492b912a0b6a20e3fefb149f2b46e30f93c1708c917c9a31ad51cb9eee06ec3",
-    "bytes": 6065
+    "sha256": "1650605b924627be9e734d05859fa438ec8d148a4f60ffcbf5baa7fd45241cd1",
+    "bytes": 6302
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -291,8 +291,8 @@
   },
   {
     "path": "assets/js/automation.js",
-    "sha256": "57767492f2921228468e7d1f8ac929e9e9e5feb19815af27a50297137bd48d0d",
-    "bytes": 6336
+    "sha256": "93d383d69d2bcc661b38462c268bc2248670294bf8c392cf855dda59506b1375",
+    "bytes": 6453
   },
   {
     "path": "assets/js/experience.js",
@@ -561,7 +561,7 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "ed517d67fc6c502e5359bf664424d4b5e02c39dd238dbc1d3e1dea53e508f11f",
+    "sha256": "228c7d881b7a5acc747a2650e55f7a67c640fded51ca3bbd4429a04e1d0fc69a",
     "bytes": 12610
   },
   {

@@ -127,3 +127,7 @@ jobs:
         run: node quality/tests/layout-stability.e2e.mjs dist
       - name: Responsive, links, keyboard and closed profile on every page
         run: node quality/tests/site-quality.e2e.mjs dist
+      - name: Real forms through the Worker, with D1 and Brevo simulated
+        run: |
+          python quality/scripts/build_production_dist.py --leads --privacy-simulation
+          node quality/tests/lead-api.e2e.mjs dist-production

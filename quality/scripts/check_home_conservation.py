@@ -91,7 +91,7 @@ AUTHORIZED_VERSIONS = {
         '02-E11 : état de la veille du 16/10/2026'),
     'assets/css/premium.css': ('04d3cd4a77f3572000b774940b4abc55aaebe23e3b13f9369fb8578a410e7790',
         'V3-FIN : adresse insécable sur écran étroit'),
-    'assets/js/automation.js': ('57767492f2921228468e7d1f8ac929e9e9e5feb19815af27a50297137bd48d0d',
+    'assets/js/automation.js': ('93d383d69d2bcc661b38462c268bc2248670294bf8c392cf855dda59506b1375',
         'W14 : contrat navigateur-serveur et perte de réponse'),
     'assets/js/qualifier.js': ('665d345fda61c0373462c4dc724cefcc97979ed29250b8942e9e17f2b426f1b7',
         'W14 : contrat navigateur-serveur et perte de réponse'),

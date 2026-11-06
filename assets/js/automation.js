@@ -51,8 +51,9 @@
     let result = {};
     try { result = await response.json(); } catch (error) { result = {}; }
     if (response.ok && result.success === true) return { configured: true, ok: true, message: result.message };
-    // 4xx et 503 sont des refus du Worker, avant tout enregistrement.
-    if (response.ok || (response.status >= 500 && response.status !== 503)) throw unknownOutcome();
+    // Les 4xx et le 503 sont des refus avant enregistrement. Le 409 signale un
+    // doublon : la demande d'origine a pu aboutir, l'issue reste donc inconnue.
+    if (response.ok || response.status === 409 || (response.status >= 500 && response.status !== 503)) throw unknownOutcome();
     throw Object.assign(new Error('Transmission refusée'), { outcome: 'refused' });
   };
 
