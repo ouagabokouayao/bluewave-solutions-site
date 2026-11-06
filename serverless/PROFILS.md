@@ -9,7 +9,7 @@ Deux configurations séparées. Aucune n'est activée par ce dépôt : toute mis
 | Collecte serveur | Aucune : API en 503 | D1 `LEADS_DB`, conservation obligatoire |
 | Brevo, Turnstile | Fermés | Ouverts après tests de bout en bout |
 | Secrets | Aucun | `BREVO_API_KEY`, `GUARD_HMAC_KEY`, `TURNSTILE_SECRET_KEY` (jamais dans Git) |
-| Tâche planifiée | Aucune | Purge quotidienne |
+| Tâche planifiée | Aucune | Purge, reprise des retraits et contrôle des blocages |
 | Contrôle | `python quality/scripts/check_profile.py A` | `python quality/scripts/check_profile.py B` |
 
 Les deux profils gardent le site non indexable tant que l'indexation n'a pas été autorisée.
@@ -118,7 +118,25 @@ python quality/scripts/render_production_wrangler.py --database-id <UUID> --lead
 python quality/scripts/check_profile.py B --newsletter
 ```
 
-Pour refermer la lettre, retirer `--newsletter` mais garder `--newsletter-database-id` : le retrait continue de fonctionner.
+### Inscriptions fermées
+
+Toute construction publie `lettre-de-veille.html`, à la même adresse, pour que les liens déjà envoyés restent valables. Sans `--newsletter`, la page affiche « Les inscriptions ne sont pas encore ouvertes. » et ne contient aucun formulaire : elle n'est ni indexée, ni citée dans le plan du site, ni reliée au menu.
+
+Une personne déjà inscrite y arrive par son lien et se désinscrit d'un clic. Sans base ni fournisseur, comme au profil A, la page donne l'adresse de contact pour un retrait à la main.
+
+Pour refermer la lettre, retirer `--newsletter` et garder `--newsletter-database-id`. `/api/health` signale `unavailable` si la base reste liée sans son secret ni ses paramètres Brevo : le retrait échouerait.
+
+### Supervision
+
+La tâche quotidienne relance les retraits en attente, puis mesure ce qui reste bloqué.
+
+| Journal | Contenu |
+|---|---|
+| `newsletter_maintenance` | `status`, retraits en attente (`count`), relancés (`retried`), en échec (`failed`), ancienneté (`age_hours`), tentatives (`attempts`), cause (`reason`, par exemple `http_401` ou `network`) |
+| `lead_delivery_backlog` | Demandes dont la diffusion reste incomplète, et leur ancienneté |
+| `sync_alert` | Blocage de plus de 24 heures, avec `operation` : `newsletter_revocation` ou `lead_delivery` |
+
+Une alerte fait aussi échouer l'exécution de la tâche : elle apparaît dans l'historique Cloudflare et peut y déclencher une notification, sans dépendre du service en panne. Aucune adresse n'entre dans ces journaux.
 
 ## Retour arrière
 

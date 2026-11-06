@@ -25,6 +25,9 @@ export const TOKEN_TTL_SECONDS = 86400;
 // La gestion des préférences expire ; la désinscription, elle, ne dépend d'aucune durée.
 export const MANAGEMENT_TTL_SECONDS = 2 * 365 * 86400;
 export const UNCONFIRMED_RETENTION_DAYS = 30;
+// Au-delà, un retrait qui n'atteint pas le fournisseur n'est plus un incident
+// passager : la personne risque de recevoir une édition après s'être désinscrite.
+export const REVOCATION_ALERT_HOURS = 24;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
@@ -116,8 +119,12 @@ export function createNewsletterChannel(environment = {}, {
 
   const finishRevocation = async record => {
     try { await transport.unsubscribe(record.email, { idempotency_key: `unsubscribe:${record.consent_id}` }); }
-    catch { return { ok: false, reason: 'unsubscribe_transport_failed', step: 'REVOKING' }; }
-    await query(`UPDATE ${table} SET state='REVOKED',management_digest=NULL WHERE consent_id=? AND state='REVOKING'`, record.consent_id).run();
+    catch (error) {
+      await query(`UPDATE ${table} SET sync_attempts=sync_attempts+1,sync_error=?,sync_attempt_at=? WHERE consent_id=? AND state='REVOKING'`,
+        error?.status ? `http_${error.status}` : 'network', new Date(now()).toISOString(), record.consent_id).run();
+      return { ok: false, reason: 'unsubscribe_transport_failed', step: 'REVOKING' };
+    }
+    await query(`UPDATE ${table} SET state='REVOKED',management_digest=NULL,sync_error=NULL WHERE consent_id=? AND state='REVOKING'`, record.consent_id).run();
     return { ok: true, step: 'REVOKED' };
   };
 
@@ -238,7 +245,7 @@ export function createNewsletterChannel(environment = {}, {
     },
 
     async retryPendingRevocations(limit = 50) {
-      const pending = (await query(`SELECT * FROM ${table} WHERE state='REVOKING' LIMIT ?`, limit).all()).results ?? [];
+      const pending = (await query(`SELECT * FROM ${table} WHERE state='REVOKING' ORDER BY revoked_at LIMIT ?`, limit).all()).results ?? [];
       let failed = 0;
       for (const record of pending) if (!(await finishRevocation(record)).ok) failed += 1;
       return { retried: pending.length, failed };
@@ -251,11 +258,29 @@ export function createNewsletterChannel(environment = {}, {
 export async function purgeNewsletter(database, { now = Date.now(), proofRetentionDays = null, table = 'newsletter_consents' } = {}) {
   if (!TABLES.has(table)) throw new Error('Table lettre de veille inconnue');
   const removed = result => result?.meta?.changes ?? result?.changes ?? 0;
-  const unconfirmed = await database.prepare(`DELETE FROM ${table} WHERE state IN ('REQUEST','SENDING','CONFIRM_SENT','CONFIRMING','EXPIRED') AND expires_at < ?`)
+  // CONFIRMING n'y figure pas : le contact a pu être créé chez le fournisseur.
+  const unconfirmed = await database.prepare(`DELETE FROM ${table} WHERE state IN ('REQUEST','SENDING','CONFIRM_SENT','EXPIRED') AND expires_at < ?`)
     .bind(now - UNCONFIRMED_RETENTION_DAYS * 86400000).run();
   const days = Number(proofRetentionDays);
   if (!proofRetentionDays || !Number.isSafeInteger(days) || days <= 0) return { unconfirmed: removed(unconfirmed), revoked: 0 };
   const revoked = await database.prepare(`DELETE FROM ${table} WHERE state='REVOKED' AND revoked_at < ?`)
     .bind(new Date(now - days * 86400000).toISOString()).run();
   return { unconfirmed: removed(unconfirmed), revoked: removed(revoked) };
+}
+
+// État de la synchronisation avec le fournisseur, indépendant de l'ouverture du
+// canal. Il dit ce qui reste bloqué, depuis quand et pourquoi, pas seulement combien
+// de tentatives ont eu lieu.
+export async function newsletterBacklog(database, { now = Date.now(), table = 'newsletter_consents' } = {}) {
+  if (!TABLES.has(table)) throw new Error('Table lettre de veille inconnue');
+  const read = async (sql, ...values) => (await database.prepare(sql).bind(...values).all()).results ?? [];
+  const [pending] = await read(`SELECT COUNT(*) AS count, MIN(revoked_at) AS oldest, MAX(sync_attempts) AS attempts FROM ${table} WHERE state='REVOKING'`);
+  const errors = await read(`SELECT DISTINCT sync_error AS code FROM ${table} WHERE state='REVOKING' AND sync_error IS NOT NULL ORDER BY code`);
+  const [stuck] = await read(`SELECT COUNT(*) AS count FROM ${table} WHERE state='CONFIRMING' AND expires_at < ?`, now);
+  const oldestHours = pending.oldest ? Math.floor((now - Date.parse(pending.oldest)) / 3600000) : 0;
+  return {
+    pending_revocations: pending.count, oldest_pending_hours: oldestHours, max_attempts: pending.attempts ?? 0,
+    error_codes: errors.map(row => row.code), stuck_confirmations: stuck.count,
+    alert: (pending.count > 0 && oldestHours >= REVOCATION_ALERT_HOURS) || stuck.count > 0
+  };
 }

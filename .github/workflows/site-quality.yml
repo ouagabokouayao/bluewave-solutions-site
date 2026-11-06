@@ -135,3 +135,7 @@ jobs:
         run: |
           python quality/scripts/build_production_dist.py --leads --newsletter --privacy-simulation
           node quality/tests/newsletter.e2e.mjs dist-production
+      - name: Newsletter withdrawal with registrations closed
+        run: |
+          python quality/scripts/build_production_dist.py
+          node quality/tests/newsletter-retrait.e2e.mjs dist-production

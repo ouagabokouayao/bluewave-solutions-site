@@ -18,7 +18,11 @@ CREATE TABLE IF NOT EXISTS newsletter_consents (
  confirmation_digest TEXT NOT NULL,
  expires_at INTEGER NOT NULL,
  management_digest TEXT,
- management_expires_at INTEGER
+ management_expires_at INTEGER,
+ -- Suivi des échecs de répercussion chez le fournisseur.
+ sync_attempts INTEGER NOT NULL DEFAULT 0,
+ sync_error TEXT,
+ sync_attempt_at TEXT
 );
 CREATE INDEX IF NOT EXISTS newsletter_confirmation ON newsletter_consents (confirmation_digest);
 CREATE INDEX IF NOT EXISTS newsletter_management ON newsletter_consents (management_digest);

@@ -182,6 +182,61 @@ test('pannes Brevo : 503 honnête, puis reprise ; retrait acquis et repris par l
   });
 });
 
+test('07 : retrait bloqué depuis plus de 24 h : journal, code d’erreur et tâche en échec', async () => {
+  await scenario(async ({ env, brevo, database, fail, logs }) => {
+    await subscribe(env);
+    const { management_token: token } = await (await call(env, 'confirm', { token: confirmationToken(brevo) })).json();
+    fail(true);
+    await call(env, 'unsubscribe', { token });
+    await worker.scheduled({}, env);
+    const summary = logs.map(line => JSON.parse(line)).find(line => line.event === 'newsletter_maintenance');
+    assert.equal(summary.status, 'ok');
+    assert.equal(summary.reason, 'http_503');
+    logs.length = 0;
+    await database.prepare(`UPDATE newsletter_consents SET revoked_at=?`).bind(new Date(Date.now() - 25 * 3600000).toISOString()).run();
+    await assert.rejects(() => worker.scheduled({}, env), /Alerte de synchronisation/);
+    const events = logs.map(line => JSON.parse(line));
+    const alert = events.find(line => line.event === 'sync_alert');
+    assert.equal(alert.operation, 'newsletter_revocation');
+    assert.equal(alert.count, 1);
+    assert.ok(alert.age_hours >= 25);
+    assert.ok(alert.attempts >= 3);
+    assert.equal(alert.reason, 'http_503');
+    assert.equal(logs.join('').includes(EMAIL), false);
+    fail(false);
+    await worker.scheduled({}, env);
+  });
+});
+
+test('07 : transport retiré alors qu’un retrait attend : la tâche ne reste pas muette', async () => {
+  await scenario(async ({ env, brevo, database, fail, logs }) => {
+    await subscribe(env);
+    const { management_token: token } = await (await call(env, 'confirm', { token: confirmationToken(brevo) })).json();
+    fail(true);
+    await call(env, 'unsubscribe', { token });
+    fail(false);
+    await database.prepare(`UPDATE newsletter_consents SET revoked_at=?`).bind(new Date(Date.now() - 25 * 3600000).toISOString()).run();
+    const broken = { ...env, NEWSLETTER_ENABLED: 'false', BREVO_API_KEY: '' };
+    await assert.rejects(() => worker.scheduled({}, broken), /Alerte de synchronisation/);
+    assert.ok(logs.some(line => line.includes('sync_alert')));
+  });
+});
+
+test('diffusions incomplètes : signalées chaque jour, alerte au-delà de 24 h', async () => {
+  const logs = [];
+  const previous = console.log;
+  console.log = line => logs.push(JSON.parse(line));
+  const database = count => ({ prepare: () => ({ bind: () => ({ all: async () => ({ results: [{ count, oldest: new Date(Date.now() - 30 * 3600000).toISOString() }] }) }) }) });
+  try {
+    await worker.scheduled({}, { LEADS_DB: database(0) });
+    assert.equal(logs.length, 0);
+    await assert.rejects(() => worker.scheduled({}, { LEADS_DB: database(2) }), /Alerte de synchronisation/);
+    assert.deepEqual(logs.map(line => line.event), ['lead_delivery_backlog', 'sync_alert']);
+    assert.equal(logs[1].operation, 'lead_delivery');
+    assert.equal(logs[1].count, 2);
+  } finally { console.log = previous; }
+});
+
 test('canal refermé : le retrait reste ouvert à qui est déjà inscrit', async () => {
   await scenario(async ({ env, brevo }) => {
     await subscribe(env);

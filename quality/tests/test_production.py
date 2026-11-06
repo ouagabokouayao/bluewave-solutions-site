@@ -35,7 +35,7 @@ class ProductionProfile(unittest.TestCase):
         self.assertNotIn('sitemap.xml', [p.name for p in out.iterdir()])
         self.assertEqual(json.loads((out / 'data/automation-config.json').read_text())['lead_endpoint'], None)
         self.assertFalse(json.loads((out / 'data/analytics-config.json').read_text())['enabled'])
-        self.assertEqual(len(list(out.glob('*.html'))), 21)
+        self.assertEqual(len(list(out.glob('*.html'))), 22)
         self.assertIn('noindex, nofollow', (out / 'index.html').read_text())
 
     def test_privacy_recipients_are_factual(self):
@@ -125,8 +125,10 @@ class ProductionProfile(unittest.TestCase):
     def test_open_profile_is_canonical_and_minimal(self):
         module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'], privacy_simulation=True)
         out = module.OUT
-        self.assertEqual(len(list(out.glob('*.html'))), 21)
+        self.assertEqual(len(list(out.glob('*.html'))), 22)
         for page in out.glob('*.html'):
+            if page.name == module.NEWSLETTER_PAGE:
+                continue
             body = page.read_text()
             source = (module.SOURCE / page.name).read_text()
             original_canonical = source.split('<link rel="canonical" href="', 1)[1].split('"', 1)[0]
@@ -219,13 +221,24 @@ class ProductionProfile(unittest.TestCase):
         self.assertEqual(opened['vars']['NEWSLETTER_ENABLED'], 'false')
         self.assertEqual(opened['vars']['LEAD_RETENTION_DAYS'], '30')
 
-    def test_newsletter_exists_only_when_opened(self):
+    def test_closed_profile_keeps_a_withdrawal_page_without_collection(self):
         module.build()
-        self.assertFalse((module.OUT / module.NEWSLETTER_PAGE).exists())
+        page = (module.OUT / module.NEWSLETTER_PAGE).read_text(encoding='utf-8')
+        self.assertTrue((module.OUT / module.WITHDRAWAL_SCRIPT).is_file())
         self.assertFalse((module.OUT / module.NEWSLETTER_SCRIPT).exists())
-        for page in module.OUT.glob('*.html'):
-            self.assertNotIn(module.NEWSLETTER_PAGE, page.read_text(encoding='utf-8'), page.name)
+        self.assertNotIn('<form', page)
+        self.assertNotIn('type="email"', page)
+        self.assertIn('Les inscriptions ne sont pas encore ouvertes.', page)
+        self.assertIn('content="noindex, nofollow"', page)
+        for other in module.OUT.glob('*.html'):
+            if other.name != module.NEWSLETTER_PAGE:
+                self.assertNotIn(module.NEWSLETTER_PAGE, other.read_text(encoding='utf-8'), other.name)
         self.assertIn('La lettre de veille est désactivée', (module.OUT / 'politique-confidentialite.html').read_text(encoding='utf-8'))
+        module.build(indexable=True, privacy_simulation=True)
+        self.assertIn('content="noindex, nofollow"', (module.OUT / module.NEWSLETTER_PAGE).read_text(encoding='utf-8'))
+        self.assertNotIn(module.NEWSLETTER_PAGE, (module.OUT / 'sitemap.xml').read_text(encoding='utf-8'))
+
+    def test_newsletter_opens_only_through_the_privacy_gate(self):
         with self.assertRaisesRegex(ValueError, 'Verrou confidentialité'):
             module.build(newsletter=True)
         module.build(newsletter=True, privacy_simulation=True)

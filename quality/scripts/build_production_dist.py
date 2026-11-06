@@ -24,10 +24,13 @@ LOGO_URL = ORIGIN + '/' + OFFICIAL_LOGO
 FORM_PAGES = ('collaboration.html', 'formation.html', 'qualifier-un-besoin.html')
 CLOSED_FORM_NOTICE = ('Ce formulaire n’envoie rien automatiquement : il prépare un courriel que vous relisez, '
     'puis envoyez vous-même depuis votre messagerie.')
-# La page et son script n'existent que dans un artefact où la lettre est ouverte.
+# Même adresse dans tous les cas : les liens déjà envoyés doivent rester valables.
+# Lettre ouverte, la page inscrit et gère. Lettre fermée, elle ne sert qu'au retrait.
 NEWSLETTER_PAGE = 'lettre-de-veille.html'
 NEWSLETTER_TEMPLATE = ROOT / 'quality/templates/lettre-de-veille.main.html'
 NEWSLETTER_SCRIPT = 'assets/js/newsletter.js'
+WITHDRAWAL_TEMPLATE = ROOT / 'quality/templates/lettre-de-veille-retrait.main.html'
+WITHDRAWAL_SCRIPT = 'assets/js/newsletter-retrait.js'
 LEGAL_FOOTER = '<a href="politique-confidentialite.html">Confidentialité</a>'
 # Une demande de contact ne vaut jamais inscription : la lettre ouverte, cette case
 # n'aurait aucun effet. Elle cède la place à un lien vers la page dédiée.
@@ -95,10 +98,10 @@ def article(document, heading, body):
     return result
 
 
-def newsletter_page():
+def newsletter_page(template, script):
     """Dérive la page de veille de la page de confidentialité déjà produite."""
     document = (OUT / 'politique-confidentialite.html').read_text(encoding='utf-8')
-    main = NEWSLETTER_TEMPLATE.read_text(encoding='utf-8').strip()
+    main = template.read_text(encoding='utf-8').strip()
     document, count = re.subn(r'<main id="contenu">.*</main>', lambda _: main, document, flags=re.S)
     if count != 1:
         raise ValueError('Contenu principal absent de la page de référence')
@@ -107,7 +110,7 @@ def newsletter_page():
     document = re.sub(r'(<meta (?:name|property)="(?:og:|twitter:)?description" content=")[^"]*', lambda m: m.group(1) + description, document)
     document = re.sub(r'(<meta property="og:title" content=")[^"]*', r'\g<1>Lettre de veille | BlueWave Solutions', document)
     document = document.replace(ORIGIN + '/politique-confidentialite.html', ORIGIN + '/' + NEWSLETTER_PAGE)
-    return document.replace('</body>', f'<script src="{NEWSLETTER_SCRIPT}" defer></script></body>')
+    return document.replace('</body>', f'<script src="{script}" defer></script></body>')
 
 
 def privacy(document, leads, events, traffic, newsletter=False):
@@ -281,10 +284,17 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
                 raise ValueError(f'Pied de page absent ou répété : {page.name}')
             document = document.replace(LEGAL_FOOTER, f'{LEGAL_FOOTER} · <a href="{NEWSLETTER_PAGE}">Lettre de veille</a>')
         page.write_text(document, encoding='utf-8')
+    template, script = (NEWSLETTER_TEMPLATE, NEWSLETTER_SCRIPT) if newsletter else (WITHDRAWAL_TEMPLATE, WITHDRAWAL_SCRIPT)
+    document = newsletter_page(template, script)
     if newsletter:
-        (OUT / NEWSLETTER_PAGE).write_text(newsletter_page(), encoding='utf-8')
-        shutil.copyfile(ROOT / NEWSLETTER_SCRIPT, OUT / NEWSLETTER_SCRIPT)
         pages.append(OUT / NEWSLETTER_PAGE)
+    else:
+        # Page de service : ni indexée, ni citée dans le plan du site.
+        document, count = re.subn(r'(<meta name="robots" content=")[^"]+', r'\g<1>noindex, nofollow', document, count=1)
+        if count != 1:
+            raise ValueError('Méta robots absente de la page de retrait')
+    (OUT / NEWSLETTER_PAGE).write_text(document, encoding='utf-8')
+    shutil.copyfile(ROOT / script, OUT / script)
     (OUT / SOCIAL_IMAGE).parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT / SOCIAL_IMAGE, OUT / SOCIAL_IMAGE)
     # Les pages servent un logo allégé ; les données structurées citent l'original.

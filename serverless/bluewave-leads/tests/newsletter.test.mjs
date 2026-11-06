@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { Miniflare } from 'miniflare';
 
-import { assertSubscriberTransport, consentProof, createNewsletterChannel, leadGrantsSubscription, MANAGEMENT_TTL_SECONDS, NEWSLETTER_STEPS, newsletterEnabled, purgeNewsletter, TOKEN_TTL_SECONDS, UNCONFIRMED_RETENTION_DAYS } from '../newsletter.mjs';
+import { assertSubscriberTransport, consentProof, createNewsletterChannel, leadGrantsSubscription, MANAGEMENT_TTL_SECONDS, NEWSLETTER_STEPS, newsletterBacklog, newsletterEnabled, purgeNewsletter, REVOCATION_ALERT_HOURS, TOKEN_TTL_SECONDS, UNCONFIRMED_RETENTION_DAYS } from '../newsletter.mjs';
 import { createBrevoNewsletterTransport } from '../newsletter-brevo.mjs';
 import { journeyPayload } from '../lead-store.mjs';
 
@@ -241,6 +241,45 @@ test('purge : adresses jamais confirmées supprimées, inscrits conservés, preu
     assert.deepEqual(await purgeNewsletter(database, { now: clock, proofRetentionDays: '10' }), { unconfirmed: 0, revoked: 1 });
     const left = (await database.prepare('SELECT email FROM newsletter_consents').all()).results.map(row => row.email);
     assert.deepEqual(left, ['inscrit@example.invalid']);
+  });
+});
+
+test('07 : un retrait qui échoue durablement est visible et alertable, avec sa cause', async () => {
+  await withDatabase(async database => {
+    let clock = NOW;
+    const transport = fakeTransport();
+    transport.unsubscribe = async () => { throw Object.assign(new Error('refus'), { status: 401 }); };
+    const channel = createNewsletterChannel(OPEN, { database, transport, now: () => clock });
+    await channel.request(INPUT);
+    const { management_token: management } = await channel.confirm(transport.calls.sent[0].token);
+    assert.deepEqual(await newsletterBacklog(database, { now: clock }), { pending_revocations: 0, oldest_pending_hours: 0, max_attempts: 0, error_codes: [], stuck_confirmations: 0, alert: false });
+    await channel.revoke(management);
+    assert.equal((await newsletterBacklog(database, { now: clock })).alert, false, 'une panne passagère n’alerte pas');
+    clock += (REVOCATION_ALERT_HOURS + 1) * 3600000;
+    assert.deepEqual(await channel.retryPendingRevocations(), { retried: 1, failed: 1 });
+    assert.deepEqual(await newsletterBacklog(database, { now: clock }), { pending_revocations: 1, oldest_pending_hours: REVOCATION_ALERT_HOURS + 1, max_attempts: 2, error_codes: ['http_401'], stuck_confirmations: 0, alert: true });
+    transport.unsubscribe = async () => {};
+    await channel.retryPendingRevocations();
+    const row = await stored(database);
+    assert.equal(row.state, 'REVOKED');
+    assert.equal(row.sync_error, null);
+    assert.equal((await newsletterBacklog(database, { now: clock })).alert, false);
+  });
+});
+
+test('07 : une confirmation interrompue est signalée et n’est pas purgée en silence', async () => {
+  await withDatabase(async database => {
+    let clock = NOW;
+    const transport = fakeTransport();
+    const channel = createNewsletterChannel(OPEN, { database, transport, now: () => clock });
+    await channel.request(INPUT);
+    await database.prepare(`UPDATE newsletter_consents SET state='CONFIRMING'`).run();
+    assert.equal((await newsletterBacklog(database, { now: clock })).alert, false);
+    clock += (UNCONFIRMED_RETENTION_DAYS + 2) * 86400000;
+    assert.equal((await purgeNewsletter(database, { now: clock })).unconfirmed, 0);
+    const backlog = await newsletterBacklog(database, { now: clock });
+    assert.equal(backlog.stuck_confirmations, 1);
+    assert.equal(backlog.alert, true);
   });
 });
 

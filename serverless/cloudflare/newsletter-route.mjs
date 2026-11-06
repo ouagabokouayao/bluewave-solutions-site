@@ -3,7 +3,7 @@
 // Fermé, seul le retrait reste possible, pour qui est déjà inscrit. Les jetons
 // arrivent toujours dans le corps d'un POST : un GET serait déclenché par les
 // scanners de messagerie, et une URL finirait dans les journaux.
-import { createNewsletterChannel, newsletterEnabled, purgeNewsletter } from '../bluewave-leads/newsletter.mjs';
+import { createNewsletterChannel, newsletterBacklog, newsletterEnabled, purgeNewsletter } from '../bluewave-leads/newsletter.mjs';
 import { createBrevoNewsletterTransport, newsletterTransportMissing } from '../bluewave-leads/newsletter-brevo.mjs';
 import { createLogger } from '../bluewave-leads/observability.mjs';
 import { createDistributedGuard } from './guard.mjs';
@@ -96,9 +96,12 @@ export async function handleNewsletter(request, env, url) {
   }
 }
 
-// Tâche quotidienne : purge, puis reprise des retraits restés sans répercussion.
+// Tâche quotidienne : purge, reprise des retraits restés sans répercussion, puis
+// état de ce qui reste bloqué. Une reprise impossible ne masque jamais cet état.
 export async function newsletterMaintenance(env, now = Date.now()) {
   const purged = await purgeNewsletter(env.NEWSLETTER_DB, { now, proofRetentionDays: env.NEWSLETTER_PROOF_RETENTION_DAYS });
-  const { retried } = await channelFor(env).retryPendingRevocations();
-  return purged.unconfirmed + purged.revoked + retried;
+  let retry = { retried: 0, failed: 0, unavailable: true };
+  try { retry = await channelFor(env).retryPendingRevocations(); } catch { /* signalé par l'état ci-dessous */ }
+  const backlog = await newsletterBacklog(env.NEWSLETTER_DB, { now });
+  return { purged, ...retry, ...backlog, alert: backlog.alert || (retry.unavailable === true && backlog.pending_revocations > 0) };
 }

@@ -86,6 +86,14 @@ test('lettre de veille ouverte : chaque composant manquant est signalé', () => 
   }
 });
 
+test('lettre fermée avec une base : le retrait doit rester possible', () => {
+  const closed = { ASSETS: assets, NEWSLETTER_DB: { prepare() {} } };
+  assert.ok(readinessReasons(closed).includes('newsletter_withdrawal_incomplete'));
+  assert.deepEqual(readinessReasons({ ...closed, NEWSLETTER_TOKEN_SECRET: 's'.repeat(40), BREVO_API_KEY: 'cle', BREVO_NEWSLETTER_LIST_ID: '7',
+    BREVO_NEWSLETTER_CONFIRM_TEMPLATE_ID: '8', BLUEWAVE_SITE_URL: 'https://bluewave.invalid' }), []);
+  assert.deepEqual(readinessReasons({ ASSETS: assets }), []);
+});
+
 test('durée de conservation invalide : indisponible ; vide : sans effet', () => {
   assert.equal(isReady({ ASSETS: assets, LEAD_RETENTION_DAYS: 'trente' }), false);
   assert.equal(isReady({ ASSETS: assets, LEAD_RETENTION_DAYS: '-5' }), false);
@@ -164,7 +172,7 @@ test('cron : les deux purges sont indépendantes et aucune n’échoue en silenc
 
 test('cron : aucune purge de demandes sans durée configurée', async () => {
   let calls = 0;
-  const leads = { prepare() { calls += 1; return { bind() { return { async run() { return { meta: { changes: 0 } }; } }; } }; } };
+  const leads = { prepare(sql) { if (sql.startsWith('DELETE')) calls += 1; return { bind() { return { async run() { return { meta: { changes: 0 } }; }, async all() { return { results: [{ count: 0, oldest: null }] }; } }; } }; } };
   await worker.scheduled({}, { LEADS_DB: leads });
   assert.equal(calls, 0);
 });

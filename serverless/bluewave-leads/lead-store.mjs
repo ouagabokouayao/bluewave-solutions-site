@@ -213,6 +213,20 @@ export function canReplayLeads(environment, database) {
     retentionCutoff(environment.LEAD_RETENTION_DAYS) !== null;
 }
 
+// Au-delà, une diffusion incomplète n'est plus un incident passager.
+export const DELIVERY_ALERT_HOURS = 24;
+// Un envoi en cours depuis moins d'une heure peut encore aboutir normalement.
+const SENDING_GRACE_MS = 3600000;
+
+export async function deliveryBacklog(database, now = new Date()) {
+  const clock = new Date(now).getTime();
+  const result = await database.prepare(`SELECT COUNT(*) AS count, MIN(created_at) AS oldest FROM lead_records WHERE delivery_status IN ('FAILED','PARTIAL_FAILURE','UNCERTAIN') OR ('SENDING' IN (brevo_contact_status,ack_status,notification_status) AND updated_at<?)`)
+    .bind(new Date(clock - SENDING_GRACE_MS).toISOString()).all();
+  const { count = 0, oldest = null } = result?.results?.[0] ?? {};
+  const oldestHours = oldest ? Math.floor((clock - Date.parse(oldest)) / 3600000) : 0;
+  return { count, oldest_hours: oldestHours, alert: count > 0 && oldestHours >= DELIVERY_ALERT_HOURS };
+}
+
 // La durée de conservation n'est pas décidée ici : elle est fournie par la
 // configuration. Sans valeur explicite, aucune purge n'a lieu.
 export function retentionCutoff(retentionDays, now = new Date()) {

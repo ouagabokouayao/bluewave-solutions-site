@@ -46,7 +46,13 @@ def common(config, site, newsletter=False):
             errors.append(f'formulaire de veille publié : {page.name}')
     automation, _ = site_config(site)
     if automation.get('newsletter_enabled') is not newsletter: errors.append('état de la lettre de veille incohérent dans l’artefact')
-    if (site / 'lettre-de-veille.html').exists() is not newsletter: errors.append('page de la lettre de veille incohérente')
+    page = site / 'lettre-de-veille.html'
+    if not page.is_file():
+        errors.append('page de la lettre de veille absente : le retrait doit rester possible')
+    elif not newsletter:
+        text = page.read_text(encoding='utf-8')
+        if '<form' in text or 'type="email"' in text: errors.append('formulaire présent sur la page de retrait')
+        if 'content="noindex, nofollow"' not in text: errors.append('page de retrait indexable')
     if automation.get('chat_enabled') is not False: errors.append('discussion ouverte dans l’artefact')
     return errors
 

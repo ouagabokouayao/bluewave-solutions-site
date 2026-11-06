@@ -1,5 +1,5 @@
 import {allowedCampaigns, createLeadHandler} from '../bluewave-leads/handler.mjs';
-import {purgeExpiredLeads} from '../bluewave-leads/lead-store.mjs';
+import {deliveryBacklog, purgeExpiredLeads} from '../bluewave-leads/lead-store.mjs';
 import {createDistributedGuard, LeadGuard} from './guard.mjs';
 import {createTurnstileVerifier} from './turnstile.mjs';
 import {isReady} from './readiness.mjs';
@@ -46,6 +46,7 @@ export default {
  async scheduled(_event, env) {
   const now = new Date();
   const logger = createLogger();
+  let alerts = 0;
   // Les deux purges sont indépendantes : l'indisponibilité d'une base ne doit
   // pas empêcher l'autre de s'exécuter, ni échouer en silence.
   if (env.CONVERSION_DB) {
@@ -69,13 +70,31 @@ export default {
     logger.log('lead_purge_failed',{});
    }
   }
+  // Diffusion restée incomplète : la tâche le dit, même si rien ne la relance.
+  if (env.LEADS_DB) {
+   try {
+    const backlog=await deliveryBacklog(env.LEADS_DB,now);
+    if (backlog.count) logger.log('lead_delivery_backlog',{count:backlog.count,age_hours:backlog.oldest_hours});
+    if (backlog.alert) {alerts++;logger.log('sync_alert',{operation:'lead_delivery',count:backlog.count,age_hours:backlog.oldest_hours});}
+   } catch {
+    logger.log('sync_backlog_failed',{operation:'lead_delivery'});
+   }
+  }
   if (env.NEWSLETTER_DB) {
    try {
-    logger.log('newsletter_maintenance',{count:await newsletterMaintenance(env,now.getTime())});
+    const result=await newsletterMaintenance(env,now.getTime());
+    logger.log('newsletter_maintenance',{status:result.alert?'alert':'ok',count:result.pending_revocations,retried:result.retried,failed:result.failed,
+     age_hours:result.oldest_pending_hours,attempts:result.max_attempts,reason:result.error_codes[0]});
+    if (result.alert) {alerts++;logger.log('sync_alert',{operation:'newsletter_revocation',count:result.pending_revocations+result.stuck_confirmations,
+     age_hours:result.oldest_pending_hours,attempts:result.max_attempts,reason:result.error_codes[0]});}
    } catch {
+    alerts++;
     logger.log('newsletter_maintenance_failed',{});
    }
   }
+  // Une exécution en échec se voit dans l'historique des tâches Cloudflare et peut
+  // y déclencher une notification, sans dépendre du service qui est en panne.
+  if (alerts) throw new Error('Alerte de synchronisation');
  },
  async fetch(request, env) {
   const url=new URL(request.url);

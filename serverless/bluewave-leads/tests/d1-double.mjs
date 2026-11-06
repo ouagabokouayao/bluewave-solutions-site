@@ -61,6 +61,12 @@ export function createD1Double({ failOn = null } = {}) {
       return { results: [...rows.values()].filter(row => row.email === values[0]).map(row => ({ ...row })) };
     }
 
+    if (sql.startsWith('SELECT COUNT(*) AS count, MIN(created_at) AS oldest FROM lead_records')) {
+      const late = [...rows.values()].filter(row => ['FAILED', 'PARTIAL_FAILURE', 'UNCERTAIN'].includes(row.delivery_status) ||
+        (['brevo_contact_status', 'ack_status', 'notification_status'].some(field => row[field] === 'SENDING') && row.updated_at < values[0]));
+      return { results: [{ count: late.length, oldest: late.map(row => row.created_at).sort()[0] ?? null }] };
+    }
+
     if (sql.startsWith('SELECT id FROM lead_records WHERE created_at <')) {
       const cutoff = values[0];
       return { results: [...rows.values()].filter(row => row.created_at < cutoff).map(row => ({ id: row.id })) };

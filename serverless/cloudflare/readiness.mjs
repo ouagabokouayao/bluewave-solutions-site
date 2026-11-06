@@ -65,6 +65,12 @@ export function readinessReasons(environment = {}) {
     if (!(Number(environment.NEWSLETTER_PROOF_RETENTION_DAYS) > 0)) reasons.push('newsletter_retention_missing');
   }
 
+  // Fermée aux inscriptions, une lettre qui a des inscrits doit rester quittable.
+  if (!newsletterEnabled(environment) && environment.NEWSLETTER_DB &&
+      (String(environment.NEWSLETTER_TOKEN_SECRET ?? '').length < 32 || newsletterTransportMissing(environment).length)) {
+    reasons.push('newsletter_withdrawal_incomplete');
+  }
+
   // Une purge configurée doit l'être avec une valeur exploitable.
   if (filled(environment, 'LEAD_RETENTION_DAYS') && retentionCutoff(environment.LEAD_RETENTION_DAYS) === null) {
     reasons.push('lead_retention_invalid');

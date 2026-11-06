@@ -12,12 +12,13 @@ export const LOG_EVENTS = Object.freeze([
   'delivery_status_write_failed',
   'event_storage_failed', 'lead_purged', 'lead_purge_failed',
   'replay_started', 'replay_failed', 'data_rights_operation', 'delivery_reconciliation_failed',
-  'newsletter_transport_failed', 'newsletter_maintenance', 'newsletter_maintenance_failed'
+  'newsletter_transport_failed', 'newsletter_maintenance', 'newsletter_maintenance_failed',
+  'lead_delivery_backlog', 'sync_backlog_failed', 'sync_alert'
 ]);
 
 // Seules ces clés peuvent accompagner un événement, et seules des valeurs
 // fermées y sont admises.
-const ALLOWED_KEYS = Object.freeze(['correlation_id', 'reason', 'journey', 'lead_type', 'status', 'count', 'step', 'operation']);
+const ALLOWED_KEYS = Object.freeze(['correlation_id', 'reason', 'journey', 'lead_type', 'status', 'count', 'step', 'operation', 'age_hours', 'attempts', 'failed', 'retried']);
 
 const FORBIDDEN_KEYS = Object.freeze([
   'email', 'firstname', 'lastname', 'name', 'organisation', 'role', 'phone',
