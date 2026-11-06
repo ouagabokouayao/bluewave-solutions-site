@@ -100,7 +100,7 @@ test('A01 E2E local : 400,403,429,503 ne déclenchent aucun Brevo',async()=>{
 test('A01 E2E : 201 PARTIAL_FAILURE, DRY RUN puis reprise de notification seule',async()=>{
   await databaseTest(async({leads})=>{
     let count=0;
-    assert.equal((await makeHandler(leads,{fetchImpl:async()=>new Response('{}',{status:++count===3?503:201})})(request(organisation))).status,201);
+    assert.equal((await makeHandler(leads,{fetchImpl:async()=>new Response('{}',{status:++count===3?400:201})})(request(organisation))).status,201);
     const row=(await leads.prepare('SELECT * FROM lead_records').all()).results[0];
     assert.equal(row.delivery_status,'PARTIAL_FAILURE');assert.equal(row.ack_status,'OK');
     assert.deepEqual((await replayDelivery(leads,row.id)).steps,['internal_notification']);

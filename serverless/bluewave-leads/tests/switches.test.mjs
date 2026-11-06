@@ -63,7 +63,7 @@ test('campagnes fermées : un code autorisé est ignoré ; ouvertes : il est con
   assert.equal(JSON.parse(open.first().journey_payload).campaign_code, 'c01-test');
 });
 
-const seeded = async (status = 500) => {
+const seeded = async (status = 400) => {
   const database = createD1Double();
   const all = { ...collectOnly, ...brevo, LEADS_ACK_ENABLED: 'true', LEADS_NOTIFY_ENABLED: 'true' };
   await submit(all, database, recorder(status).fetchImpl);

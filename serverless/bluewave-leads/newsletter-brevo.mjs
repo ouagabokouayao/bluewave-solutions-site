@@ -1,5 +1,7 @@
 // Transport Brevo de la lettre de veille. Il n'est construit que par le Worker,
 // lorsque la base et les paramètres sont présents.
+import { attemptKey } from './brevo-client.mjs';
+
 const BREVO_API_BASE = 'https://api.brevo.com/v3';
 const CONFIRMATION_SUBJECT = 'Confirmez votre inscription à la lettre de veille BlueWave';
 const REQUIRED = Object.freeze(['BREVO_API_KEY', 'BREVO_NEWSLETTER_LIST_ID', 'BREVO_NEWSLETTER_CONFIRM_TEMPLATE_ID', 'BLUEWAVE_SITE_URL']);
@@ -27,13 +29,22 @@ export function createBrevoNewsletterTransport({ environment, fetchImpl = global
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(10000)
     });
-    if (!response.ok && response.status !== absent) throw new Error('Service Brevo indisponible');
-    return response;
+    if (response.ok || response.status === absent) return response;
+    const detail = await response.json().catch(() => ({}));
+    throw Object.assign(new Error('Service Brevo indisponible'), { status: response.status, duplicate: detail?.code === 'duplicate_parameter' });
   };
   return {
-    sendConfirmation: (email, token) => request('/smtp/email', {
-      to: [{ email }], templateId, subject: CONFIRMATION_SUBJECT, params: { confirmation_url: page('confirmer', token) }
-    }),
+    // Pendant 30 minutes, Brevo refuse un second envoi de la même clé : ce refus
+    // prouve que le premier a été accepté.
+    async sendConfirmation(email, token, { idempotency_key: key } = {}) {
+      const tracking = key ? { headers: { idempotencyKey: await attemptKey(key) } } : {};
+      try {
+        return await request('/smtp/email', { to: [{ email }], templateId, subject: CONFIRMATION_SUBJECT, params: { confirmation_url: page('confirmer', token) }, ...tracking });
+      } catch (error) {
+        if (error.duplicate) return null;
+        throw error;
+      }
+    },
     subscribe: (email, { preferences, management_token }) => request('/contacts', {
       email, listIds: [listId], updateEnabled: true,
       attributes: { BW_VEILLE_PREFERENCES: preferences.join(' | '), BW_VEILLE_GESTION: page('gerer', management_token) }

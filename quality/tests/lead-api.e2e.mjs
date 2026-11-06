@@ -6,6 +6,7 @@ import {readFile} from 'node:fs/promises';
 import {extname, join, normalize} from 'node:path';
 import assert from 'node:assert/strict';
 import worker from '../../serverless/cloudflare/worker.mjs';
+import {replayDelivery} from '../../serverless/bluewave-leads/replay.mjs';
 import {Miniflare} from 'miniflare';
 
 const ROOT = normalize(process.argv[2] || 'dist-production');
@@ -33,9 +34,16 @@ const rows = async () => (await d1.prepare('SELECT * FROM lead_records ORDER BY 
 const freshDatabase = async () => { await d1.prepare('DELETE FROM lead_records').run(); brevo.length = 0; skew = 0; return d1; };
 
 const brevo = [];
+const lookups = [];
+let providerEvents = [];
+let loseProviderResponse = false;
 globalThis.fetch = async (url, init) => {
   if (!String(url).startsWith('https://api.brevo.com/')) throw new Error(`Sortie réseau interdite : ${url}`);
-  brevo.push({path: new URL(url).pathname, body: JSON.parse(init.body)});
+  if (!init.body) { lookups.push(new URL(url).searchParams); return Response.json({events: providerEvents}); }
+  const body = JSON.parse(init.body);
+  brevo.push({path: new URL(url).pathname, body});
+  // Brevo accepte l'accusé, mais sa réponse se perd en route.
+  if (loseProviderResponse && body.templateId === 12) throw new TypeError('connexion coupée');
   return new Response('{}', {status: 201});
 };
 const assets = {fetch: async request => {
@@ -240,6 +248,40 @@ await check('W14 : un seul territoire modifié : une seconde demande, pas un dou
   assert.deepEqual(statuses, [201, 201]);
   assert.deepEqual((await rows()).map(row => row.territory).sort(), ['cote-divoire', 'france-mediterranee']);
   assert.equal(acknowledgements(), 2);
+  await ctx.close();
+});
+
+await check('W14 : Brevo accepte l’accusé et sa réponse se perd : aucun second appel sans rapprochement', async () => {
+  const journey = JOURNEYS.formation;
+  const database = await freshDatabase();
+  const replayEnvironment = {...environment(database), LEADS_ENABLED: 'false', LEADS_REPLAY_ENABLED: 'true'};
+  const quiet = {log: () => null};
+  loseProviderResponse = true;
+  providerEvents = [];
+  const {ctx, page, statuses} = await session(environment(database));
+  await page.goto(`${ORIGIN}${journey.url}`, {waitUntil: 'networkidle'});
+  await journey.run(page, journey.form);
+  await page.click(submitOf(journey));
+  await page.waitForFunction(selector => document.querySelector(selector)?.textContent.includes('a bien été'), journey.message);
+  loseProviderResponse = false;
+  assert.deepEqual(statuses, [201]);
+  let [row] = await rows();
+  assert.equal(row.ack_status, 'UNCERTAIN');
+  assert.equal(row.delivery_status, 'UNCERTAIN');
+  assert.equal(acknowledgements(), 1);
+  const refused = await replayDelivery(database, row.id, {environment: replayEnvironment, dryRun: false, logger: quiet});
+  assert.equal(refused.reason, 'reconciliation_required');
+  assert.deepEqual(refused.unresolved, ['ack']);
+  assert.equal(acknowledgements(), 1, 'second accusé sans rapprochement');
+  assert.equal(lookups.at(-1).get('tags'), JSON.stringify([`bw-ack-${row.id}`]));
+  providerEvents = [{event: 'requests', tag: `bw-ack-${row.id}`}];
+  const reconciled = await replayDelivery(database, row.id, {environment: replayEnvironment, dryRun: false, logger: quiet});
+  assert.deepEqual(reconciled.reconciled, ['ack']);
+  assert.equal(reconciled.delivery_status, 'DELIVERED');
+  assert.equal(acknowledgements(), 1);
+  [row] = await rows();
+  assert.equal(row.ack_status, 'OK');
+  providerEvents = [];
   await ctx.close();
 });
 

@@ -86,7 +86,8 @@ const INCIDENTS = Object.freeze({
   ack_failed:{severity:'MAJOR',action:'DRY_RUN_REPLAY'},
   internal_notification_failed:{severity:'MAJOR',action:'DRY_RUN_REPLAY'},
   event_storage_failed:{severity:'MAJOR',action:'STOP_EVENTS'},
-  replay_failed:{severity:'MAJOR',action:'MANUAL_REVIEW'}
+  replay_failed:{severity:'MAJOR',action:'MANUAL_REVIEW'},
+  delivery_reconciliation_failed:{severity:'MAJOR',action:'RECONCILE_BEFORE_REPLAY'}
 });
 export function classifyIncident(event, details = {}, occurredAt = new Date().toISOString()) {
   const clean = buildLogRecord(event, details);

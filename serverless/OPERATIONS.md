@@ -204,12 +204,42 @@ complet, non implémenté.
 ## 8 bis. Reprise d'une diffusion incomplète
 
 `serverless/bluewave-leads/replay.mjs` rejoue **uniquement** les étapes dont le
-statut n'est pas `OK`. Une étape déjà aboutie n'est jamais réexpédiée : aucun
-demandeur ne reçoit deux accusés. Une demande `DELIVERED` n'est pas rejouée.
+statut n'est pas `OK`. Une étape déjà aboutie n'est jamais réexpédiée. Une demande
+`DELIVERED` n'est pas rejouée.
 
 Le mode par défaut est l'annonce : la reprise dit ce qu'elle ferait sans rien
 envoyer. Un envoi réel demande `dryRun: false`, un appel explicite
 d'exploitation. Aucune route ne mène à ce module.
+
+### États d'une étape
+
+| État | Sens | Reprise |
+|---|---|---|
+| `PENDING` | Aucun envoi tenté | Envoi |
+| `FAILED` | Refus certain : réponse 4xx, ou contact en échec | Envoi |
+| `SENDING` | Envoi commencé, issue jamais écrite | Rapprochement d'abord |
+| `UNCERTAIN` | Pas de réponse, ou réponse 5xx : Brevo a pu accepter | Rapprochement d'abord |
+| `OK` | Accepté par Brevo | Jamais rejouée |
+| `SKIPPED` | Interrupteur fermé à la réception | Envoi si l'interrupteur s'ouvre |
+
+Le contact Brevo est rejouable sans risque : il ne passe jamais par le
+rapprochement. Une demande avec une étape `SENDING` ou `UNCERTAIN` porte le statut
+global `UNCERTAIN` dès que l'issue est connue comme inconnue.
+
+### Rapprochement avant un nouvel accusé
+
+Chaque courriel porte le repère `bw-<étape>-<id de la demande>` et une clé
+d'idempotence stable.
+
+1. La reprise interroge `GET /v3/smtp/statistics/events` avec l'adresse et le
+   repère. Un événement d'acceptation portant ce repère clôt l'étape en `OK`, sans
+   aucun envoi.
+2. Sinon, l'étape reste `UNCERTAIN` et la reprise répond
+   `reconciliation_required`. Une absence d'événement n'est pas une preuve : les
+   événements peuvent arriver en retard.
+3. Après contrôle humain dans Brevo, `confirmedNotSent: ['ack']` autorise un seul
+   renvoi. Il réutilise la même clé. Si Brevo répond `duplicate_parameter` dans sa
+   fenêtre de 30 minutes, le premier envoi est prouvé et l'étape passe à `OK`.
 
 Identifier les demandes à reprendre :
 
@@ -217,14 +247,18 @@ Identifier les demandes à reprendre :
 SELECT id, created_at, delivery_status, brevo_contact_status, ack_status,
        notification_status, last_error_code
 FROM lead_records
-WHERE delivery_status IN ('PARTIAL_FAILURE','FAILED')
+WHERE delivery_status IN ('PARTIAL_FAILURE','FAILED','UNCERTAIN')
+   OR 'SENDING' IN (brevo_contact_status, ack_status, notification_status)
 ORDER BY created_at DESC;
 ```
 
-Un `delivery_status_write_failed` au journal signale le cas particulier où les
-envois ont pu aboutir sans que les statuts aient pu être écrits : la ligne
-paraît alors moins avancée qu'elle ne l'est. Vérifier côté Brevo avant de
-rejouer, pour ne pas provoquer un second accusé.
+Un `delivery_status_write_failed` signale que les statuts n'ont pas pu être écrits.
+Si l'écriture d'intention échoue, rien ne part. Si l'écriture finale échoue, les
+étapes restent en `SENDING` et passent par le rapprochement.
+
+Limites connues : la clé d'idempotence et les événements Brevo sont documentés par
+Brevo, mais n'ont été essayés qu'en simulation. Le rapprochement doit être vérifié
+sur un compte de test avant toute ouverture.
 
 ## 8 ter. Opérations sur les données
 
@@ -253,7 +287,7 @@ pendant un repli : ils relèvent d'un mandat distinct concernant la messagerie.
 
 - Les demandes déjà enregistrées **restent en base** : un repli ferme l'entrée,
   il ne supprime rien. Aucune purge n'est déclenchée par un repli.
-- Les demandes en `PARTIAL_FAILURE` ou `FAILED` restent à reprendre et le
+- Les demandes en `PARTIAL_FAILURE`, `FAILED` ou `UNCERTAIN` restent à reprendre et le
   demeurent après le repli : la liste ci-dessus les retrouve.
 - Reprendre **après** rétablissement, pas pendant : rejouer vers un service
   encore instable produirait de nouveaux échecs partiels. Commencer par
@@ -302,7 +336,7 @@ Le journal distingue : `lead_rejected`, `lead_stored`, `lead_duplicate`,
 `lead_storage_failed`, `turnstile_failed`, `brevo_contact_failed`,
 `ack_failed`, `internal_notification_failed`, `delivery_status_write_failed`,
 `event_storage_failed`, `lead_purged`, `lead_purge_failed`, `replay_started`,
-`replay_failed`, `data_rights_operation`. Chaque ligne porte un `correlation_id`
+`replay_failed`, `delivery_reconciliation_failed`, `data_rights_operation`. Chaque ligne porte un `correlation_id`
 tiré au hasard, sans lien avec une personne. Aucune identité, aucun texte libre,
 aucun jeton, aucune clé n'y figure : les clés interdites sont écartées à la
 construction, et les valeurs non fermées ne sont pas écrites.

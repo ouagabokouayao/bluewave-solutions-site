@@ -1,5 +1,5 @@
-import { BrevoClient, DELIVERY_STEPS, enabledSteps, validateEnvironment } from './brevo-client.mjs';
-import { buildLeadRecord, canDeliverLeads, markDelivery, storeLead } from './lead-store.mjs';
+import { BrevoClient, DELIVERY_STEPS, enabledSteps, failureStatus, validateEnvironment } from './brevo-client.mjs';
+import { buildLeadRecord, canDeliverLeads, markDelivery, storeLead, summarizeDelivery } from './lead-store.mjs';
 import { createLogger, newCorrelationId } from './observability.mjs';
 import { createMemoryGuard, requestClientKey } from './security.mjs';
 import { validateLeadPayload } from './validation.mjs';
@@ -141,19 +141,27 @@ export function createLeadHandler({
     }
 
     const active = enabledSteps(environment);
-    const steps = Object.fromEntries(DELIVERY_STEPS.map(step => [step.field, active.includes(step) ? 'PENDING' : 'SKIPPED']));
+    const steps = Object.fromEntries(DELIVERY_STEPS.map(step => [step.field, active.includes(step) ? 'SENDING' : 'SKIPPED']));
     let firstFailure = '';
     if (active.length) {
+      // L'intention d'envoyer est écrite avant l'envoi : si la suite se perd, la
+      // reprise sait qu'un courriel a pu partir. Sans cette écriture, rien ne part.
+      try {
+        await markDelivery(leadStore, record.id, { ...steps, now: now() });
+      } catch {
+        logger.log('delivery_status_write_failed', { correlation_id: correlationId, status: 'intent' });
+        return responseJson(201, { success: true, message: SUCCESS_MESSAGE }, origin);
+      }
       try {
         const brevo = new BrevoClient({ environment, fetchImpl, steps: active });
         for (const step of active) {
           try {
-            await brevo[step.method](lead);
+            await brevo[step.method](lead, { reference: record.id });
             steps[step.field] = 'OK';
-          } catch {
-            steps[step.field] = 'FAILED';
+          } catch (error) {
+            steps[step.field] = failureStatus(step, error);
             firstFailure = firstFailure || step.code;
-            logger.log(step.event, { correlation_id: correlationId, journey: lead.journey });
+            logger.log(step.event, { correlation_id: correlationId, journey: lead.journey, status: steps[step.field] });
           }
         }
       } catch {
@@ -164,18 +172,13 @@ export function createLeadHandler({
       }
     }
 
-    const attempted = active.map(step => steps[step.field]);
-    const deliveryStatus = !attempted.length ? 'STORED'
-      : attempted.every(status => status === 'OK') ? 'DELIVERED'
-        : attempted.some(status => status === 'OK') ? 'PARTIAL_FAILURE' : 'FAILED';
+    const deliveryStatus = summarizeDelivery(active.map(step => steps[step.field]));
     // Le statut est consigné pour que la reprise sache exactement quoi rejouer.
     try {
       await markDelivery(leadStore, record.id, { ...steps, delivery_status: deliveryStatus, last_error_code: firstFailure, now: now() });
     } catch {
-      // La demande reste en base, mais ses statuts ne reflètent plus la
-      // diffusion réelle : la ligne apparaîtra en STORED/PENDING alors que des
-      // envois ont pu aboutir. L'exploitation doit le savoir pour ne pas
-      // rejouer à l'aveugle.
+      // Les étapes restent en SENDING : la reprise exigera un rapprochement
+      // avant tout nouvel envoi, et la tâche quotidienne les signalera.
       logger.log('delivery_status_write_failed', { correlation_id: correlationId, status: deliveryStatus });
     }
 

@@ -75,7 +75,7 @@ test('reprise encore en échec : statut conservé, rien d’inventé', async () 
   const record = await seed(database, { brevo_contact_status: 'FAILED', ack_status: 'FAILED', notification_status: 'FAILED', delivery_status: 'FAILED' });
   const events = [];
   const result = await replayDelivery(database, record.id, {
-    environment, fetchImpl: async () => new Response('', { status: 503 }), dryRun: false,
+    environment, fetchImpl: async () => new Response('', { status: 401 }), dryRun: false,
     logger: { log: (event, details) => events.push(event) }
   });
   assert.equal(result.ok, false);

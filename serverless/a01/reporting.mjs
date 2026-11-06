@@ -42,7 +42,7 @@ export function buildReport({events = [], leads = [], reviews = [], costs = [], 
     const provenance = provenanceOf(lead,campaigns);
     const target = bucket(lead.created_at,provenance.acquisition_source,provenance.campaign_code);
     target.accepted_requests++;
-    if (['FAILED','PARTIAL_FAILURE'].includes(lead.delivery_status)) target.delivery_failures++;
+    if (['FAILED','PARTIAL_FAILURE','UNCERTAIN'].includes(lead.delivery_status)) target.delivery_failures++;
   }
   const latestReviews = new Map();
   for (const raw of reviews) {

@@ -6,14 +6,25 @@
 
 // Cycle TECHNIQUE. Il ne dit rien de l'intérêt commercial d'une demande.
 export const DELIVERY_STATUSES = Object.freeze([
-  'RECEIVED', 'STORED', 'DELIVERY_PENDING', 'DELIVERED', 'PARTIAL_FAILURE', 'FAILED'
+  'RECEIVED', 'STORED', 'DELIVERY_PENDING', 'DELIVERED', 'PARTIAL_FAILURE', 'FAILED', 'UNCERTAIN'
 ]);
 
 // Statuts du vivier d'expertise. 'MOBILISABLE' n'y figure pas : il se décide
 // humainement, hors de ce pipeline.
 export const EXPERTISE_STATUSES = Object.freeze(['REÇU', 'À QUALIFIER', 'QUALIFIÉ', 'À CONTACTER']);
 
-export const STEP_STATUSES = Object.freeze(['PENDING', 'OK', 'FAILED', 'SKIPPED']);
+// SENDING : l'envoi a commencé. UNCERTAIN : il s'est terminé sans issue connue.
+// Dans ces deux états, Brevo a pu accepter le message : rien ne peut le rejouer
+// sans rapprochement. FAILED est un refus certain.
+export const STEP_STATUSES = Object.freeze(['PENDING', 'SENDING', 'OK', 'FAILED', 'UNCERTAIN', 'SKIPPED']);
+
+// Statut global d'une demande, à partir des étapes tentées.
+export function summarizeDelivery(statuses) {
+  if (!statuses.length) return 'STORED';
+  if (statuses.some(status => status === 'UNCERTAIN' || status === 'SENDING')) return 'UNCERTAIN';
+  if (statuses.every(status => status === 'OK')) return 'DELIVERED';
+  return statuses.some(status => status === 'OK') ? 'PARTIAL_FAILURE' : 'FAILED';
+}
 
 // Champs métier sérialisés dans journey_payload. Liste fermée, alignée sur le
 // schéma P0 : un champ inconnu n'entre pas en base.

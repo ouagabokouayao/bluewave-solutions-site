@@ -69,9 +69,9 @@ test('la demande est enregistrée avant le premier appel Brevo', async () => {
   assert.equal(order.includes('brevo'), true);
 });
 
-test('panne Brevo complète : la demande est conservée et la réponse reste un succès', async () => {
+test('refus Brevo complet : la demande est conservée et la réponse reste un succès', async () => {
   const database = createD1Double();
-  const brevo = brevoAlways(503);
+  const brevo = brevoAlways(401);
   const response = await handler(brevo.fetchImpl, database)(request());
   assert.equal(response.status, 201);
   assert.deepEqual(await response.json(), { success: true, message: SUCCESS_MESSAGE });
@@ -89,7 +89,7 @@ test('échec partiel : contact et accusé passés, notification en échec', asyn
   let call = 0;
   const fetchImpl = async () => {
     call += 1;
-    return new Response('{}', { status: call === 3 ? 500 : 201, headers: { 'content-type': 'application/json' } });
+    return new Response('{}', { status: call === 3 ? 400 : 201, headers: { 'content-type': 'application/json' } });
   };
   const response = await handler(fetchImpl, database)(request());
   assert.equal(response.status, 201);
