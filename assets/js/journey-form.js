@@ -1,8 +1,11 @@
-import {hasCanonicalOffer, validateLead} from './lead-schema.js';
+import {OFFER_LABELS, hasCanonicalOffer, validateLead} from './lead-schema.js';
 
 const params = new URLSearchParams(typeof location === 'undefined' ? '' : location.search);
 const sourceOffer = hasCanonicalOffer(params.get('offre')) ? params.get('offre') : '';
 const formState = new WeakMap();
+const VALIDATION_MESSAGE = 'Vérifiez les champs signalés avant de préparer votre message.';
+const PREPARED_MESSAGE = 'Votre message est prêt, mais il n’a pas été envoyé. Ouvrez-le dans votre messagerie ou copiez-le, puis envoyez-le vous-même.';
+const COPY_LABEL = 'Message préparé, non envoyé. Si votre messagerie ne s’ouvre pas ou le tronque, copiez-le et envoyez-le à bluewavesolutions3399@gmail.com.';
 
 function formValue(form, name) {
   const data = new FormData(form);
@@ -110,10 +113,28 @@ export function fallbackMailBody(payload) {
     payload.context ? `Contexte de la formation : ${payload.context}` : '',
     payload.deadline && payload.deadline !== 'nondef' ? `Échéance : ${payload.deadline}` : '',
     payload.need ? `Contexte / besoin : ${payload.need}` : '',
-    payload.contact_preference ? `Préférence de contact : ${payload.contact_preference}` : '',
-    '',
-    'J’ai relu ces informations avant envoi.'
+    payload.contact_preference ? `Préférence de contact : ${payload.contact_preference}` : ''
   ].filter(line => line !== '').join('\n');
+}
+
+// Le courriel reprend les libellés lus par la personne, jamais les codes internes.
+const LABELLED_FIELDS = Object.freeze(['organisation_type', 'territory', 'contact_preference', 'deadline',
+  'collaboration_form', 'professional_status', 'availability', 'rc_pro', 'training_format', 'training_level',
+  'domains', 'expertise_domains', 'intervention_types', 'work_languages']);
+
+function chosenLabels(form, name) {
+  const controls = [...form.elements].filter(control => control.name === name);
+  if (controls[0]?.matches('select')) return [...controls[0].selectedOptions].filter(option => option.value).map(option => option.textContent.trim());
+  return controls.filter(control => control.checked).map(control => control.closest('label')?.textContent.trim() || control.value);
+}
+
+export function readablePayload(form, payload) {
+  const readable = {...payload};
+  for (const name of LABELLED_FIELDS) {
+    const labels = chosenLabels(form, name);
+    if (labels.length && payload[name] !== 'nondef') readable[name] = Array.isArray(payload[name]) ? labels : labels[0];
+  }
+  return readable;
 }
 
 // Certaines messageries tronquent un lien mailto long sans prévenir. Le
@@ -133,7 +154,7 @@ function copyBox(form) {
   const id = `${form.querySelector('[name="email"]')?.id || 'lead'}-message-prepare`;
   const label = document.createElement('label');
   label.htmlFor = id;
-  label.textContent = 'Message préparé — si votre messagerie le tronque, copiez-le et collez-le dans un nouveau courriel';
+  label.textContent = COPY_LABEL;
   const area = document.createElement('textarea');
   area.id = id;
   area.readOnly = true;
@@ -160,7 +181,7 @@ function copyBox(form) {
 }
 
 function fallbackMail(form, payload, status) {
-  const safeLines = fallbackMailBody(payload);
+  const safeLines = fallbackMailBody(readablePayload(form, payload));
   const plainSubject = `BlueWave — ${form.dataset.mailSubject}`;
   const subject = encodeURIComponent(plainSubject);
   const body = encodeURIComponent(`Bonjour,\n\n${safeLines}\n\nCordialement,`);
@@ -186,8 +207,17 @@ function showSchemaError(form, errors) {
   const field = errors.find(name => [...form.elements].some(control => control.name === name && !control.disabled && control.type !== 'hidden'));
   const control = field ? [...form.elements].find(item => item.name === field && !item.disabled && item.type !== 'hidden') : null;
   if (control) { control.setAttribute('aria-invalid', 'true'); control.focus(); }
-  form.querySelector('[data-form-message]').textContent = 'Certains champs obligatoires ou structurés doivent être vérifiés.';
+  form.querySelector('[data-form-message]').textContent = VALIDATION_MESSAGE;
   window.BlueWaveAutomation?.track('lead_validation_error', {journey: form.dataset.journey, offer: sourceOffer || undefined, status: 'invalid'});
+}
+
+// Le signalement reste visible après la disparition de la bulle du navigateur.
+function markInvalidControls(form) {
+  for (const control of form.elements) {
+    if (!control.willValidate) continue;
+    if (control.validity.valid) control.removeAttribute('aria-invalid');
+    else control.setAttribute('aria-invalid', 'true');
+  }
 }
 
 function wireForm(form) {
@@ -216,7 +246,8 @@ function wireForm(form) {
     markStarted(form);
     form.querySelector('[data-mail-fallback]').hidden = true;
     if (!form.reportValidity()) {
-      form.querySelector('[data-form-message]').textContent = 'Vérifiez les champs obligatoires ou le format de votre réponse.';
+      markInvalidControls(form);
+      form.querySelector('[data-form-message]').textContent = VALIDATION_MESSAGE;
       window.BlueWaveAutomation?.track('lead_validation_error', {journey: form.dataset.journey, offer: sourceOffer || undefined, status: 'invalid'});
       return;
     }
@@ -227,7 +258,7 @@ function wireForm(form) {
     const button = form.querySelector('button[type="submit"]');
     const message = form.querySelector('[data-form-message]');
     button.disabled = true;
-    message.textContent = 'Préparation de la transmission…';
+    message.textContent = 'Préparation de votre message…';
     window.BlueWaveAutomation?.track('lead_submit_attempt', {journey: payload.journey, offer: payload.source_offer || undefined});
     const guard = await window.BlueWaveAutomation?.turnstile?.().catch(() => null);
     try {
@@ -245,11 +276,11 @@ function wireForm(form) {
         await window.BlueWaveAutomation.showMeeting();
       } else {
         fallbackMail(form, payload, 'not-configured');
-        message.textContent = 'La transmission automatique est désactivée. Votre message est prêt : relisez-le, puis envoyez-le depuis votre messagerie.';
+        message.textContent = PREPARED_MESSAGE;
       }
     } catch {
       fallbackMail(form, payload, 'unavailable');
-      message.textContent = 'La transmission est indisponible. Relisez le courriel préparé avant de l’envoyer.';
+      message.textContent = 'La transmission est indisponible et rien n’a été envoyé. Relisez le courriel préparé, puis envoyez-le vous-même.';
     } finally {
       if (guard?.enabled) guard.reset(form);
       payload.captcha_token = '';
@@ -302,7 +333,7 @@ if (typeof document !== 'undefined') {
     link.href = `qualifier-un-besoin.html?${query}`;
   });
   if (sourceOffer) {
-    document.querySelectorAll('[data-source-offer]').forEach(node => { node.hidden = false; node.textContent = `Offre d’origine conservée : ${sourceOffer}.`; });
+    document.querySelectorAll('[data-source-offer]').forEach(node => { node.hidden = false; node.textContent = `Offre présélectionnée : ${OFFER_LABELS[sourceOffer]}.`; });
     window.BlueWaveAutomation?.track('offer_contact_transition', {journey: document.body.dataset.journey, offer: sourceOffer});
   }
   // Le formulaire n’est interactif qu’après installation de l’interception.

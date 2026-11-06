@@ -275,6 +275,7 @@ test('A01 CLI : exports exploitables hors dépôt, permissions restreintes et au
   const {mkdtemp,writeFile,readFile,stat,rm}=await import('node:fs/promises');
   const {tmpdir}=await import('node:os');const {join}=await import('node:path');
   const {execFileSync}=await import('node:child_process');
+  const {fileURLToPath}=await import('node:url');
   const directory=await mkdtemp(join(tmpdir(),'bluewave-a01-'));
   const cli=new URL('../../a01/prepare.mjs',import.meta.url);
   const record=await buildLeadRecord(validateLeadPayload(base,{campaigns}).value,{now:new Date(stamp)});
@@ -282,7 +283,7 @@ test('A01 CLI : exports exploitables hors dépôt, permissions restreintes et au
     for(const [kind,input] of [['handoff',{records:[record],campaigns}],['schedule',{contents:[content],options:{campaigns}}],['report',{from:'2026-10-11T00:00:00Z',to:'2026-10-12T00:00:00Z',leads:[record],campaigns}]]) {
       const inputPath=join(directory,`${kind}-input.json`),outputPath=join(directory,`${kind}-output.json`);
       await writeFile(inputPath,JSON.stringify(input));
-      const args=[cli.pathname,kind,inputPath,outputPath];
+      const args=[fileURLToPath(cli),kind,inputPath,outputPath];
       execFileSync(process.execPath,args);
       const result=JSON.parse(await readFile(outputPath,'utf8'));
       assert.equal((await stat(outputPath)).mode&0o777,0o600);
@@ -290,7 +291,7 @@ test('A01 CLI : exports exploitables hors dépôt, permissions restreintes et au
       if(kind==='schedule')assert.equal(result.external_calls,0);
       if(kind==='report')assert.equal(result.counts[0].accepted_requests,1);
       assert.throws(()=>execFileSync(process.execPath,args,{stdio:'ignore'}));
-      assert.throws(()=>execFileSync(process.execPath,[cli.pathname,kind,inputPath,new URL('../../../unsafe-export.json',import.meta.url).pathname],{stdio:'ignore'}));
+      assert.throws(()=>execFileSync(process.execPath,[fileURLToPath(cli),kind,inputPath,fileURLToPath(new URL('../../../unsafe-export.json',import.meta.url))],{stdio:'ignore'}));
     }
   } finally {await rm(directory,{recursive:true,force:true});}
 });

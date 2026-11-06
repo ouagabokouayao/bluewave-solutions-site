@@ -157,6 +157,20 @@ class ProductionProfile(unittest.TestCase):
         for entry in json.loads((out / 'MANIFEST_SHA256.json').read_text()):
             self.assertEqual(hashlib.sha256((out / entry['path']).read_bytes()).hexdigest(), entry['sha256'])
 
+    def test_form_notice_describes_the_channel_of_the_profile(self):
+        pages = ('collaboration.html', 'formation.html', 'qualifier-un-besoin.html')
+        module.build()
+        for name in pages:
+            page = (module.OUT / name).read_text(encoding='utf-8')
+            self.assertIn(module.CLOSED_FORM_NOTICE, page)
+            self.assertNotIn(module.OPEN_FORM_NOTICE, page)
+        module.build(leads=True, privacy_simulation=True)
+        for name in pages:
+            page = (module.OUT / name).read_text(encoding='utf-8')
+            self.assertIn(module.OPEN_FORM_NOTICE, page)
+            self.assertNotIn(module.CLOSED_FORM_NOTICE, page)
+        module.build()
+
     def test_config_requires_real_d1_binding_and_route_is_explicit(self):
         real = '11111111-1111-1111-1111-111111111111'
         leads = '22222222-2222-2222-2222-222222222222'

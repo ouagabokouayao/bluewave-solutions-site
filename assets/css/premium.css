@@ -418,3 +418,6 @@ summary:focus-visible,[tabindex]:focus-visible{
 .media-subnav span{color:#49637A}
 /* CSP style-src 'self' : le masquage des cases fermées passe par la feuille, jamais par un attribut style. */
 .consent-check[hidden]{display:none!important}
+
+/* Un champ refusé reste signalé après la disparition de la bulle du navigateur. */
+.lead-form [aria-invalid="true"]{border-color:#b42318;box-shadow:0 0 0 2px rgba(180,35,24,.2)}

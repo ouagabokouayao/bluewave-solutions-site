@@ -19,6 +19,12 @@ OLD_PATH = '/bluewave-solutions-site/'
 # Carte de partage composée à partir du logo officiel de référence (sans redessin).
 SOCIAL_IMAGE = 'assets/img/brand/social/bluewave-partage-1200x630.png'
 LOGO_URL = ORIGIN + '/assets/img/brand/logo/logo-bluewave-horizontal-officiel.png'
+# Le texte affiché avant envoi décrit le canal réellement ouvert par le profil.
+FORM_PAGES = ('collaboration.html', 'formation.html', 'qualifier-un-besoin.html')
+CLOSED_FORM_NOTICE = ('Ce formulaire n’envoie rien automatiquement : il prépare un courriel que vous relisez, '
+    'puis envoyez vous-même depuis votre messagerie.')
+OPEN_FORM_NOTICE = ('Ce formulaire transmet votre demande à BlueWave Solutions. Si la transmission échoue, '
+    'un courriel prêt à envoyer vous est proposé.')
 
 
 def social(document, name):
@@ -205,6 +211,11 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
             raise ValueError(f'Méta robots absente : {page.name}')
         if page.name != '404.html':
             document = social(document, page.name)
+        if page.name in FORM_PAGES:
+            if document.count(CLOSED_FORM_NOTICE) != 1:
+                raise ValueError(f'Avis de transmission absent ou répété : {page.name}')
+            if leads:
+                document = document.replace(CLOSED_FORM_NOTICE, OPEN_FORM_NOTICE)
         if page.name == 'politique-confidentialite.html':
             document = privacy(document, leads, events, bool(token))
         if page.name == 'mentions-legales.html':

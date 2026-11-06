@@ -6,6 +6,17 @@ export const OFFERS = Object.freeze([
   'structuration-projet', 'formation-capacites', 'note-strategique', 'atelier-cadrage'
 ]);
 
+// Libellés lus par les visiteurs : un code d'offre n'est jamais affiché tel quel.
+export const OFFER_LABELS = Object.freeze({
+  'diagnostic-strategique': 'Diagnostic stratégique maritime, littoral ou portuaire',
+  'vulnerabilite-cotiere': 'Vulnérabilité côtière, adaptation et options de décision',
+  'gouvernance-acteurs': 'Gouvernance, acteurs, usages et acceptabilité',
+  'structuration-projet': 'Structuration de projets maritimes, littoraux ou d’économie bleue',
+  'formation-capacites': 'Formation et renforcement des capacités',
+  'note-strategique': 'Note stratégique BlueWave',
+  'atelier-cadrage': 'Atelier de cadrage BlueWave'
+});
+
 export const JOURNEYS = Object.freeze(['projet', 'collaboration', 'formation', 'evenement']);
 export const LEAD_TYPES = Object.freeze([
   'projet-mission', 'collaboration-organisation', 'expertise-offer', 'formation',

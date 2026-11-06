@@ -18,9 +18,21 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
   let started = false;
   let submitting = false;
   let lastOrientation = null;
+  let orientationMail = 'mailto:bluewavesolutions3399@gmail.com';
+  const VALIDATION_MESSAGE = 'Vérifiez les champs signalés avant de préparer votre message.';
+  const PREPARED_MESSAGE = 'Votre message est prêt, mais il n’a pas été envoyé. Ouvrez-le dans votre messagerie ou copiez-le, puis envoyez-le vous-même.';
+  const DIRECT_MAIL_LABEL = 'Utiliser directement ma messagerie';
+  const PREPARED_MAIL_LABEL = 'Ouvrir le courriel préparé';
+  const requestLabels = {'projet-mission':'Projet ou mission',collaboration:'Collaboration','evenement-intervention':'Événement ou intervention',formation:'Formation'};
+  const resetPreparedMail = () => {
+    const mail = document.getElementById('result-mail');
+    mail.href = orientationMail;
+    mail.textContent = DIRECT_MAIL_LABEL;
+    if (leadMessage) leadMessage.textContent = '';
+  };
 
   const labels = {
-    territoire:{med:'France / Méditerranée',ci:"Côte d’Ivoire",ao:"Afrique de l’Ouest",autre:'un autre territoire',multi:'plusieurs territoires',preciser:'un territoire à préciser'},
+    territoire:{med:'en France et en Méditerranée',ci:"en Côte d’Ivoire",ao:"en Afrique de l’Ouest",autre:'sur un autre territoire',multi:'sur plusieurs territoires',preciser:'sur un territoire à préciser'},
     probleme:{vulnerabilite:'vulnérabilité côtière / adaptation',strategie:'stratégie maritime, littorale ou portuaire',gouvernance:"gouvernance / acteurs / conflits d’usage",sfn:'Solutions fondées sur la Nature',projet:"structuration d’un projet côtier ou maritime",planification:'planification littorale / coordination territoriale',formation:'formation / concertation / médiation',multiple:'plusieurs problématiques',indetermine:'un besoin encore à qualifier'},
     stade:{initial:'question initiale',flou:'besoin encore flou',cadrage:'cadrage en cours',etude:'étude ou diagnostic déjà engagé',structure:'projet structuré à approfondir',decision:'décision ou arbitrage proche',concertation:'concertation à préparer',formation:'formation à organiser'},
     resultat:{comprendre:'comprendre une situation',options:'comparer des options',acteurs:'identifier les acteurs, usages et tensions',structurer:'structurer un projet',route:'préparer une feuille de route',concertation:'préparer une concertation',former:'former ou aligner une équipe',note:"produire une note courte d’aide à la décision",perimetre:'définir le bon périmètre'}
@@ -107,17 +119,18 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
       resultat: document.getElementById('q-resultat').value,
     };
     const [offer,why,confirm] = orient(v);
-    const summary = `Vous cherchez à ${labels.resultat[v.resultat]} sur ${labels.territoire[v.territoire]}, à un stade de ${labels.stade[v.stade]}, dans un contexte de ${labels.probleme[v.problematique]}.`;
+    const summary = `Vous cherchez à ${labels.resultat[v.resultat]} ${labels.territoire[v.territoire]}, à un stade de ${labels.stade[v.stade]}, dans un contexte de ${labels.probleme[v.problematique]}.`;
     const offerId = Object.keys(offerPresets).find(key => offerPresets[key].label === offer);
     lastOrientation = { ...v, offer, summary, offerId };
     document.getElementById('result-title').textContent = 'Une première orientation pour cadrer la suite.';
     document.getElementById('result-summary').textContent = summary;
     document.getElementById('result-offer').textContent = `${offer}. ${why}`;
     document.getElementById('result-method').textContent = `${canonicalMethod} L’intensité de certaines étapes sera adaptée au besoin réel.`;
-    document.getElementById('result-confirm').textContent = `À confirmer : ${confirm}.`;
+    document.getElementById('result-confirm').textContent = `${confirm[0].toUpperCase()}${confirm.slice(1)}.`;
     const subject = encodeURIComponent(`BlueWave — qualification d’un besoin — ${offer}`);
     const body = encodeURIComponent(`Bonjour,\n\nJe souhaite présenter le besoin suivant à BlueWave Solutions.\n\n${summary}\n\nOrientation indicative affichée : ${offer}.\n\nJe comprends que cette orientation ne constitue ni un diagnostic ni une proposition commerciale.\n\nCordialement,`);
-    document.getElementById('result-mail').href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
+    orientationMail = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
+    resetPreparedMail();
     window.BlueWaveAutomation?.track('qualifier_complete', { status: 'complete', offer: offerId, journey: activeJourney });
     window.BlueWaveAutomation?.track('lead_form_open', { offer: offerId, journey: activeJourney });
     result.hidden = false;
@@ -157,8 +170,8 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     `Organisation : ${payload.organisation}`,
     payload.role ? `Fonction : ${payload.role}` : '',
     `E-mail : ${payload.email}`,
-    `Type de demande : ${payloadType}`,
-    `Préférence de contact : ${payload.contact_preference}`, '',
+    `Type de demande : ${requestLabels[payloadType] || 'Autre demande'}`,
+    `Préférence de contact : ${answerText('lead-contact-preference')}`, '',
     `Type d’organisation : ${answerText('q-organisation')}`,
     `Territoire : ${answerText('q-territoire')}`,
     `Problématique : ${answerText('q-problematique')}`,
@@ -169,7 +182,6 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     orientation.summary, '',
     'Description :', payload.need, '',
     `Orientation indicative : ${orientation.offer}.`, '',
-    'J’ai relu ces informations avant envoi.', '',
     'Cordialement,'
   ].filter((line, index, lines) => line !== '' || lines[index - 1] !== '').join('\n');
   const showCopyBox = text => {
@@ -181,7 +193,7 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
       box.style.marginTop = '1.25rem';
       const label = document.createElement('label');
       label.htmlFor = 'lead-message-prepare';
-      label.textContent = 'Message préparé — si votre messagerie le tronque, copiez-le et collez-le dans un nouveau courriel';
+      label.textContent = 'Message préparé, non envoyé. Si votre messagerie ne s’ouvre pas ou le tronque, copiez-le et envoyez-le à bluewavesolutions3399@gmail.com.';
       const area = document.createElement('textarea');
       area.id = 'lead-message-prepare';
       area.readOnly = true;
@@ -206,8 +218,10 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
   };
   const hideCopyBox = event => {
     if (event?.target?.closest?.('[data-mail-copy]')) return;
+    event?.target?.removeAttribute?.('aria-invalid');
     const box = leadForm?.querySelector('[data-mail-copy]');
     if (box) box.hidden = true;
+    resetPreparedMail();
   };
   leadForm?.addEventListener('input', hideCopyBox);
   leadForm?.addEventListener('change', hideCopyBox);
@@ -215,11 +229,18 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
 
   leadForm?.addEventListener('submit', async event => {
     event.preventDefault();
-    if (submitting || !lastOrientation || !leadForm.reportValidity()) return;
+    if (submitting || !lastOrientation) return;
+    if (!leadForm.reportValidity()) {
+      for (const control of leadForm.elements) {
+        if (control.willValidate && !control.validity.valid) control.setAttribute('aria-invalid', 'true');
+      }
+      leadMessage.textContent = VALIDATION_MESSAGE;
+      return;
+    }
     const orientation = lastOrientation;
     submitting = true;
     leadSubmit.disabled = true;
-    leadMessage.textContent = 'Transmission en cours…';
+    leadMessage.textContent = 'Préparation de votre message…';
     const data = new FormData(leadForm);
     const canonicalPayload = {
       journey: activeJourney,
@@ -258,7 +279,7 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     if (!validation.ok) {
       submitting = false;
       leadSubmit.disabled = false;
-      leadMessage.textContent = 'Certains champs doivent être vérifiés avant de préparer la demande.';
+      leadMessage.textContent = VALIDATION_MESSAGE;
       window.BlueWaveAutomation?.track('lead_validation_error', {journey: activeJourney, offer: orientation.offerId, status: 'invalid'});
       return;
     }
@@ -267,10 +288,11 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
     window.BlueWaveAutomation?.track('lead_submit_attempt', eventContext);
     const prepareFallback = status => {
       const payloadType = payload.lead_type || payload.type;
-      const plainSubject = `BlueWave — ${payloadType} — ${orientation.offer}`;
+      const plainSubject = `BlueWave — ${requestLabels[payloadType] || 'Demande'} — ${orientation.offer}`;
       const text = preparedQualifierMessage(payload, orientation, payloadType);
       const mail = document.getElementById('result-mail');
       mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${encodeURIComponent(plainSubject)}&body=${encodeURIComponent(text)}`;
+      mail.textContent = PREPARED_MAIL_LABEL;
       showCopyBox(`À : bluewavesolutions3399@gmail.com\nObjet : ${plainSubject}\n\n${text}`);
       window.BlueWaveAutomation?.track('lead_submit_fallback_email', { ...eventContext, status });
       mail.focus();
@@ -287,11 +309,11 @@ import {hasCanonicalOffer, hasJourney, resolveQualifierLeadType, validateLead} f
         await window.BlueWaveAutomation.showMeeting();
       } else {
         prepareFallback('not-configured');
-        leadMessage.textContent = 'La transmission automatisée n’est pas encore active. Votre message est prêt : utilisez le bouton de messagerie, relisez-le puis envoyez-le vous-même.';
+        leadMessage.textContent = PREPARED_MESSAGE;
       }
     } catch (error) {
       prepareFallback('unavailable');
-      leadMessage.textContent = 'La transmission n’a pas pu aboutir. Votre courriel est prêt dans le bouton de messagerie ; relisez-le avant de l’envoyer. Si vous avez déjà reçu une confirmation, évitez un second envoi.';
+      leadMessage.textContent = 'La transmission est indisponible et rien n’a été envoyé. Relisez le courriel préparé, puis envoyez-le vous-même.';
     } finally {
       if (guard?.enabled) guard.reset(leadForm);
       payload.captcha_token = '';

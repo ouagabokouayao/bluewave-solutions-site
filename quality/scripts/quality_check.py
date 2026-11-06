@@ -599,6 +599,21 @@ def main():
         except (OSError,ValueError) as exc:
             errors.append(f'radar: configuration illisible ({exc})')
 
+    # Aucune soumission native possible : la donnée saisie ne doit jamais partir
+    # dans une URL, même si les scripts ne se chargent pas.
+    for f in HTML:
+        text=f.read_text(encoding='utf-8')
+        forms=re.findall(r'<form\b[^>]*>',text)
+        if 'data-newsletter-form' in text:errors.append(f'{f.name}: formulaire de veille présent alors que les inscriptions sont fermées')
+        if not forms:continue
+        if '<meta http-equiv="Content-Security-Policy" content="form-action \'none\'">' not in text:errors.append(f'{f.name}: CSP form-action absente')
+        if '<noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>' not in text:errors.append(f'{f.name}: repli sans JavaScript absent')
+        if 'mailto:bluewavesolutions3399@gmail.com">bluewavesolutions3399@gmail.com</a>' not in text:errors.append(f'{f.name}: contact direct absent')
+        if 'n’envoie rien automatiquement' not in text:errors.append(f'{f.name}: explication du courriel préparé absente')
+        for form in forms:
+            if not re.search(r'\sinert[\s>]',form):errors.append(f'{f.name}: formulaire sans inert')
+            if re.search(r'\s(action|method|target)=',form):errors.append(f'{f.name}: soumission native déclarée')
+
     # JS syntax if node available handled outside
     report={'status':'pass' if not errors else 'fail','html_pages_checked':len(HTML),'errors':errors,'warnings':warnings}
     print(json.dumps(report,ensure_ascii=False,indent=2))

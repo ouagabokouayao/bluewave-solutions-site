@@ -54,6 +54,9 @@ const CASES = [
   }}
 ];
 
+// Les codes techniques des listes ne doivent jamais atteindre le courriel.
+const INTERNAL_CODES = /\b(france-mediterranee|cote-divoire|afrique-ouest|projet-mission|collaboration-organisation|expertise-offer|presentiel|gouvernance-maritime|littoral-adaptation)\b|: (email|ong|consultant|ponctuelle|distance|francais|cartographie)$/m;
+
 const browser = await chromium.launch();
 let failures = 0;
 for (const c of CASES) {
@@ -65,10 +68,20 @@ for (const c of CASES) {
     await p.goto(`${base}/${c.page}`, {waitUntil: 'networkidle'});
     if (c.choose) await p.check(`input[value="${c.choose}"]`);
     const f = c.form;
+    // Soumission vide : le refus reste lisible et rien ne part dans l'URL.
+    await p.click(`${f} button[type=submit]`);
+    assert.match(await p.textContent(`${f} [data-form-message]`), /Vérifiez les champs signalés/);
+    assert.ok(await p.locator(`${f} [aria-invalid="true"]`).count() > 0, 'champ refusé non signalé');
     await p.fill(`${f} [name=firstname]`, 'Awa'); await p.fill(`${f} [name=lastname]`, 'Koné');
     await p.fill(`${f} [name=email]`, 'awa@example.invalid');
     await c.fill(p, f);
     await p.check(`${f} [name=privacy_acknowledged]`);
+    // La touche Entrée passe par la même interception que le bouton.
+    await p.focus(`${f} [name=email]`);
+    await p.keyboard.press('Enter');
+    await p.waitForSelector(`${f} [data-mail-copy]:not([hidden])`, {timeout: 5000});
+    assert.equal(new URL(p.url()).search, '', 'données saisies dans l’URL après Entrée');
+    await p.fill(`${f} [name=firstname]`, 'Awa');
     await p.click(`${f} button[type=submit]`);
     await p.waitForSelector(`${f} [data-mail-copy]:not([hidden])`, {timeout: 5000});
     const message = await p.inputValue(`${f} [data-mail-copy] textarea`);
@@ -81,7 +94,8 @@ for (const c of CASES) {
     await p.click(`${f} button[type=submit]`);
     await p.waitForSelector(`${f} [data-mail-copy]:not([hidden])`, {timeout: 5000});
     assert.ok((await p.inputValue(`${f} [data-mail-copy] textarea`)).includes('Koné-Traoré'), 'seconde soumission non prise en compte');
-    assert.match(await p.textContent(`${f} [data-form-message]`), /transmission automatique est désactivée/);
+    assert.match(await p.textContent(`${f} [data-form-message]`), /n’a pas été envoyé/);
+    assert.doesNotMatch(await p.inputValue(`${f} [data-mail-copy] textarea`), INTERNAL_CODES, 'code interne dans le courriel préparé');
     assert.equal(await p.locator(`${f} [data-mail-copy]`).count(), 1, 'message copiable dupliqué');
     assert.deepEqual(api, [], 'appel API alors que la transmission est fermée');
     console.log(`ok - ${label}`);
@@ -108,16 +122,27 @@ for (const c of CASES) {
     await p.waitForSelector('#qualifier-result:not([hidden])', {timeout: 5000});
     assert.ok(await p.isHidden('label[for="lead-newsletter"]'), 'case newsletter affichée alors que la lettre est fermée');
     const f = '#lead-form';
+    assert.doesNotMatch(await p.textContent('#result-confirm'), /^À confirmer/, 'préfixe répété sous le titre');
+    await p.click('#lead-submit');
+    assert.match(await p.textContent('#lead-message'), /Vérifiez les champs signalés/);
+    assert.ok(await p.locator(`${f} [aria-invalid="true"]`).count() > 0, 'champ refusé non signalé');
     await p.fill(`${f} [name=firstname]`, 'Awa'); await p.fill(`${f} [name=lastname]`, 'Koné');
     await p.fill(`${f} [name=organisation_name]`, 'Commune test'); await p.fill(`${f} [name=role]`, 'Chargée de mission');
     await p.fill(`${f} [name=email]`, 'awa@example.invalid'); await p.fill(`${f} [name=description]`, LONG);
-    await p.check(`${f} [name=consent]`); await p.click('#lead-submit');
+    await p.check(`${f} [name=consent]`);
+    await p.focus(`${f} [name=email]`); await p.keyboard.press('Enter');
     await p.waitForSelector(`${f} [data-mail-copy]:not([hidden])`, {timeout: 5000});
+    assert.equal(new URL(p.url()).search, '?parcours=projet', 'données saisies dans l’URL après Entrée');
     const message = await p.inputValue(`${f} [data-mail-copy] textarea`);
     for (const text of [LONG, 'Fonction : Chargée de mission', ...Object.values(chosen)]) assert.ok(message.includes(text), `réponse absente : ${text.slice(0, 40)}`);
+    assert.doesNotMatch(message, INTERNAL_CODES, 'code interne dans le courriel préparé');
+    assert.match(await p.textContent('#lead-message'), /n’a pas été envoyé/);
+    assert.equal((await p.textContent('#result-mail')).trim(), 'Ouvrir le courriel préparé');
     assert.equal(await p.getAttribute(`${f} [data-mail-copy] textarea`, 'name'), null, 'le message copiable porte un name');
     await p.fill(`${f} [name=lastname]`, 'Koné-Traoré');
     assert.ok(await p.isHidden(`${f} [data-mail-copy]`), 'message périmé encore affiché après modification');
+    assert.equal((await p.textContent('#lead-message')).trim(), '', 'statut périmé encore affiché');
+    assert.equal((await p.textContent('#result-mail')).trim(), 'Utiliser directement ma messagerie');
     await p.click('#lead-submit');
     await p.waitForSelector(`${f} [data-mail-copy]:not([hidden])`, {timeout: 5000});
     assert.ok((await p.inputValue(`${f} [data-mail-copy] textarea`)).includes('Koné-Traoré'), 'seconde soumission non prise en compte');
@@ -126,6 +151,21 @@ for (const c of CASES) {
     console.log('ok - qualifier-un-besoin.html#projet');
   } catch (error) {
     failures++; console.log(`not ok - qualifier-un-besoin.html#projet: ${error.message}`);
+  }
+  await ctx.close();
+}
+// L'offre d'arrivée est nommée pour le visiteur, jamais par son code.
+{
+  const ctx = await browser.newContext({viewport: {width: 390, height: 844}});
+  const p = await ctx.newPage();
+  try {
+    await p.goto(`${base}/formation.html?offre=formation-capacites`, {waitUntil: 'networkidle'});
+    assert.equal((await p.textContent('[data-source-offer]')).trim(), 'Offre présélectionnée : Formation et renforcement des capacités.');
+    await p.goto(`${base}/projet.html?offre=note-strategique`, {waitUntil: 'networkidle'});
+    assert.equal((await p.textContent('[data-source-offer]')).trim(), 'Offre présélectionnée : Note stratégique BlueWave.');
+    console.log('ok - offre présélectionnée nommée');
+  } catch (error) {
+    failures++; console.log(`not ok - offre présélectionnée: ${error.message}`);
   }
   await ctx.close();
 }
@@ -196,6 +236,31 @@ for (const mode of ['sans JavaScript', 'script bloqué']) {
     }
   }
   await ctx.close();
+}
+// JavaScript réellement coupé : seul ce réglage du moteur fait rendre <noscript>.
+{
+  const noScript = await chromium.launch({args: ['--blink-settings=scriptEnabled=false']});
+  const p = await (await noScript.newContext({viewport: {width: 390, height: 844}})).newPage();
+  for (const name of ['formation.html', 'collaboration.html', 'qualifier-un-besoin.html']) {
+    try {
+      await p.goto(`${base}/${name}`, {waitUntil: 'load'});
+      // Aucun script ne peut s'exécuter, pas même ceux de Playwright : la page
+      // est lue dans l'arbre d'accessibilité, comme par une technologie d'assistance.
+      const cdp = await p.context().newCDPSession(p);
+      const {nodes} = await cdp.send('Accessibility.getFullAXTree');
+      const exposed = nodes.filter(node => !node.ignored);
+      const text = exposed.map(node => node.name?.value || '').join(' | ');
+      assert.match(text, /JavaScript est désactivé/, 'explication absente');
+      assert.ok(exposed.some(node => node.role?.value === 'link' && node.name?.value === 'bluewavesolutions3399@gmail.com'), 'contact direct absent');
+      const fields = exposed.filter(node => ['textbox', 'combobox', 'checkbox', 'radio', 'ComboBoxMenuButton'].includes(node.role?.value));
+      assert.deepEqual(fields.map(node => node.name?.value), [], 'champ inutilisable exposé');
+      await cdp.detach();
+      console.log(`ok - ${name} / noscript réel`);
+    } catch (error) {
+      failures++; console.log(`not ok - ${name} / noscript réel: ${error.message}`);
+    }
+  }
+  await noScript.close();
 }
 await browser.close(); server.close();
 process.exit(failures ? 1 : 0);
