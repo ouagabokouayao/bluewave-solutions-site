@@ -131,3 +131,7 @@ jobs:
         run: |
           python quality/scripts/build_production_dist.py --leads --privacy-simulation
           node quality/tests/lead-api.e2e.mjs dist-production
+      - name: Newsletter journey through the Worker, with local D1 and Brevo simulated
+        run: |
+          python quality/scripts/build_production_dist.py --leads --newsletter --privacy-simulation
+          node quality/tests/newsletter.e2e.mjs dist-production

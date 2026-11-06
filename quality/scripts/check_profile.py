@@ -32,19 +32,21 @@ def site_config(site):
             json.loads((site / 'data/analytics-config.json').read_text(encoding='utf-8')))
 
 
-def common(config, site):
+def common(config, site, newsletter=False):
     errors = []
     variables = config.get('vars', {})
     if config.get('workers_dev') is not False: errors.append('workers_dev doit rester fermé')
     if config.get('preview_urls') is not False: errors.append('preview_urls doit rester fermé')
-    if variables.get('NEWSLETTER_ENABLED') != 'false': errors.append('la lettre de veille doit rester fermée')
+    if variables.get('NEWSLETTER_ENABLED') != str(newsletter).lower():
+        errors.append('la lettre de veille doit être ouverte' if newsletter else 'la lettre de veille doit rester fermée')
     for name in SECRET_NAMES:
         if name in variables: errors.append(f'secret dans la configuration : {name}')
     for page in sorted(site.glob('*.html')):
         if 'data-newsletter-form' in page.read_text(encoding='utf-8'):
             errors.append(f'formulaire de veille publié : {page.name}')
     automation, _ = site_config(site)
-    if automation.get('newsletter_enabled') is not False: errors.append('newsletter ouverte dans l’artefact')
+    if automation.get('newsletter_enabled') is not newsletter: errors.append('état de la lettre de veille incohérent dans l’artefact')
+    if (site / 'lettre-de-veille.html').exists() is not newsletter: errors.append('page de la lettre de veille incohérente')
     if automation.get('chat_enabled') is not False: errors.append('discussion ouverte dans l’artefact')
     return errors
 
@@ -78,14 +80,19 @@ def profile_a(config, site):
     return errors
 
 
-def profile_b(config, site, simulation):
-    errors = common(config, site)
+def profile_b(config, site, simulation, newsletter=False):
+    errors = common(config, site, newsletter)
     variables = config.get('vars', {})
     for name in ('LEADS_ENABLED', 'TURNSTILE_ENABLED'):
         if variables.get(name) != 'true': errors.append(f'{name} doit valoir true')
     databases = {entry.get('binding'): entry.get('database_id') for entry in config.get('d1_databases', [])}
     if not databases.get('LEADS_DB') or not databases.get('CONVERSION_DB'): errors.append('bases D1 absentes')
     elif databases['LEADS_DB'] == databases['CONVERSION_DB']: errors.append('bases D1 confondues')
+    if newsletter:
+        if not databases.get('NEWSLETTER_DB') or databases['NEWSLETTER_DB'] in (databases.get('LEADS_DB'), databases.get('CONVERSION_DB')):
+            errors.append('base de la lettre de veille absente ou confondue')
+        if not variables.get('NEWSLETTER_NOTICE_VERSION'): errors.append('version de l’information absente')
+        if not re.fullmatch(r'[1-9][0-9]*', variables.get('NEWSLETTER_PROOF_RETENTION_DAYS', '')): errors.append('durée de la preuve absente')
     if not re.fullmatch(r'[1-9][0-9]*', variables.get('LEAD_RETENTION_DAYS', '')): errors.append('durée de conservation absente')
     if not str(variables.get('ALLOWED_ORIGIN', '')).startswith('https://'): errors.append('origine autorisée invalide')
     if 'durable_objects' not in config: errors.append('garde anti-abus absente')
@@ -105,9 +112,10 @@ def main():
     parser.add_argument('--config', type=Path)
     parser.add_argument('--site', type=Path, default=SITE)
     parser.add_argument('--simulation', action='store_true', help='Profil B seulement : contrôle hors publication.')
+    parser.add_argument('--newsletter', action='store_true', help='Profil B seulement : la lettre de veille est censée être ouverte.')
     options = parser.parse_args()
     config = load_config(options.config or (CONFIG_A if options.profile == 'A' else CONFIG_B))
-    errors = profile_a(config, options.site) if options.profile == 'A' else profile_b(config, options.site, options.simulation)
+    errors = profile_a(config, options.site) if options.profile == 'A' else profile_b(config, options.site, options.simulation, options.newsletter)
     for error in errors:
         print(f'FAIL: {error}')
     if errors:

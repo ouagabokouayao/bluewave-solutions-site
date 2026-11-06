@@ -219,6 +219,51 @@ class ProductionProfile(unittest.TestCase):
         self.assertEqual(opened['vars']['NEWSLETTER_ENABLED'], 'false')
         self.assertEqual(opened['vars']['LEAD_RETENTION_DAYS'], '30')
 
+    def test_newsletter_exists_only_when_opened(self):
+        module.build()
+        self.assertFalse((module.OUT / module.NEWSLETTER_PAGE).exists())
+        self.assertFalse((module.OUT / module.NEWSLETTER_SCRIPT).exists())
+        for page in module.OUT.glob('*.html'):
+            self.assertNotIn(module.NEWSLETTER_PAGE, page.read_text(encoding='utf-8'), page.name)
+        self.assertIn('La lettre de veille est désactivée', (module.OUT / 'politique-confidentialite.html').read_text(encoding='utf-8'))
+        with self.assertRaisesRegex(ValueError, 'Verrou confidentialité'):
+            module.build(newsletter=True)
+        module.build(newsletter=True, privacy_simulation=True)
+        page = (module.OUT / module.NEWSLETTER_PAGE).read_text(encoding='utf-8')
+        self.assertIn('<title>Lettre de veille | BlueWave Solutions</title>', page)
+        self.assertIn(f'href="{module.ORIGIN}/{module.NEWSLETTER_PAGE}"', page)
+        self.assertNotIn('data-newsletter-form', page)
+        self.assertTrue((module.OUT / module.NEWSLETTER_SCRIPT).is_file())
+        self.assertIs(json.loads((module.OUT / 'data/automation-config.json').read_text(encoding='utf-8'))['newsletter_enabled'], True)
+        policy = (module.OUT / 'politique-confidentialite.html').read_text(encoding='utf-8')
+        self.assertNotIn('La lettre de veille est désactivée', policy)
+        self.assertIn('fondé sur votre consentement spécifique', policy)
+        self.assertIn('lettre de veille : jusqu’à votre désinscription', policy)
+        for form in module.OUT.glob('*.html'):
+            self.assertNotIn('data-newsletter-consent', form.read_text(encoding='utf-8'), form.name)
+
+    def test_newsletter_config_requires_its_own_base_and_decisions(self):
+        conversion, leads, veille = ('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333')
+        closed = json.loads(config.render(conversion, leads).read_text())
+        self.assertEqual(closed['vars']['NEWSLETTER_ENABLED'], 'false')
+        self.assertEqual(len(closed['d1_databases']), 2)
+        with self.assertRaisesRegex(ValueError, 'NEWSLETTER_DB'):
+            config.render(conversion, leads, newsletter=True, notice_version='veille-v1', proof_retention_days=1095)
+        with self.assertRaisesRegex(ValueError, 'base distincte'):
+            config.render(conversion, leads, newsletter=True, newsletter_database_id=leads, notice_version='veille-v1', proof_retention_days=1095)
+        with self.assertRaisesRegex(ValueError, 'NOTICE_VERSION'):
+            config.render(conversion, leads, newsletter=True, newsletter_database_id=veille, proof_retention_days=1095)
+        with self.assertRaisesRegex(ValueError, 'PROOF_RETENTION'):
+            config.render(conversion, leads, newsletter=True, newsletter_database_id=veille, notice_version='veille-v1')
+        opened = json.loads(config.render(conversion, leads, newsletter=True, newsletter_database_id=veille, notice_version='veille-v1', proof_retention_days=1095).read_text())
+        self.assertEqual(opened['vars']['NEWSLETTER_ENABLED'], 'true')
+        self.assertEqual(opened['vars']['NEWSLETTER_PROOF_RETENTION_DAYS'], '1095')
+        self.assertIn(veille, [entry['database_id'] for entry in opened['d1_databases'] if entry['binding'] == 'NEWSLETTER_DB'])
+        # Refermée, la base reste liée : le retrait doit continuer de fonctionner.
+        reclosed = json.loads(config.render(conversion, leads, newsletter_database_id=veille).read_text())
+        self.assertEqual(reclosed['vars']['NEWSLETTER_ENABLED'], 'false')
+        self.assertEqual(len(reclosed['d1_databases']), 3)
+
     def test_privacy_gate_blocks_publishable_artifact(self):
         approval = json.loads((ROOT / 'quality/privacy-approval.json').read_text(encoding='utf-8'))
         self.assertFalse(approval['approved'])

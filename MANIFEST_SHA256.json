@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "1650605b924627be9e734d05859fa438ec8d148a4f60ffcbf5baa7fd45241cd1",
-    "bytes": 6302
+    "sha256": "8f38020e7dd4e4da3e4df5579ba204afe8db857a3d22cdb9d815a7bc27b3be89",
+    "bytes": 6568
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -481,8 +481,8 @@
   },
   {
     "path": "quality/privacy-approval.json",
-    "sha256": "9e01c910887ec1d483262de9c639982abead9fe9e20f3747a858f789faded4db",
-    "bytes": 4499
+    "sha256": "ad6ade641db60c6a220e307c887db5194c6a7a902f60fc5dd7246e2217141247",
+    "bytes": 4988
   },
   {
     "path": "quality/radar/README.md",
@@ -541,8 +541,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "201307113c1883074a4cd4b9b8eee7a03ddec5d066f736eff0009b619e19bc5b",
-    "bytes": 20523
+    "sha256": "750d078221a3ee09ab8188eea843ee839cb60cc7c1980b439bc4d68a4cb86ae5",
+    "bytes": 24690
   },
   {
     "path": "quality/scripts/check_brand_assets.py",
@@ -561,8 +561,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "368e6541ae0f6801edd08817bb314355416b3861c2b1cea44632471fd9faf26a",
-    "bytes": 14788
+    "sha256": "aaf0cde1e9df3040d4301c85577e57de6b68e12d99b6afd3c48f7c9d848d5cf8",
+    "bytes": 14946
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -591,8 +591,8 @@
   },
   {
     "path": "quality/scripts/render_production_wrangler.py",
-    "sha256": "f0608737f3306ea397b25ff7d53a628a116c301ae7b81d520473ae8636ef1209",
-    "bytes": 5744
+    "sha256": "8ce33e4972c270b207fe4c661d4444338531dea76e7ba3ca9a1045c782b17330",
+    "bytes": 7675
   },
   {
     "path": "quality/scripts/update_actualites.py",
@@ -631,8 +631,8 @@
   },
   {
     "path": "quality/tests/test_production.py",
-    "sha256": "b9ca15a2b945c9adb0aaf0ea7d42924bd8cb68c8f0bb0306bb64550f1430a5c1",
-    "bytes": 13839
+    "sha256": "b8067a5c1405e2b0f83a8f2471f5941acdf39c3adf4f019e4de12b5216c3fcdf",
+    "bytes": 17510
   },
   {
     "path": "robots.txt",
@@ -646,8 +646,8 @@
   },
   {
     "path": "serverless/PROFILS.md",
-    "sha256": "99e5b00f6cd88972e7f3a83279b8e16f959494581ac23f58072333e53b6da81e",
-    "bytes": 4926
+    "sha256": "3ae29ca0b66b7085adce392060090c4728f6604f56ce64da40428df617b47e64",
+    "bytes": 8237
   },
   {
     "path": "serverless/a01/README.md",
@@ -836,8 +836,8 @@
   },
   {
     "path": "serverless/cloudflare/PRODUCTION.md",
-    "sha256": "4546f82f44d37c2f90ab12de981e6e15b13249a03e13392d2d0f8d7d11bbf356",
-    "bytes": 5887
+    "sha256": "7b63172a782100919e15b188c3a4907128aa790eed84bd2eb5b961c94f2e938a",
+    "bytes": 5940
   },
   {
     "path": "serverless/cloudflare/README.md",

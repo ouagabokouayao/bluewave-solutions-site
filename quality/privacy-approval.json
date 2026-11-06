@@ -39,8 +39,8 @@
     },
     {
       "rubrique": "Lettre de veille",
-      "fait": "Aucune demande de contact ne produit d'inscription : le canal est fermé et le code refuse l'opt-in forgé.",
-      "preuve": "serverless/bluewave-leads/newsletter.mjs et le rejet newsletter du handler."
+      "fait": "Aucune demande de contact ne produit d'inscription : le code refuse l'opt-in forgé, et la lettre a sa propre base et sa propre route.",
+      "preuve": "serverless/bluewave-leads/newsletter.mjs, serverless/cloudflare/newsletter-route.mjs et le rejet newsletter du handler."
     }
   ],
   "affirmations_a_valider": [
@@ -78,6 +78,12 @@
       "rubrique": "Évolution",
       "affirmation": "Suppression effective des données chez les prestataires sur demande.",
       "pourquoi": "Engagement opérationnel qui dépend des procédures réelles, non d'un code.",
+      "statut": "A_VALIDER"
+    },
+    {
+      "rubrique": "Lettre de veille",
+      "affirmation": "Consentement spécifique recueilli sur une page dédiée, confirmation par courriel, données conservées, rôle de Brevo et durée de la preuve après retrait.",
+      "pourquoi": "Texte préparé pour l'option --newsletter. Base légale, information des personnes et durées ne sont pas démontrées par le code.",
       "statut": "A_VALIDER"
     }
   ]

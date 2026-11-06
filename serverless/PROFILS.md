@@ -26,6 +26,7 @@ Chaque canal s'ouvre seul, avec la valeur `"true"`. Sans cette valeur, il reste 
 | `LEADS_NOTIFY_ENABLED` | Notification interne | `BREVO_API_KEY`, `BREVO_INTERNAL_TEMPLATE_ID`, `BLUEWAVE_INTERNAL_EMAIL` |
 | `LEADS_REPLAY_ENABLED` | Réémission de demandes déjà reçues | `LEADS_DB`, `LEAD_RETENTION_DAYS` |
 | `CAMPAIGNS_ENABLED` | Conservation des codes campagne | `ALLOWED_CAMPAIGNS` |
+| `NEWSLETTER_ENABLED` | Inscription à la lettre de veille | Voir « Lettre de veille » |
 
 Trois décisions restent distinctes :
 
@@ -78,6 +79,46 @@ npx wrangler deploy --config serverless/cloudflare/.wrangler-production.generate
 Sans D1, sans durée de conservation ou sans paramètre Brevo, `/api/leads` répond sans jamais appeler Brevo. `/api/health` signale tout composant manquant.
 
 Essais de bout en bout à réussir avant ouverture : demande valide, accusé, notification interne, panne Brevo sans perte, doublon, antispam, purge, droit d'accès et d'effacement. Uniquement avec des adresses de test.
+
+## Lettre de veille
+
+Canal distinct des demandes de contact, fermé par défaut. Aucune demande de contact ne produit d'inscription.
+
+| Étape | Route | Effet |
+|---|---|---|
+| Inscription | `POST /api/newsletter/subscribe` | Enregistre la demande, envoie le lien de confirmation. Même réponse pour une adresse nouvelle, en attente ou déjà inscrite |
+| Confirmation | `POST /api/newsletter/confirm` | Inscrit chez Brevo, scelle la preuve, remet le jeton de gestion |
+| Préférences | `POST /api/newsletter/preferences` | Lit ou modifie les rubriques |
+| Désinscription | `POST /api/newsletter/unsubscribe` | Retire le consentement en base, puis chez Brevo. Reste ouverte canal fermé, sans limite de débit ni de durée |
+
+Jetons :
+
+- Ils sont opaques : aucune adresse n'y figure. La base n'en garde que l'empreinte.
+- Le lien de confirmation vaut 24 heures et ne sert qu'une fois, même entre plusieurs instances. Ce contrôle a lieu dans D1.
+- Le jeton de gestion vaut deux ans pour les rubriques. Il reste valable pour la désinscription.
+- Ils voyagent dans le fragment de l'adresse et le corps d'un POST : ils n'entrent ni dans les journaux, ni dans `Referer`. Ouvrir un lien ne déclenche rien, ce qui neutralise les scanners de messagerie.
+
+Une panne Brevo pendant un retrait laisse l'état `REVOKING`. Le consentement est déjà retiré, et la tâche quotidienne reprend la répercussion. Conserver `BREVO_API_KEY` et `NEWSLETTER_DB` tant qu'il reste des inscrits ou des retraits en cours : sans eux, le retrait échoue.
+
+Conservation : une adresse jamais confirmée est supprimée 30 jours après l'expiration de son lien. La preuve d'un consentement retiré suit `NEWSLETTER_PROOF_RETENTION_DAYS`.
+
+À réunir avant l'ouverture :
+
+1. Base D1 distincte, schéma `serverless/cloudflare/newsletter-schema.sql` appliqué.
+2. Secret `NEWSLETTER_TOKEN_SECRET` (32 caractères au moins) posé avec `wrangler secret put`.
+3. Liste Brevo dédiée, attributs `BW_VEILLE_PREFERENCES` et `BW_VEILLE_GESTION`, modèle de confirmation utilisant `{{ params.confirmation_url }}`.
+4. Paramètres `BREVO_NEWSLETTER_LIST_ID` et `BREVO_NEWSLETTER_CONFIRM_TEMPLATE_ID`.
+5. Modèle de lettre dont le lien de désinscription pointe vers `BW_VEILLE_GESTION`. Le lien de désinscription propre à Brevo ne met pas `NEWSLETTER_DB` à jour.
+6. Décisions de 04B : information des personnes, `NEWSLETTER_NOTICE_VERSION`, durée de la preuve, durée de 30 jours. La rubrique « Lettre de veille » de `quality/privacy-approval.json` doit passer à `VALIDE`.
+7. Essai réel sur la liste Brevo, avec une adresse de test : les appels sont aujourd'hui vérifiés en simulation seulement.
+
+```sh
+python quality/scripts/build_production_dist.py --leads --newsletter --turnstile-site-key <CLÉ_PUBLIQUE>
+python quality/scripts/render_production_wrangler.py --database-id <UUID> --leads-database-id <UUID> --newsletter --newsletter-database-id <UUID> --notice-version <VERSION> --proof-retention-days <JOURS> --leads --turnstile --retention-days <JOURS>
+python quality/scripts/check_profile.py B --newsletter
+```
+
+Pour refermer la lettre, retirer `--newsletter` mais garder `--newsletter-database-id` : le retrait continue de fonctionner.
 
 ## Retour arrière
 

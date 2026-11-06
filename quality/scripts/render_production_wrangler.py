@@ -6,6 +6,9 @@ Deux bases sont exigées et ne se confondent jamais :
 - CONVERSION_DB : compteurs d'événements agrégés, sans donnée personnelle ;
 - LEADS_DB      : demandes nominatives.
 
+NEWSLETTER_DB, troisième base facultative, porte les consentements à la lettre de
+veille. Elle reste liée après fermeture : le retrait doit continuer de fonctionner.
+
 Aucun identifiant fictif n'est accepté. La route de production n'est jamais
 ajoutée d'office : elle demande une option explicite.
 
@@ -36,11 +39,19 @@ def _database_id(value, label):
 
 def render(database_id, leads_database_id, *, indexable=False, leads=False, events=False,
            route=False, campaigns=(), turnstile=False, retention_days=None,
-           contact_sync=False, ack=False, notifications=False, replay=False):
+           contact_sync=False, ack=False, notifications=False, replay=False,
+           newsletter=False, newsletter_database_id=None, notice_version=None, proof_retention_days=None):
     conversion_id = _database_id(database_id, 'CONVERSION_DB')
     leads_id = _database_id(leads_database_id, 'LEADS_DB')
     if conversion_id.lower() == leads_id.lower():
         raise ValueError('CONVERSION_DB et LEADS_DB doivent être deux bases distinctes')
+    newsletter_id = _database_id(newsletter_database_id, 'NEWSLETTER_DB') if newsletter_database_id or newsletter else None
+    if newsletter_id and newsletter_id.lower() in (conversion_id.lower(), leads_id.lower()):
+        raise ValueError('NEWSLETTER_DB doit être une base distincte')
+    if newsletter and not re.fullmatch(r'[a-z0-9][a-z0-9._-]{0,63}', notice_version or '', re.I):
+        raise ValueError('NEWSLETTER_NOTICE_VERSION est obligatoire lorsque la lettre est ouverte')
+    if newsletter and (proof_retention_days is None or int(proof_retention_days) <= 0):
+        raise ValueError('NEWSLETTER_PROOF_RETENTION_DAYS est obligatoire lorsque la lettre est ouverte')
     if any(not re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,39}', code) for code in campaigns):
         raise ValueError('Code campagne invalide')
     if turnstile:
@@ -68,6 +79,11 @@ def render(database_id, leads_database_id, *, indexable=False, leads=False, even
         {'binding': 'LEADS_DB', 'database_name': 'bluewave-leads-production',
          'database_id': leads_id},
     ]
+    if newsletter_id:
+        config['d1_databases'].append({'binding': 'NEWSLETTER_DB', 'database_name': 'bluewave-newsletter-production',
+            'database_id': newsletter_id})
+    config['vars'].update(NEWSLETTER_ENABLED=str(newsletter).lower(), NEWSLETTER_NOTICE_VERSION=notice_version or '',
+        NEWSLETTER_PROOF_RETENTION_DAYS=str(proof_retention_days or ''))
     if (leads or replay) and retention_days is None:
         raise ValueError('LEAD_RETENTION_DAYS doit être choisi avant la collecte ou la réémission')
     config['vars'].update(LEADS_CONTACT_SYNC_ENABLED=str(contact_sync).lower(), LEADS_ACK_ENABLED=str(ack).lower(),
@@ -97,9 +113,15 @@ if __name__ == '__main__':
     parser.add_argument('--ack', action='store_true', help='Envoyer les accusés de réception.')
     parser.add_argument('--notifications', action='store_true', help='Envoyer les notifications internes.')
     parser.add_argument('--replay', action='store_true', help='Autoriser la réémission des demandes déjà reçues.')
+    parser.add_argument('--newsletter', action='store_true', help='Ouvrir la lettre de veille.')
+    parser.add_argument('--newsletter-database-id', help='Identifiant D1 de NEWSLETTER_DB.')
+    parser.add_argument('--notice-version', help='Version de l’information présentée aux inscrits.')
+    parser.add_argument('--proof-retention-days', type=int, default=None, help='Conservation de la preuve après retrait.')
     parser.add_argument('--campaign', action='append', default=[])
     opts = parser.parse_args()
     print(render(opts.database_id, opts.leads_database_id, indexable=opts.indexable,
         leads=opts.leads, events=opts.events, route=opts.route, campaigns=opts.campaign,
         turnstile=opts.turnstile, retention_days=opts.retention_days, contact_sync=opts.contact_sync,
-        ack=opts.ack, notifications=opts.notifications, replay=opts.replay))
+        ack=opts.ack, notifications=opts.notifications, replay=opts.replay, newsletter=opts.newsletter,
+        newsletter_database_id=opts.newsletter_database_id, notice_version=opts.notice_version,
+        proof_retention_days=opts.proof_retention_days))

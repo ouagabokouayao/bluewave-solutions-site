@@ -24,6 +24,16 @@ LOGO_URL = ORIGIN + '/' + OFFICIAL_LOGO
 FORM_PAGES = ('collaboration.html', 'formation.html', 'qualifier-un-besoin.html')
 CLOSED_FORM_NOTICE = ('Ce formulaire n’envoie rien automatiquement : il prépare un courriel que vous relisez, '
     'puis envoyez vous-même depuis votre messagerie.')
+# La page et son script n'existent que dans un artefact où la lettre est ouverte.
+NEWSLETTER_PAGE = 'lettre-de-veille.html'
+NEWSLETTER_TEMPLATE = ROOT / 'quality/templates/lettre-de-veille.main.html'
+NEWSLETTER_SCRIPT = 'assets/js/newsletter.js'
+LEGAL_FOOTER = '<a href="politique-confidentialite.html">Confidentialité</a>'
+# Une demande de contact ne vaut jamais inscription : la lettre ouverte, cette case
+# n'aurait aucun effet. Elle cède la place à un lien vers la page dédiée.
+LEAD_NEWSLETTER_OPTION = re.compile(r'<label class="consent-check" for="lead-newsletter" hidden>.*?</label>', re.S)
+LEAD_NEWSLETTER_LINK = ('<p class="note">Cette demande ne vous inscrit à aucune liste. Pour recevoir la lettre de veille, '
+    f'utilisez <a href="{NEWSLETTER_PAGE}">sa page dédiée</a>.</p>')
 OPEN_FORM_NOTICE = ('Ce formulaire transmet votre demande à BlueWave Solutions. Si la transmission échoue, '
     'un courriel prêt à envoyer vous est proposé.')
 
@@ -85,7 +95,22 @@ def article(document, heading, body):
     return result
 
 
-def privacy(document, leads, events, traffic):
+def newsletter_page():
+    """Dérive la page de veille de la page de confidentialité déjà produite."""
+    document = (OUT / 'politique-confidentialite.html').read_text(encoding='utf-8')
+    main = NEWSLETTER_TEMPLATE.read_text(encoding='utf-8').strip()
+    document, count = re.subn(r'<main id="contenu">.*</main>', lambda _: main, document, flags=re.S)
+    if count != 1:
+        raise ValueError('Contenu principal absent de la page de référence')
+    description = 'Inscription à la lettre de veille de BlueWave Solutions, confirmée par courriel et retirable à tout moment.'
+    document = re.sub(r'(<title>)[^<]*(</title>)', r'\g<1>Lettre de veille | BlueWave Solutions\g<2>', document, count=1)
+    document = re.sub(r'(<meta (?:name|property)="(?:og:|twitter:)?description" content=")[^"]*', lambda m: m.group(1) + description, document)
+    document = re.sub(r'(<meta property="og:title" content=")[^"]*', r'\g<1>Lettre de veille | BlueWave Solutions', document)
+    document = document.replace(ORIGIN + '/politique-confidentialite.html', ORIGIN + '/' + NEWSLETTER_PAGE)
+    return document.replace('</body>', f'<script src="{NEWSLETTER_SCRIPT}" defer></script></body>')
+
+
+def privacy(document, leads, events, traffic, newsletter=False):
     if leads:
         transmission = ('<p>Lorsque vous envoyez le formulaire, BlueWave reçoit les données nécessaires '
             'à la réponse. Le service Cloudflare transmet la demande au prestataire Brevo, qui conserve '
@@ -95,7 +120,7 @@ def privacy(document, leads, events, traffic):
         recipients = ('<p>Le fondateur de BlueWave Solutions, seul destinataire à ce jour ; Cloudflare pour '
             'l’hébergement, les mesures techniques et la protection contre les abus ; Brevo pour '
             'les contacts et e-mails transactionnels ; Google, qui fournit la messagerie de réception. '
-            'Aucune inscription à une liste de veille ni automatisation marketing n’est active.</p>')
+            + ('' if newsletter else 'Aucune inscription à une liste de veille ni automatisation marketing n’est active.') + '</p>')
     else:
         transmission = ('<p>La transmission automatisée reste désactivée. Le site prépare un courriel '
             'que vous relisez et envoyez depuis votre propre messagerie. BlueWave ne reçoit ces '
@@ -111,9 +136,11 @@ def privacy(document, leads, events, traffic):
         '<ul><li>Mesures précontractuelles prises à votre demande, uniquement lorsque votre message '
         'porte sur une mission ou un projet et que leurs conditions sont réunies ;</li><li>intérêt '
         f'légitime de BlueWave à répondre aux contacts professionnels{measured}, sous réserve d’une '
-        'mise en balance avec vos intérêts, libertés et droits ;</li><li>la lettre de veille est un '
-        'traitement distinct, désactivé ; s’il était ouvert, il reposerait sur votre consentement '
-        'spécifique.</li></ul>')
+        'mise en balance avec vos intérêts, libertés et droits ;</li><li>' +
+        ('la lettre de veille est un traitement distinct, fondé sur votre consentement spécifique, '
+         'que vous pouvez retirer à tout moment.' if newsletter else
+         'la lettre de veille est un traitement distinct, désactivé ; s’il était ouvert, il reposerait '
+         'sur votre consentement spécifique.') + '</li></ul>')
     if not leads:
         data = ('<ul><li>les informations que vous choisissez d’inclure dans votre courriel : '
             'nom, organisation, adresse e-mail, description de la demande et, le cas échéant, '
@@ -148,9 +175,15 @@ def privacy(document, leads, events, traffic):
         analytics_text += ('<p>Le régime applicable à cette mesure (consentement ou exemption) est '
             'établi par le responsable avant son activation ; aucune exemption n’est présumée.</p>')
     document = article(document, 'Cookies et traceurs', analytics_text +
-        '<p>Aucun cookie publicitaire, newsletter, chat ou lien de rendez-vous automatisé n’est activé. '
+        '<p>Aucun cookie publicitaire, ' + ('' if newsletter else 'newsletter, ') + 'chat ou lien de rendez-vous automatisé n’est activé. '
         'Cloudflare peut traiter des données techniques de connexion pour servir et sécuriser le site.</p>')
     document = article(document, 'Lettre de veille',
+        '<p>L’inscription se fait sur une page dédiée et ne prend effet qu’après confirmation par un lien '
+        'reçu par courriel, valable vingt-quatre heures. BlueWave conserve votre adresse, vos rubriques, '
+        'la version de l’information présentée et les dates de demande, de confirmation et de retrait, '
+        'dans une base distincte des demandes de contact. Brevo reçoit votre adresse pour expédier la '
+        'lettre. Chaque lettre permet de se désinscrire ; aucun formulaire de prise de contact ne vaut '
+        'inscription.</p>' if newsletter else
         '<p>La lettre de veille est désactivée. Aucun formulaire de prise de contact ne vaut '
         'inscription marketing. Une éventuelle activation ultérieure demandera un consentement séparé.</p>')
     durations = ('<ul><li>Demandes de contact : le temps nécessaire à leur traitement ;</li><li>contacts '
@@ -159,8 +192,12 @@ def privacy(document, leads, events, traffic):
         'toutes les données ;</li><li>relations contractuelles : selon les obligations propres au dossier ;</li>')
     if events:
         durations += '<li>agrégats de conversion : treize mois glissants ;</li>'
-    if leads:
+    if leads or newsletter:
         durations += '<li>garde anti-abus : fenêtres temporaires d’environ vingt minutes ;</li>'
+    if newsletter:
+        durations += ('<li>lettre de veille : jusqu’à votre désinscription ; une adresse jamais confirmée '
+            'est supprimée au plus tard trente jours après l’expiration du lien ; la preuve d’un '
+            'consentement retiré, selon la durée arrêtée par le responsable ;</li>')
     durations += ('<li>journaux techniques des prestataires : selon leurs paramètres contractuels '
         'effectivement retenus.</li></ul>')
     document = article(document, 'Durées de conservation', durations)
@@ -177,8 +214,8 @@ def privacy(document, leads, events, traffic):
 
 
 def build(indexable=False, leads=False, events=False, token=None, campaigns=(), privacy_simulation=False,
-          turnstile_site_key=None):
-    privacy_gate(indexable or leads or events or token is not None, privacy_simulation)
+          turnstile_site_key=None, newsletter=False):
+    privacy_gate(indexable or leads or events or newsletter or token is not None, privacy_simulation)
     # Turnstile ne s'active pas à moitié : sans clé publique, le navigateur ne
     # peut obtenir aucun jeton et toute demande serait refusée côté serveur.
     if turnstile_site_key is not None and not re.fullmatch(r'[A-Za-z0-9_-]{8,64}', turnstile_site_key):
@@ -221,7 +258,7 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
             if leads:
                 document = document.replace(CLOSED_FORM_NOTICE, OPEN_FORM_NOTICE)
         if page.name == 'politique-confidentialite.html':
-            document = privacy(document, leads, events, bool(token))
+            document = privacy(document, leads, events, bool(token), newsletter)
         if page.name == 'mentions-legales.html':
             document = document.replace('Mentions légales — préactivation', 'Mentions légales')
             document = document.replace('Cette page est préparée pour la phase de préactivation. Elle sera complétée après immatriculation avant toute activation publique définitive.',
@@ -235,7 +272,19 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
                 'immatriculation sur justificatifs.</p>' if indexable else
                 '<p>Le site reste non indexable pendant sa préparation. Les mentions légales '
                 'seront complétées après immatriculation sur justificatifs.</p>')
+        if newsletter and page.name == 'qualifier-un-besoin.html':
+            document, count = LEAD_NEWSLETTER_OPTION.subn(lambda _: LEAD_NEWSLETTER_LINK, document)
+            if count != 1:
+                raise ValueError('Option de veille absente ou répétée du questionnaire')
+        if newsletter:
+            if document.count(LEGAL_FOOTER) != 1:
+                raise ValueError(f'Pied de page absent ou répété : {page.name}')
+            document = document.replace(LEGAL_FOOTER, f'{LEGAL_FOOTER} · <a href="{NEWSLETTER_PAGE}">Lettre de veille</a>')
         page.write_text(document, encoding='utf-8')
+    if newsletter:
+        (OUT / NEWSLETTER_PAGE).write_text(newsletter_page(), encoding='utf-8')
+        shutil.copyfile(ROOT / NEWSLETTER_SCRIPT, OUT / NEWSLETTER_SCRIPT)
+        pages.append(OUT / NEWSLETTER_PAGE)
     (OUT / SOCIAL_IMAGE).parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT / SOCIAL_IMAGE, OUT / SOCIAL_IMAGE)
     # Les pages servent un logo allégé ; les données structurées citent l'original.
@@ -260,7 +309,7 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + links + '</urlset>', encoding='utf-8')
     (OUT / 'data/automation-config.json').write_text(json.dumps({
         'provider':'brevo', 'lead_endpoint':'/api/leads' if leads else None,
-        'chat_enabled':False, 'newsletter_enabled':False, 'meeting_url':None,
+        'chat_enabled':False, 'newsletter_enabled':bool(newsletter), 'meeting_url':None,
         # Seule la clé publique entre dans le build. La clé secrète reste un
         # secret de runtime et n'a aucune raison d'exister ici.
         'turnstile':{'enabled':bool(turnstile_site_key), 'site_key':turnstile_site_key}
@@ -293,6 +342,7 @@ if __name__ == '__main__':
     parser.add_argument('--indexable', action='store_true')
     parser.add_argument('--leads', action='store_true')
     parser.add_argument('--events', action='store_true')
+    parser.add_argument('--newsletter', action='store_true', help='Ajoute la page de la lettre de veille et ses mentions.')
     parser.add_argument('--traffic-token')
     parser.add_argument('--campaign', action='append', default=[])
     parser.add_argument('--privacy-simulation', action='store_true',
@@ -300,4 +350,4 @@ if __name__ == '__main__':
     parser.add_argument('--turnstile-site-key',
         help='Clé PUBLIQUE Turnstile. Son absence laisse le canal fermé ; la clé secrète ne passe jamais par ici.')
     opts = parser.parse_args()
-    print(f'PASS: {build(opts.indexable,opts.leads,opts.events,opts.traffic_token,opts.campaign,opts.privacy_simulation,opts.turnstile_site_key)} fichiers de production dérivés')
+    print(f'PASS: {build(opts.indexable,opts.leads,opts.events,opts.traffic_token,opts.campaign,opts.privacy_simulation,opts.turnstile_site_key,opts.newsletter)} fichiers de production dérivés')
