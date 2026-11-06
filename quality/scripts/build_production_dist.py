@@ -18,7 +18,8 @@ OLD = 'https://ouagabokouayao.github.io/bluewave-solutions-site/'
 OLD_PATH = '/bluewave-solutions-site/'
 # Carte de partage composée à partir du logo officiel de référence (sans redessin).
 SOCIAL_IMAGE = 'assets/img/brand/social/bluewave-partage-1200x630.png'
-LOGO_URL = ORIGIN + '/assets/img/brand/logo/logo-bluewave-horizontal-officiel.png'
+OFFICIAL_LOGO = 'assets/img/brand/logo/logo-bluewave-horizontal-officiel.png'
+LOGO_URL = ORIGIN + '/' + OFFICIAL_LOGO
 # Le texte affiché avant envoi décrit le canal réellement ouvert par le profil.
 FORM_PAGES = ('collaboration.html', 'formation.html', 'qualifier-un-besoin.html')
 CLOSED_FORM_NOTICE = ('Ce formulaire n’envoie rien automatiquement : il prépare un courriel que vous relisez, '
@@ -234,6 +235,8 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
         page.write_text(document, encoding='utf-8')
     (OUT / SOCIAL_IMAGE).parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT / SOCIAL_IMAGE, OUT / SOCIAL_IMAGE)
+    # Les pages servent un logo allégé ; les données structurées citent l'original.
+    shutil.copyfile(ROOT / OFFICIAL_LOGO, OUT / OFFICIAL_LOGO)
     (OUT / 'robots.txt').write_text(
         ('User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ' + ORIGIN + '/sitemap.xml\n')
         if indexable else 'User-agent: *\nDisallow: /\n', encoding='utf-8')

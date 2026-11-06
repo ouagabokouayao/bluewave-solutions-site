@@ -33,6 +33,18 @@
     });
     desktop.addEventListener('change', event => { if (event.matches) closeMenu(); });
   }
+  // Les grandes images de fond ne concurrencent pas le chargement du hero.
+  const deferred = document.querySelectorAll('.offer-media, .geo-photo, .closing-line');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries, watcher) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-near');
+        watcher.unobserve(entry.target);
+      });
+    }, {rootMargin: '900px 0px'});
+    deferred.forEach(node => observer.observe(node));
+  } else deferred.forEach(node => node.classList.add('is-near'));
   const header = document.querySelector('.topbar');
   if (header) {
     let scheduled = false;

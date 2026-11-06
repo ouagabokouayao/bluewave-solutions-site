@@ -25,7 +25,7 @@ async function render(status) {
 
 test('stale corpus displays the actual last update, without claiming a running job', async () => {
   const result = await render({state: 'ok', generated_at: '2026-09-20T16:22:11Z', last_successful_at: '2026-09-20T16:22:11Z'});
-  assert.equal(result.textContent, 'Actualisation nécessaire. Dernière mise à jour : 20 septembre 2026.');
+  assert.equal(result.textContent, 'Dernière mise à jour : 20 septembre 2026.');
 });
 test('recent successful collection displays its date', async () => {
   const result = await render({state: 'ok', generated_at: '2026-10-14T12:00:00Z'});

@@ -10,17 +10,19 @@ function element(dataset = {}) {
   return {dataset, hidden: true, textContent: '', attrs, handlers,
     setAttribute(key, value) {attrs[key] = value;}, getAttribute(key) {return attrs[key];},
     addEventListener(key, fn) {handlers[key] = fn;}, focus() {this.focused = true;},
-    classList: {remove(key) {classes.delete(key);}, toggle(key, value) {value ? classes.add(key) : classes.delete(key);}, contains(key) {return classes.has(key);}}};
+    classList: {add(key) {classes.add(key);}, remove(key) {classes.delete(key);}, toggle(key, value) {value ? classes.add(key) : classes.delete(key);}, contains(key) {return classes.has(key);}}};
 }
-function setup({reduce = false, present = true} = {}) {
+function setup({reduce = false, present = true, observer = null} = {}) {
   const root = element(), menu = element(), panel = element(), header = element(), motion = element(), description = element();
+  const backgrounds = [element(), element(), element()];
   const buttons = ['1','2','3'].map(usage => element({usage}));
   const reduced = {matches: reduce, addEventListener(_, fn) {this.change = fn;}};
   const desktop = {matches: false, addEventListener(_, fn) {this.change = fn;}};
-  const doc = {handlers: {}, querySelector(selector) {return ({'.home-premium': present ? root : null, '.menu-toggle': menu, '.topbar': header, '[data-motion-toggle]': motion, '[data-matrix-description]': description})[selector];}, getElementById() {return panel;}, querySelectorAll() {return buttons;}, addEventListener(key, fn) {this.handlers[key] = fn;}};
+  const doc = {handlers: {}, querySelector(selector) {return ({'.home-premium': present ? root : null, '.menu-toggle': menu, '.topbar': header, '[data-motion-toggle]': motion, '[data-matrix-description]': description})[selector];}, getElementById() {return panel;}, querySelectorAll(selector) {return selector === '[data-usage]' ? buttons : backgrounds;}, addEventListener(key, fn) {this.handlers[key] = fn;}};
   const win = {scrollY: 0, handlers: {}, matchMedia(query) {return query.includes('reduced') ? reduced : desktop;}, addEventListener(key, fn) {this.handlers[key] = fn;}, requestAnimationFrame(fn) {fn();}};
-  runInNewContext(source, {document: doc, window: win});
-  return {root, menu, panel, header, motion, description, buttons, reduced, desktop, doc, win};
+  if (observer) win.IntersectionObserver = observer;
+  runInNewContext(source, {document: doc, window: win, IntersectionObserver: observer});
+  return {root, menu, panel, header, motion, description, buttons, backgrounds, reduced, desktop, doc, win};
 }
 test('mobile navigation opens, closes on a link, Escape restores focus', () => {
   const x = setup(); assert.equal(x.panel.hidden, true); assert.equal(x.menu.hidden, false);
@@ -47,6 +49,19 @@ test('matrix selection changes the explanatory text and selected state', () => {
   x.buttons[2].handlers.click(); assert.match(x.description.textContent,/restent à documenter/);
 });
 test('home enhancement has no effect on other pages', () => {const x=setup({present:false}); assert.equal(x.menu.handlers.click,undefined);});
+test('large background images wait for their section, or load at once without observer', () => {
+  const eager = setup();
+  assert.ok(eager.backgrounds.every(node => node.classList.contains('is-near')));
+  const watched = [];
+  let notify;
+  class Observer { constructor(fn, options) { notify = fn; this.options = options; } observe(node) { watched.push(node); } unobserve() {} }
+  const lazy = setup({observer: Observer});
+  assert.equal(watched.length, 3);
+  assert.ok(lazy.backgrounds.every(node => !node.classList.contains('is-near')));
+  notify([{isIntersecting: true, target: lazy.backgrounds[1]}, {isIntersecting: false, target: lazy.backgrounds[2]}], {unobserve() {}});
+  assert.equal(lazy.backgrounds[1].classList.contains('is-near'), true);
+  assert.equal(lazy.backgrounds[2].classList.contains('is-near'), false);
+});
 test('sticky header changes at the scroll threshold', () => {
   const x=setup(); assert.equal(x.header.classList.contains('scrolled'),false);
   x.win.scrollY=75; x.win.handlers.scroll(); assert.equal(x.header.classList.contains('scrolled'),true);

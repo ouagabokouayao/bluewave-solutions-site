@@ -191,7 +191,7 @@ def main():
         if not featured:
             for marker in ['data-news-home-label','data-news-home-note']:
                 if marker not in index_text:errors.append(f'index.html: fallback featured=0 incomplet {marker}')
-            for marker in ['Actualités récentes','Aucun signal récent n’est actuellement mis en avant.','score_relevance_bluewave >= 6','recentRelevant']:
+            for marker in ['Actualités récentes','Aucune publication récente n’est actuellement disponible.','score_relevance_bluewave >= 6','recentRelevant']:
                 if marker not in news_js:errors.append(f'actualites.js: fallback featured=0 incomplet {marker}')
     except (OSError,ValueError,KeyError,TypeError) as exc:
         errors.append(f'données actualités invalides: {exc}')
