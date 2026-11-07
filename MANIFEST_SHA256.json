@@ -566,8 +566,8 @@
   },
   {
     "path": "quality/scripts/check_preactivation.py",
-    "sha256": "2cfb52eef546e3bec39d2b56d3437be32a8c77ad61f7db2d13847dd66cbc907e",
-    "bytes": 1607
+    "sha256": "f76e7f75902630398b76c0874a3799f076f8e45ee3aa8e192881bc3e40a5a058",
+    "bytes": 1187
   },
   {
     "path": "quality/scripts/check_secrets.py",
