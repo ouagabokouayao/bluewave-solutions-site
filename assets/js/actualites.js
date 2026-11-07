@@ -13,6 +13,8 @@
     'cote-divoire': 'Afrique de l’Ouest',
     'afrique-ouest': 'Afrique de l’Ouest'
   };
+  // Ces sources publient en anglais : la langue est déclarée et annoncée sur la carte.
+  const ENGLISH_SOURCES = new Set(['emsa', 'eu-oceans-fisheries']);
   const formatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const text = (tag, value, className) => {
@@ -32,9 +34,16 @@
     const time = text('time', Number.isNaN(date.valueOf()) ? '' : formatter.format(date), 'news-date');
     if (!Number.isNaN(date.valueOf())) time.dateTime = item.published_at;
     meta.append(time);
-    article.append(meta, text('h3', item.title));
-    article.append(text('p', item.source_name, 'news-source'));
-    if (item.excerpt) article.append(text('p', item.excerpt, 'news-excerpt'));
+    const english = ENGLISH_SOURCES.has(item.source_id);
+    const title = text('h3', item.title);
+    if (english) title.lang = 'en';
+    article.append(meta, title);
+    article.append(text('p', english ? `${item.source_name} · article en anglais` : item.source_name, 'news-source'));
+    if (item.excerpt) {
+      const excerpt = text('p', item.excerpt, 'news-excerpt');
+      if (english) excerpt.lang = 'en';
+      article.append(excerpt);
+    }
     const link = text('a', 'Lire à la source', 'news-link');
     link.href = item.url;
     link.target = '_blank';
@@ -53,22 +62,31 @@
 
   const renderStatus = (status) => {
     const targets = document.querySelectorAll('[data-news-status]');
-    const generated = new Date(status.generated_at);
-    const hours = Number.isNaN(generated.valueOf()) ? Infinity : (Date.now() - generated.valueOf()) / 3600000;
-    let message = status.message || 'Veille actualisée.';
-    if (status.state === 'cached' && !Number.isNaN(generated.valueOf())) {
-      message = `${message} Revalidation : ${formatter.format(generated)}.`;
-    } else if (hours > 36) {
-      message = 'Actualisation en cours.';
-    } else if (!Number.isNaN(generated.valueOf())) {
-      message = `${message} Dernière mise à jour : ${formatter.format(generated)}.`;
+    const validDate = value => {
+      const date = typeof value === 'string' && value.trim() ? new Date(value) : null;
+      return date && !Number.isNaN(date.valueOf()) ? date : null;
+    };
+    const generated = validDate(status.generated_at);
+    const lastUpdate = validDate(status.last_successful_at)
+      || (['ok', 'partial'].includes(status.state) ? generated : null);
+    const hours = lastUpdate ? (Date.now() - lastUpdate.valueOf()) / 3600000 : Infinity;
+    const messages = {
+      ok: hours > 36 ? '' : 'Veille actualisée.',
+      partial: 'Veille partiellement actualisée ; certaines sources sont indisponibles.',
+      cached: 'Corpus revalidé sans nouvelle collecte distante.',
+      error: 'Sources momentanément indisponibles ; dernier corpus conservé.'
+    };
+    let message = messages[status.state] ?? 'État de la veille non renseigné.';
+    message += lastUpdate
+      ? ` Dernière mise à jour : ${formatter.format(lastUpdate)}.`
+      : ' Date de dernière mise à jour indisponible.';
+    message = message.trim();
+    if (status.state === 'cached' && generated) {
+      message += ` Revalidation du corpus : ${formatter.format(generated)}.`;
     }
     targets.forEach(target => {
       target.textContent = message;
-      if (!Number.isNaN(generated.valueOf())) {
-        const action = status.state === 'cached' ? 'Dernière revalidation' : 'Dernière collecte';
-        target.title = `${action} : ${formatter.format(generated)}`;
-      }
+      target.title = lastUpdate ? `Dernière collecte réussie : ${formatter.format(lastUpdate)}` : '';
     });
   };
 
@@ -82,13 +100,11 @@
     const note = document.querySelector('[data-news-home-note]');
     if (label) label.textContent = featured.length ? 'À la une' : 'Actualités récentes';
     if (note) {
-      note.hidden = featured.length > 0;
-      note.textContent = chosen.length
-        ? 'Aucun signal récent n’est actuellement mis en avant. Voici les publications récentes les plus directement liées aux champs BlueWave.'
-        : 'Aucune publication récente n’est actuellement disponible.';
+      note.hidden = chosen.length > 0;
+      note.textContent = 'Aucune publication récente n’est actuellement disponible.';
     }
     home.setAttribute('aria-label', featured.length ? 'Actualités à la une' : 'Actualités récentes');
-    home.replaceChildren(...chosen.map((item, index) => card(item, index === 0)));
+    home.replaceChildren(...chosen.map((item, index) => card(item, featured.length > 0 && index === 0)));
   };
 
   const renderPage = (items) => {
@@ -100,9 +116,12 @@
     const featuredTitle = document.querySelector('[data-news-featured-title]');
     if (featuredLabel) featuredLabel.textContent = featured.length ? 'À la une' : 'Actualités récentes';
     if (featuredTitle) {
-      const labels = ['Aucun signal récent qualifié à mettre en avant.', 'Un signal récent à mettre en perspective.', 'Deux signaux récents à mettre en perspective.', 'Trois signaux récents à mettre en perspective.'];
-      featuredTitle.textContent = labels[featured.length] || labels[0];
+      const labels = ['', 'Un signal récent à mettre en perspective.', 'Deux signaux récents à mettre en perspective.', 'Trois signaux récents à mettre en perspective.'];
+      featuredTitle.textContent = labels[featured.length] || '';
     }
+    // Sans signal qualifié, la section n'annonce pas un vide : la liste suffit.
+    const featuredSection = featuredTarget.closest('section');
+    if (featuredSection) featuredSection.hidden = featured.length === 0;
     featuredTarget.replaceChildren(...featured.map((item, index) => card(item, index === 0)));
     let active = 'all';
     const drawList = () => {
@@ -127,6 +146,7 @@
 
   const showError = () => {
     document.querySelectorAll('[data-news-error]').forEach(node => {
+      node.closest('section')?.removeAttribute('hidden');
       node.hidden = false;
       node.textContent = 'La veille est momentanément indisponible.';
     });

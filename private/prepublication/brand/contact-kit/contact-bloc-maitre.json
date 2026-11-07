@@ -1,0 +1,56 @@
+{
+  "version": "contact-kit-v1-2026-10-08",
+  "objet": "Bloc maître des coordonnées BlueWave Solutions. Source unique de vérité du Contact Kit : signature HTML, variante texte, vCard et emplacement QR en dérivent.",
+  "statut": "TEMP",
+  "marqueur": "TEMP — DO NOT PUBLISH",
+  "public_allowed": false,
+  "approved_by": null,
+  "approved_at": null,
+  "identite": {
+    "raison_sociale": "BlueWave Solutions",
+    "forme_juridique_mention": "SASU en cours de constitution",
+    "nature_activite": "Bureau d’études · conseil · recherche appliquée",
+    "domaines": "Mer, littoral, gouvernance maritime, environnement côtier, économie bleue",
+    "ville_base": "Marseille",
+    "pays": "France"
+  },
+  "personne": {
+    "nom_public": "Bokoua Yao OUAGA",
+    "fonction_affichee": "Fondateur",
+    "mentions_interdites": [
+      "statut doctoral",
+      "affiliation universitaire",
+      "titre non détenu",
+      "fonction non exercée"
+    ]
+  },
+  "coordonnees": {
+    "email": "bluewavesolutions3399@gmail.com",
+    "telephone": null,
+    "adresse_postale": null,
+    "site_web_provisoire": "https://ouagabokouayao.github.io/bluewave-solutions-site/",
+    "domaine_definitif": null
+  },
+  "identite_visuelle": {
+    "logo_horizontal_clair": "assets/img/brand/logo/logo-bluewave-horizontal-officiel.png",
+    "logo_horizontal_fond_fonce": "assets/img/brand/logo/logo-bluewave-horizontal-fond-fonce.png",
+    "note_signature": "Une signature de courriel exige une URL absolue pour afficher un logotype. Aucune URL publique définitive n'étant arrêtée, le logotype reste un emplacement réservé dans la signature HTML."
+  },
+  "emplacement_qr": {
+    "status": "TEMP",
+    "contenu_encode": null,
+    "note": "Aucun QR n'est généré. Un QR fige une URL publique définitive, qui n'est pas arbitrée. L'emplacement est réservé dans la signature HTML et dans le gabarit de carte."
+  },
+  "faits_non_etablis": [
+    "Aucun numéro de téléphone professionnel n'est arbitré.",
+    "Aucune adresse postale d'établissement n'est arrêtée : la société est en cours de constitution.",
+    "Aucun nom de domaine définitif n'est confirmé en production.",
+    "Aucun numéro d'identification d'entreprise n'existe à ce jour."
+  ],
+  "a_arbitrer_par_le_fondateur": [
+    "Nom de domaine définitif et URL publique canonique.",
+    "Numéro de téléphone professionnel à faire figurer, ou absence assumée.",
+    "Adresse du siège après immatriculation.",
+    "Ajout des mentions légales obligatoires de signature après immatriculation : dénomination, forme, capital, siège, numéro d'identification."
+  ]
+}

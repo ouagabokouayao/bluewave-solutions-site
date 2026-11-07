@@ -1,0 +1,291 @@
+{
+  "version": "supports-registry-v1-2026-10-08",
+  "objet": "Registre technique des supports commerciaux et institutionnels BlueWave Solutions. Il déclare l'architecture, les emplacements, les statuts et les sources attendues. Il ne fabrique aucun document.",
+  "statut_global": "PREPUBLICATION",
+  "statuts_autorises": ["TEMP", "REVIEW", "APPROVED", "PUBLIC_READY"],
+  "regle_exposition": {
+    "principe": "Aucun téléchargement public n'est actif tant qu'un support n'est pas PUBLIC_READY avec public_allowed à true et un fichier réellement existant.",
+    "interdictions": [
+      "Aucun faux PDF téléchargeable.",
+      "Aucun appel au téléchargement sans fichier réel derrière.",
+      "Aucun prix public dans un support exposé sur le site."
+    ],
+    "mecanisme_futur": "Un support passé en PUBLIC_READY est copié dans un répertoire public dédié, déclaré dans le manifeste d'intégrité, puis exposé par un lien explicite. Tant que ce n'est pas fait, la page publique n'affiche qu'un emplacement annoncé, sans lien actif."
+  },
+  "canon_offres_coeur": [
+    "Diagnostic stratégique maritime, littoral ou portuaire",
+    "Vulnérabilité côtière, adaptation et options de décision",
+    "Gouvernance, acteurs, usages et acceptabilité",
+    "Structuration de projets maritimes, littoraux ou d’économie bleue",
+    "Formation et renforcement des capacités"
+  ],
+  "canon_formats_entree": [
+    "Note stratégique BlueWave",
+    "Atelier de cadrage BlueWave"
+  ],
+  "supports": [
+    {
+      "code": "A",
+      "support_id": "CORPORATE_DECK",
+      "titre": "Corporate Deck",
+      "calibrage": "10 à 15 pages",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/decks/",
+      "filename": null,
+      "formats_cibles": ["pdf", "pptx"],
+      "sources_proprietaires": ["01", "03", "06", "socle maître", "dossier commercial maître"],
+      "contenu_attendu": [
+        "BlueWave en bref",
+        "problème et proposition de valeur",
+        "cinq offres cœur",
+        "méthode publique",
+        "types de livrables",
+        "géographies prioritaires",
+        "capacité d'exécution proportionnée",
+        "modalités d'engagement"
+      ],
+      "interdits": ["client", "partenaire", "mandat", "équipe", "implantation", "résultat", "distinction", "label", "prix public"],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "B",
+      "support_id": "COMPANY_PROFILE",
+      "titre": "Company Profile",
+      "calibrage": "1 page",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/one-pagers/",
+      "filename": null,
+      "formats_cibles": ["pdf"],
+      "sources_proprietaires": ["01", "socle maître", "stratégie marque-site"],
+      "contenu_attendu": [
+        "identification de la structure",
+        "nature de l'activité",
+        "périmètre d'intervention",
+        "géographies prioritaires",
+        "coordonnées"
+      ],
+      "interdits": ["effectif non établi", "chiffre d'affaires", "référence client", "prix public"],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "C",
+      "support_id": "CAPABILITY_STATEMENT",
+      "titre": "Capability Statement",
+      "calibrage": "2 pages maximum",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/one-pagers/",
+      "filename": null,
+      "formats_cibles": ["pdf"],
+      "sources_proprietaires": ["06", "01", "socle maître"],
+      "contenu_attendu": [
+        "capacités directement portées",
+        "capacités mobilisées par coordination d'opérateurs qualifiés",
+        "méthode publique",
+        "types de livrables",
+        "domaines de connaissance",
+        "borne des professions réglementées"
+      ],
+      "interdits": ["agrément non détenu", "certification non détenue", "expertise réglementée attribuée à BlueWave"],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "D",
+      "support_id": "FICHES_OFFRES",
+      "titre": "Fiches offres",
+      "calibrage": "5 fiches, une par offre cœur",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/offres/",
+      "formats_cibles": ["pdf"],
+      "sources_proprietaires": ["01", "06"],
+      "elements": [
+        {"offre_id": "diagnostic-strategique", "titre": "Diagnostic stratégique maritime, littoral ou portuaire", "filename": null, "status": "TEMP"},
+        {"offre_id": "vulnerabilite-cotiere", "titre": "Vulnérabilité côtière, adaptation et options de décision", "filename": null, "status": "TEMP"},
+        {"offre_id": "gouvernance-acteurs", "titre": "Gouvernance, acteurs, usages et acceptabilité", "filename": null, "status": "TEMP"},
+        {"offre_id": "structuration-projet", "titre": "Structuration de projets maritimes, littoraux ou d’économie bleue", "filename": null, "status": "TEMP"},
+        {"offre_id": "formation-capacites", "titre": "Formation et renforcement des capacités", "filename": null, "status": "TEMP"}
+      ],
+      "contenu_attendu_par_fiche": [
+        "situation traitée",
+        "questions auxquelles la mission répond",
+        "déroulé par étapes",
+        "livrable attendu",
+        "conditions de faisabilité",
+        "limites explicites"
+      ],
+      "interdits": ["prix public", "durée engageante non arbitrée", "résultat garanti"],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "E",
+      "support_id": "CATALOGUE_FORMATION",
+      "titre": "Catalogue Formation",
+      "calibrage": "catalogue + 7 modules",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/formation/",
+      "filename": null,
+      "formats_cibles": ["pdf"],
+      "sources_proprietaires": ["01", "06"],
+      "modules": [
+        {"module_id": "FORMATION_M1", "titre": null, "status": "TEMP", "source_attendue": "01 / 06"},
+        {"module_id": "FORMATION_M2", "titre": null, "status": "TEMP", "source_attendue": "01 / 06"},
+        {"module_id": "FORMATION_M3", "titre": null, "status": "TEMP", "source_attendue": "01 / 06"},
+        {"module_id": "FORMATION_M4", "titre": null, "status": "TEMP", "source_attendue": "01 / 06"},
+        {"module_id": "FORMATION_M5", "titre": null, "status": "TEMP", "source_attendue": "01 / 06"},
+        {"module_id": "FORMATION_M6", "titre": null, "status": "TEMP", "source_attendue": "01 / 06"},
+        {"module_id": "FORMATION_M7", "titre": null, "status": "TEMP", "source_attendue": "01 / 06"}
+      ],
+      "note_arbitrage": "Les sept intitulés de modules ne figurent pas au canon disponible. Ils ne sont pas inventés ici : les emplacements sont créés, les titres restent à fournir par le propriétaire fonctionnel.",
+      "contenu_attendu_par_module": [
+        "public visé",
+        "acquis attendus",
+        "durée indicative",
+        "format",
+        "modalités d'évaluation des acquis",
+        "prérequis"
+      ],
+      "interdits": ["certification non détenue", "agrément de formation non détenu", "prix public"],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "F",
+      "support_id": "NOTE_COLLABORATION",
+      "titre": "Note Collaboration",
+      "calibrage": "note courte",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/collaboration/",
+      "filename": null,
+      "formats_cibles": ["pdf"],
+      "sources_proprietaires": ["03", "06", "01"],
+      "contenu_attendu": [
+        "formes de collaboration envisageables",
+        "apport de BlueWave dans un groupement",
+        "complémentarité avec les professions réglementées",
+        "modalités d'entrée en relation"
+      ],
+      "interdits": ["partenaire présenté comme établi", "consortium présenté comme constitué", "référence commerciale"],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "G",
+      "support_id": "PROFIL_FONDATEUR",
+      "titre": "Profil fondateur",
+      "calibrage": "trois variantes",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/founder/",
+      "formats_cibles": ["md", "pdf"],
+      "sources_proprietaires": ["02", "socle maître"],
+      "variantes": [
+        {"variante_id": "FONDATEUR_COURT", "cible": "signature, fiche, annuaire", "calibrage": "40 mots maximum", "status": "TEMP", "filename": "private/prepublication/founder/founder-profils-textuels.json"},
+        {"variante_id": "FONDATEUR_INSTITUTIONNEL", "cible": "dossier, candidature, support institutionnel", "calibrage": "120 mots maximum", "status": "TEMP", "filename": "private/prepublication/founder/founder-profils-textuels.json"},
+        {"variante_id": "FONDATEUR_CONFERENCE_MEDIA", "cible": "programme d'événement, présentation d'intervenant, sollicitation presse", "calibrage": "80 mots maximum", "status": "TEMP", "filename": "private/prepublication/founder/founder-profils-textuels.json"}
+      ],
+      "interdits": [
+        "statut doctoral",
+        "affiliation universitaire",
+        "fonction non exercée",
+        "titre non détenu",
+        "parcours réécrit ou enrichi"
+      ],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "H",
+      "support_id": "MEDIA_KIT",
+      "titre": "Media Kit",
+      "calibrage": "dossier",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/media/",
+      "filename": null,
+      "formats_cibles": ["pdf", "zip"],
+      "sources_proprietaires": ["02", "01"],
+      "contenu_attendu": [
+        "BlueWave en bref",
+        "domaines d'expertise et d'intervention",
+        "profil fondateur variante conférence et média",
+        "photographie de presse (FOUNDER_MEDIA)",
+        "logotypes et règles d'usage",
+        "contact média"
+      ],
+      "dependances_actifs": ["FOUNDER_MEDIA"],
+      "interdits": ["retombée média non obtenue", "citation non prononcée", "revue de presse fabriquée"],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "I",
+      "support_id": "EVENT_SPEAKER_KIT",
+      "titre": "Event / Speaker Kit",
+      "calibrage": "dossier",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/events/",
+      "filename": null,
+      "formats_cibles": ["pdf"],
+      "sources_proprietaires": ["02", "01", "06"],
+      "contenu_attendu": [
+        "formats d'intervention envisageables",
+        "sujets traitables",
+        "profil intervenant variante conférence et média",
+        "photographie d'intervention (FOUNDER_SPEAKER)",
+        "besoins techniques",
+        "conditions logistiques",
+        "contact organisateur"
+      ],
+      "dependances_actifs": ["FOUNDER_SPEAKER"],
+      "interdits": ["conférence non tenue", "programme non confirmé", "organisateur présenté comme partenaire"],
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "code": "J",
+      "support_id": "CONTACT_KIT",
+      "titre": "Contact Kit",
+      "calibrage": "jeu d'éléments de contact",
+      "status": "TEMP",
+      "public_allowed": false,
+      "download_enabled": false,
+      "emplacement": "private/prepublication/brand/contact-kit/",
+      "formats_cibles": ["html", "txt", "vcf"],
+      "sources_proprietaires": ["02"],
+      "elements": [
+        {"element_id": "CONTACT_BLOC_MAITRE", "filename": "private/prepublication/brand/contact-kit/contact-bloc-maitre.json", "status": "TEMP"},
+        {"element_id": "CONTACT_SIGNATURE_HTML", "filename": "private/prepublication/brand/contact-kit/contact-signature-html-v1.html", "status": "TEMP"},
+        {"element_id": "CONTACT_SIGNATURE_TEXTE", "filename": "private/prepublication/brand/contact-kit/contact-signature-texte-v1.txt", "status": "TEMP"},
+        {"element_id": "CONTACT_VCARD", "filename": "private/prepublication/brand/contact-kit/contact-vcard-v1.vcf", "status": "TEMP"},
+        {"element_id": "CONTACT_QR_EMPLACEMENT", "filename": null, "status": "TEMP", "note": "Emplacement réservé. Aucun QR n'est généré : il encoderait une URL publique définitive non arbitrée."}
+      ],
+      "interdits": ["URL publique définitive inventée", "numéro de téléphone non arbitré", "mention de statut doctoral", "affiliation universitaire"],
+      "approved_by": null,
+      "approved_at": null
+    }
+  ],
+  "faits_non_etablis": [
+    "Aucun support de cette liste n'existe à ce jour sous forme de fichier final.",
+    "Aucun support n'est exposé au téléchargement public.",
+    "Aucune URL publique définitive n'est arrêtée."
+  ]
+}

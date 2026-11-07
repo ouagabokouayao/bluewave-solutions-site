@@ -1,0 +1,34 @@
+{
+  // Profil A : ouverture commerciale manuelle. Contact par courriel, aucune
+  // collecte serveur. Ni base D1, ni garde, ni tâche planifiée, ni route.
+  // La route et l'indexation s'ajoutent uniquement après autorisation de Joseph.
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "bluewave-site-production",
+  "main": "./worker.mjs",
+  "compatibility_date": "2026-08-06",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "../../dist-production",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "none",
+    "not_found_handling": "404-page"
+  },
+  "vars": {
+    "LEADS_ENABLED": "false",
+    "LEADS_CONTACT_SYNC_ENABLED": "false",
+    "LEADS_ACK_ENABLED": "false",
+    "LEADS_NOTIFY_ENABLED": "false",
+    "LEADS_REPLAY_ENABLED": "false",
+    "CAMPAIGNS_ENABLED": "false",
+    "EVENTS_ENABLED": "false",
+    "NEWSLETTER_ENABLED": "false",
+    "NEWSLETTER_NOTICE_VERSION": "",
+    "NEWSLETTER_PROOF_RETENTION_DAYS": "",
+    "TURNSTILE_ENABLED": "false",
+    "PUBLIC_INDEXABLE": "false",
+    "ALLOWED_CAMPAIGNS": "",
+    "LEAD_RETENTION_DAYS": ""
+  }
+}

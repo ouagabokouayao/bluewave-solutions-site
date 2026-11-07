@@ -1,0 +1,315 @@
+import importlib.util
+import hashlib
+import json
+import re
+import tempfile
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+spec = importlib.util.spec_from_file_location('production_build', ROOT / 'quality/scripts/build_production_dist.py')
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+spec2 = importlib.util.spec_from_file_location('production_config', ROOT / 'quality/scripts/render_production_wrangler.py')
+config = importlib.util.module_from_spec(spec2)
+spec2.loader.exec_module(config)
+
+
+class ProductionProfile(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.original_out = module.OUT
+        self.original_target = config.TARGET
+        module.OUT = Path(self.tmp.name) / 'public'
+        config.TARGET = Path(self.tmp.name) / 'wrangler.json'
+
+    def tearDown(self):
+        module.OUT = self.original_out
+        config.TARGET = self.original_target
+        self.tmp.cleanup()
+
+    def test_closed_profile_stays_closed(self):
+        module.build()
+        out = module.OUT
+        self.assertIn('Disallow: /', (out / 'robots.txt').read_text())
+        self.assertNotIn('sitemap.xml', [p.name for p in out.iterdir()])
+        self.assertEqual(json.loads((out / 'data/automation-config.json').read_text())['lead_endpoint'], None)
+        self.assertFalse(json.loads((out / 'data/analytics-config.json').read_text())['enabled'])
+        self.assertEqual(len(list(out.glob('*.html'))), 22)
+        self.assertIn('noindex, nofollow', (out / 'index.html').read_text())
+
+    def test_privacy_recipients_are_factual(self):
+        for options in ({}, {'leads': True, 'privacy_simulation': True}):
+            module.build(**options)
+            page = (module.OUT / 'politique-confidentialite.html').read_text()
+            self.assertNotIn('personnes habilitées', page)
+            self.assertIn('Le fondateur de BlueWave Solutions, seul destinataire à ce jour', page)
+            self.assertIn('Google (Gmail)', page)
+        module.build()
+        page = (module.OUT / 'politique-confidentialite.html').read_text()
+        self.assertIn('les informations que vous choisissez d’inclure dans votre courriel', page)
+        self.assertNotIn('Si le formulaire est actif', page)
+
+    def test_not_found_page_works_at_domain_root(self):
+        module.build()
+        out = module.OUT
+        page = (out / '404.html').read_text()
+        self.assertIn('<base href="/">', page)
+        for html in out.glob('*.html'):
+            self.assertNotIn('bluewave-solutions-site', html.read_text(), html.name)
+
+    def test_pages_respect_worker_csp(self):
+        # Le Worker sert style-src 'self' et script-src 'self' : un attribut
+        # style, un élément style, un gestionnaire on* ou un script en ligne
+        # exécutable serait bloqué en production sans que le banc local le voie.
+        module.build()
+        for page in module.OUT.glob('*.html'):
+            body = page.read_text()
+            self.assertNotRegex(body, r'<[a-z][^>]*\sstyle=', page.name)
+            self.assertNotIn('<style', body, page.name)
+            self.assertNotRegex(body, r'<[a-z][^>]*\son[a-z]+=', page.name)
+            for tag in re.findall(r'<script\b[^>]*>', body):
+                self.assertTrue('src=' in tag or 'application/ld+json' in tag, f'{page.name}: {tag}')
+
+    def test_share_card_and_structured_data(self):
+        module.build()
+        out = module.OUT
+        image = out / module.SOCIAL_IMAGE
+        header = image.read_bytes()[:24]
+        self.assertEqual(header[:8], b'\x89PNG\r\n\x1a\n')
+        self.assertEqual((int.from_bytes(header[16:20], 'big'), int.from_bytes(header[20:24], 'big')), (1200, 630))
+        for page in out.glob('*.html'):
+            body = page.read_text()
+            tag = f'<meta property="og:image" content="{module.ORIGIN}/{module.SOCIAL_IMAGE}">'
+            self.assertEqual(body.count(tag), 0 if page.name == '404.html' else 1, page.name)
+        index = (out / 'index.html').read_text()
+        blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', index, re.S)
+        self.assertEqual(len(blocks), 1)
+        graph = {node['@type']: node for node in json.loads(blocks[0])['@graph']}
+        organisation = graph['Organization']
+        self.assertEqual(organisation['name'], 'BlueWave Solutions')
+        self.assertEqual(organisation['url'], module.ORIGIN + '/')
+        self.assertTrue((out / organisation['logo'].replace(module.ORIGIN + '/', '')).is_file())
+        for absent in ('address', 'telephone', 'foundingDate', 'member', 'employee', 'award'):
+            self.assertNotIn(absent, organisation)
+
+    def test_privacy_follows_04b_principles(self):
+        # Formulations de principe validées par 04B (16/10/2026) pour la
+        # configuration statique ; elles valent pour chaque profil.
+        for options in ({}, {'leads': True, 'events': True, 'privacy_simulation': True}):
+            module.build(**options)
+            page = (module.OUT / 'politique-confidentialite.html').read_text()
+            self.assertIn('que leurs conditions sont réunies', page)
+            self.assertIn('sous réserve d’une mise en balance', page)
+            self.assertIn('la lettre de veille est un traitement distinct, désactivé', page)
+            self.assertIn('durée de référence retenue en matière de prospection et non durée applicable à toutes les données', page)
+            self.assertIn('Google (Gmail)', page)
+            self.assertIn('Aucune suppression automatique n’est présentée comme opérationnelle', page)
+            self.assertNotIn('dispense de consentement', page)
+            self.assertNotIn('supprime les données', page)
+            self.assertNotIn('jusqu’à trois ans après le dernier contact', page)
+        module.build()
+        page = (module.OUT / 'politique-confidentialite.html').read_text()
+        self.assertIn('Cloudflare Web Analytics est désactivé', page)
+        self.assertIn('Aucun événement de conversion distant n’est activé', page)
+        self.assertNotIn('agrégats de conversion', page)
+        self.assertNotIn('garde anti-abus', page)
+        self.assertNotIn('mesurer', page)
+        for html in module.OUT.glob('*.html'):
+            body = html.read_text()
+            self.assertNotIn('33651676812', body, html.name)
+            self.assertNotIn('06 51 67 68 12', body, html.name)
+        approval = json.loads((ROOT / 'quality/privacy-approval.json').read_text(encoding='utf-8'))
+        self.assertIs(approval['approved'], False)
+
+    def test_open_profile_is_canonical_and_minimal(self):
+        module.build(indexable=True, leads=True, events=True, token='a'*32, campaigns=['salon_2026'], privacy_simulation=True)
+        out = module.OUT
+        self.assertEqual(len(list(out.glob('*.html'))), 22)
+        for page in out.glob('*.html'):
+            if page.name == module.NEWSLETTER_PAGE:
+                continue
+            body = page.read_text()
+            source = (module.SOURCE / page.name).read_text()
+            original_canonical = source.split('<link rel="canonical" href="', 1)[1].split('"', 1)[0]
+            expected = original_canonical.replace(module.OLD, module.ORIGIN + '/').removesuffix('index.html')
+            self.assertIn(f'<link rel="canonical" href="{expected}">', body)
+            self.assertNotIn(module.OLD, body)
+            self.assertIn('index, follow' if page.name != '404.html' else 'noindex, nofollow', body)
+        self.assertIn('Sitemap: ' + module.ORIGIN, (out / 'robots.txt').read_text())
+        self.assertIn('Brevo', (out / 'politique-confidentialite.html').read_text())
+        self.assertIn('treize mois', (out / 'politique-confidentialite.html').read_text())
+        self.assertNotIn('GitHub Pages', (out / 'politique-confidentialite.html').read_text())
+        self.assertNotIn('préactivation', (out / 'mentions-legales.html').read_text())
+        self.assertIn('101 Townsend St.', (out / 'mentions-legales.html').read_text())
+        self.assertIn('+1 888 993 5273', (out / 'mentions-legales.html').read_text())
+        self.assertEqual(json.loads((out / 'data/automation-config.json').read_text())['lead_endpoint'], '/api/leads')
+        self.assertEqual(json.loads((out / 'data/analytics-config.json').read_text())['campaigns'], ['salon_2026'])
+        self.assertFalse(json.loads((out / 'data/automation-config.json').read_text())['newsletter_enabled'])
+        self.assertEqual(len(list(out.glob('*.xml'))), 1)
+        sitemap = (out / 'sitemap.xml').read_text()
+        self.assertNotIn('404.html', sitemap)
+        urls = re.findall(r'<loc>(.*?)</loc>', sitemap)
+        self.assertEqual(len(urls), 16)
+        self.assertEqual(len(urls), len(set(urls)))
+        for alias in ('contact', 'domaines', 'notes-demonstrateurs', 'services'):
+            self.assertNotIn(f'{module.ORIGIN}/{alias}.html', urls)
+        self.assertIn(f'{module.ORIGIN}/', urls)
+        self.assertNotIn(f'{module.ORIGIN}/index.html', urls)
+        for url in urls:
+            page = (out / (url.rsplit('/', 1)[1] or 'index.html')).read_text()
+            self.assertIn(f'<link rel="canonical" href="{url}">', page)
+        for entry in json.loads((out / 'MANIFEST_SHA256.json').read_text()):
+            self.assertEqual(hashlib.sha256((out / entry['path']).read_bytes()).hexdigest(), entry['sha256'])
+
+    def test_form_notice_describes_the_channel_of_the_profile(self):
+        pages = ('collaboration.html', 'formation.html', 'qualifier-un-besoin.html')
+        module.build()
+        for name in pages:
+            page = (module.OUT / name).read_text(encoding='utf-8')
+            self.assertIn(module.CLOSED_FORM_NOTICE, page)
+            self.assertNotIn(module.OPEN_FORM_NOTICE, page)
+        module.build(leads=True, privacy_simulation=True)
+        for name in pages:
+            page = (module.OUT / name).read_text(encoding='utf-8')
+            self.assertIn(module.OPEN_FORM_NOTICE, page)
+            self.assertNotIn(module.CLOSED_FORM_NOTICE, page)
+        module.build()
+
+    def test_profile_a_refuses_any_opening(self):
+        spec = importlib.util.spec_from_file_location('check_profile', ROOT / 'quality/scripts/check_profile.py')
+        profile = importlib.util.module_from_spec(spec); spec.loader.exec_module(profile)
+        module.build()
+        closed = profile.load_config(profile.CONFIG_A)
+        self.assertEqual(profile.profile_a(closed, module.OUT), [])
+        for change in ({'routes': [{'pattern': 'www.bluewavesolutions.fr'}]}, {'d1_databases': []}, {'triggers': {}},
+                       {'vars': {**closed['vars'], 'LEADS_ENABLED': 'true'}}, {'vars': {**closed['vars'], 'PUBLIC_INDEXABLE': 'true'}},
+                       {'vars': {**closed['vars'], 'BREVO_API_KEY': 'x'}}):
+            self.assertTrue(profile.profile_a({**closed, **change}, module.OUT), change)
+        module.build(leads=True, privacy_simulation=True)
+        self.assertTrue(profile.profile_a(closed, module.OUT))
+        module.build()
+
+    def test_config_requires_real_d1_binding_and_route_is_explicit(self):
+        real = '11111111-1111-1111-1111-111111111111'
+        leads = '22222222-2222-2222-2222-222222222222'
+        with self.assertRaises(ValueError):
+            config.render('00000000-0000-0000-0000-000000000000', leads)
+        with self.assertRaises(ValueError):
+            config.render(real, '00000000-0000-0000-0000-000000000000')
+        # Les deux bases ne peuvent pas être la même : analytics et demandes
+        # ne se mélangent pas.
+        with self.assertRaises(ValueError):
+            config.render(real, real)
+        with self.assertRaises(TypeError):
+            config.render(real)
+        target = config.render(real, leads)
+        closed = json.loads(target.read_text())
+        self.assertFalse(closed['workers_dev'])
+        self.assertNotIn('routes', closed)
+        self.assertEqual(closed['vars']['LEADS_ENABLED'], 'false')
+        self.assertEqual(closed['vars']['TURNSTILE_ENABLED'], 'false')
+        self.assertEqual(closed['vars']['LEAD_RETENTION_DAYS'], '')
+        bindings = {entry['binding']: entry['database_id'] for entry in closed['d1_databases']}
+        self.assertEqual(bindings['CONVERSION_DB'], real)
+        self.assertEqual(bindings['LEADS_DB'], leads)
+        with self.assertRaisesRegex(ValueError, 'LEAD_RETENTION_DAYS'):
+            config.render(real, leads, leads=True)
+        config.render(real, leads, indexable=True, leads=True, events=True, route=True, retention_days=30)
+        opened = json.loads(target.read_text())
+        self.assertEqual(opened['routes'][0]['pattern'], 'www.bluewavesolutions.fr')
+        self.assertEqual(opened['vars']['NEWSLETTER_ENABLED'], 'false')
+        self.assertEqual(opened['vars']['LEAD_RETENTION_DAYS'], '30')
+
+    def test_closed_profile_keeps_a_withdrawal_page_without_collection(self):
+        module.build()
+        page = (module.OUT / module.NEWSLETTER_PAGE).read_text(encoding='utf-8')
+        self.assertTrue((module.OUT / module.WITHDRAWAL_SCRIPT).is_file())
+        self.assertFalse((module.OUT / module.NEWSLETTER_SCRIPT).exists())
+        self.assertNotIn('<form', page)
+        self.assertNotIn('type="email"', page)
+        self.assertIn('Les inscriptions ne sont pas encore ouvertes.', page)
+        self.assertIn('content="noindex, nofollow"', page)
+        for other in module.OUT.glob('*.html'):
+            if other.name != module.NEWSLETTER_PAGE:
+                self.assertNotIn(module.NEWSLETTER_PAGE, other.read_text(encoding='utf-8'), other.name)
+        self.assertIn('La lettre de veille est désactivée', (module.OUT / 'politique-confidentialite.html').read_text(encoding='utf-8'))
+        module.build(indexable=True, privacy_simulation=True)
+        self.assertIn('content="noindex, nofollow"', (module.OUT / module.NEWSLETTER_PAGE).read_text(encoding='utf-8'))
+        self.assertNotIn(module.NEWSLETTER_PAGE, (module.OUT / 'sitemap.xml').read_text(encoding='utf-8'))
+
+    def test_editorial_texts_of_02_in_the_closed_profile(self):
+        module.build()
+        news = (module.OUT / 'actualites.html').read_text(encoding='utf-8')
+        for text in ('BlueWave Perspectives — Mer, littoral &amp; opportunités', 'Tous les quinze jours', 'Méditerranée', 'Côte d’Ivoire', 'Afrique de l’Ouest',
+                     'À la une', 'Afrique de l’Ouest &amp; Méditerranée', 'Opportunités', 'Agenda', 'Regard BlueWave', 'Les inscriptions ne sont pas encore ouvertes.'):
+            self.assertIn(text, news)
+        self.assertNotRegex(news, r'<form[^>]*newsletter|name="consent"')
+        for page in module.OUT.glob('*.html'):
+            self.assertNotIn('Lettre de veille BlueWave', page.read_text(encoding='utf-8'), page.name)
+
+    def test_newsletter_opens_only_through_the_privacy_gate(self):
+        with self.assertRaisesRegex(ValueError, 'Verrou confidentialité'):
+            module.build(newsletter=True)
+        module.build(newsletter=True, privacy_simulation=True)
+        page = (module.OUT / module.NEWSLETTER_PAGE).read_text(encoding='utf-8')
+        self.assertIn('<title>BlueWave Perspectives | BlueWave Solutions</title>', page)
+        for label in ('Actualités maritimes et littorales', 'Formations et rencontres', 'Études et publications', 'Tous les quinze jours'):
+            self.assertIn(label, page)
+        for value in ('veille', 'formations', 'publications'):
+            self.assertEqual(page.count(f'name="preferences" type="checkbox" value="{value}"'), 2)
+        news = (module.OUT / 'actualites.html').read_text(encoding='utf-8')
+        self.assertNotIn(module.CLOSED_NEWSLETTER_NOTE, news)
+        self.assertIn(module.OPEN_NEWSLETTER_LINK, news)
+        self.assertIn(f'href="{module.ORIGIN}/{module.NEWSLETTER_PAGE}"', page)
+        self.assertNotIn('data-newsletter-form', page)
+        self.assertTrue((module.OUT / module.NEWSLETTER_SCRIPT).is_file())
+        self.assertIs(json.loads((module.OUT / 'data/automation-config.json').read_text(encoding='utf-8'))['newsletter_enabled'], True)
+        policy = (module.OUT / 'politique-confidentialite.html').read_text(encoding='utf-8')
+        self.assertNotIn('La lettre de veille est désactivée', policy)
+        self.assertIn('fondé sur votre consentement spécifique', policy)
+        self.assertIn('BlueWave Perspectives : jusqu’à votre désinscription', policy)
+        for form in module.OUT.glob('*.html'):
+            self.assertNotIn('data-newsletter-consent', form.read_text(encoding='utf-8'), form.name)
+
+    def test_newsletter_config_requires_its_own_base_and_decisions(self):
+        conversion, leads, veille = ('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333')
+        closed = json.loads(config.render(conversion, leads).read_text())
+        self.assertEqual(closed['vars']['NEWSLETTER_ENABLED'], 'false')
+        self.assertEqual(len(closed['d1_databases']), 2)
+        with self.assertRaisesRegex(ValueError, 'NEWSLETTER_DB'):
+            config.render(conversion, leads, newsletter=True, notice_version='veille-v1', proof_retention_days=1095)
+        with self.assertRaisesRegex(ValueError, 'base distincte'):
+            config.render(conversion, leads, newsletter=True, newsletter_database_id=leads, notice_version='veille-v1', proof_retention_days=1095)
+        with self.assertRaisesRegex(ValueError, 'NOTICE_VERSION'):
+            config.render(conversion, leads, newsletter=True, newsletter_database_id=veille, proof_retention_days=1095)
+        with self.assertRaisesRegex(ValueError, 'PROOF_RETENTION'):
+            config.render(conversion, leads, newsletter=True, newsletter_database_id=veille, notice_version='veille-v1')
+        opened = json.loads(config.render(conversion, leads, newsletter=True, newsletter_database_id=veille, notice_version='veille-v1', proof_retention_days=1095).read_text())
+        self.assertEqual(opened['vars']['NEWSLETTER_ENABLED'], 'true')
+        self.assertEqual(opened['vars']['NEWSLETTER_PROOF_RETENTION_DAYS'], '1095')
+        self.assertIn(veille, [entry['database_id'] for entry in opened['d1_databases'] if entry['binding'] == 'NEWSLETTER_DB'])
+        # Refermée, la base reste liée : le retrait doit continuer de fonctionner.
+        reclosed = json.loads(config.render(conversion, leads, newsletter_database_id=veille).read_text())
+        self.assertEqual(reclosed['vars']['NEWSLETTER_ENABLED'], 'false')
+        self.assertEqual(len(reclosed['d1_databases']), 3)
+
+    def test_privacy_gate_blocks_publishable_artifact(self):
+        approval = json.loads((ROOT / 'quality/privacy-approval.json').read_text(encoding='utf-8'))
+        self.assertFalse(approval['approved'])
+        self.assertTrue(approval['affirmations_a_valider'])
+        # Un artefact indexable non simulé est refusé tant que les mentions ne
+        # sont pas validées.
+        with self.assertRaises(ValueError):
+            module.build(indexable=True, leads=True, events=True)
+        for options in ({'leads': True}, {'events': True}, {'token': 'a'*32}):
+            with self.assertRaisesRegex(ValueError, 'Verrou confidentialité'):
+                module.build(**options)
+        # Le profil fermé et la simulation restent constructibles.
+        module.build()
+        module.build(indexable=True, leads=True, events=True, privacy_simulation=True)
+        mode = json.loads((ROOT / 'quality/reports/production-build-mode.json').read_text())
+        self.assertFalse(mode['publishable'])
+
+if __name__ == '__main__':
+    unittest.main()
