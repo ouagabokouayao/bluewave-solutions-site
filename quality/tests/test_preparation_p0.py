@@ -22,6 +22,7 @@ def load(name, path):
 
 
 dns = load('compare_dns', 'quality/scripts/compare_dns.py')
+preflight = load('dns_preflight', 'quality/scripts/dns_preflight.py')
 radar = load('radar_export_crm', 'quality/scripts/radar_export_crm.py')
 build = load('production_build', 'quality/scripts/build_production_dist.py')
 REFERENCE = json.loads(dns.REFERENCE.read_text(encoding='utf-8'))
@@ -66,6 +67,46 @@ class Dns(unittest.TestCase):
         Path(zone.name).unlink()
         self.assertEqual(result.returncode, 0)
         self.assertIn('DNSSEC actif', result.stdout)
+
+
+class Raccordement(unittest.TestCase):
+    MX = ['1 mx1.mail.ovh.net.', '5 mx2.mail.ovh.net.', '100 mx3.mail.ovh.net.']
+
+    def resolver(self, ds=True, target_mx=None):
+        def resolve(name, kind, server):
+            if kind == 'DS':
+                return ['14294 8 2 113061F9'] if ds else []
+            if kind == 'NS':
+                return ['ns111.ovh.net.', 'dns111.ovh.net.']
+            if kind == 'MX':
+                return target_mx if target_mx is not None else self.MX
+            if kind == 'TXT':
+                return ['"v=spf1 include:mx.ovh.com -all"']
+            return []
+        return resolve
+
+    def test_ds_present_interdit_la_bascule(self):
+        checks, ready = preflight.preflight(self.resolver(ds=True))
+        self.assertFalse(ready)
+        self.assertIn('présent', checks[0][2])
+
+    def test_ds_retire_et_messagerie_servie_autorisent_la_bascule(self):
+        _, ready = preflight.preflight(self.resolver(ds=False), target=['ana.ns.cloudflare.com'])
+        self.assertTrue(ready)
+
+    def test_zone_cible_sans_messagerie_interdit_la_bascule(self):
+        checks, ready = preflight.preflight(self.resolver(ds=False, target_mx=['1 mx1.mail.ovh.net.']), target=['ana.ns.cloudflare.com'])
+        self.assertFalse(ready)
+        self.assertFalse(checks[-1][1])
+
+    def test_fichier_de_zone_cible_conserve_la_messagerie(self):
+        text = (ROOT / 'serverless/cloudflare/zone-cible-cloudflare.txt').read_text(encoding='utf-8')
+        rows, critical = dns.compare(text, REFERENCE)
+        self.assertFalse(critical)
+        kinds = {key[1] for _, key, _ in rows if _ != 'nouveau'}
+        self.assertNotIn('SOA', text.split('$TTL')[1])
+        self.assertNotRegex(text, r'\n\S+\s+\d+\s+IN\s+NS\s')
+        self.assertNotIn('3|welcome', text.split('$TTL')[1])
 
 
 class Messagerie(unittest.TestCase):

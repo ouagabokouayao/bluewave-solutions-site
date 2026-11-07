@@ -641,8 +641,8 @@
   },
   {
     "path": "serverless/DNS-MATRICE.md",
-    "sha256": "660cdd7b681ca99cfad86a1b405cdc9522355bd4b8ad7833b16aac76cdbcab3c",
-    "bytes": 3765
+    "sha256": "dd8296631c3c826ac338ad026d6a549819eb8c129d45c27135becf84dd991eec",
+    "bytes": 3909
   },
   {
     "path": "serverless/MESSAGERIE.md",
@@ -860,6 +860,11 @@
     "bytes": 6156
   },
   {
+    "path": "serverless/cloudflare/RACCORDEMENT.md",
+    "sha256": "518703093edc4c582fb9dad392db6c62c5c0744af9c994d9ba1199fe81a58596",
+    "bytes": 3647
+  },
+  {
     "path": "serverless/cloudflare/README.md",
     "sha256": "e5a9a51e294301793a5f71def46ef4fbfc0fb5438e05a1dc9f1190ca9b1fe895",
     "bytes": 2688
@@ -993,6 +998,11 @@
     "path": "serverless/cloudflare/wrangler.profil-a.jsonc",
     "sha256": "b1300ea3787e505aad3f52bc10edac8bde63553de99fcff583030a17899883cb",
     "bytes": 1140
+  },
+  {
+    "path": "serverless/cloudflare/zone-cible-cloudflare.txt",
+    "sha256": "21e5244d5bc046775ecedafcee7c3683e174c2f5016dc20d209581fe9e389bec",
+    "bytes": 983
   },
   {
     "path": "services.html",

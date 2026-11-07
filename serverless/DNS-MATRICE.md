@@ -40,7 +40,7 @@ Statuts :
 
 DNSSEC est **actif**. Le registre `.fr` publie un DS (balise 14294, algorithme 8, condensat de type 2), et la zone OVH publie ses clés DNSKEY.
 
-Changer de serveurs de noms sans traiter ce DS rendrait le domaine injoignable pour les résolveurs qui valident DNSSEC : site **et** courriel. Avant toute délégation, il faut soit désactiver DNSSEC chez OVH et attendre le retrait du DS, soit suivre une migration DNSSEC prévue par les deux fournisseurs.
+Changer de serveurs de noms sans traiter ce DS rendrait le domaine injoignable pour les résolveurs qui valident DNSSEC : site **et** courriel. Avant toute délégation, il faut soit désactiver DNSSEC chez OVH et attendre le retrait du DS, soit suivre une migration DNSSEC prévue par les deux fournisseurs. La procédure retenue et son contrôle en lecture seule (`quality/scripts/dns_preflight.py`) sont dans `serverless/cloudflare/RACCORDEMENT.md`.
 
 ## Web, apex et redirections
 
