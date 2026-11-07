@@ -9,6 +9,7 @@ const defaultGuard = createMemoryGuard();
 
 function responseJson(status, payload, origin = null) {
   const headers = {
+    'x-content-type-options': 'nosniff',
     'content-type': 'application/json; charset=utf-8',
     'cache-control': 'no-store',
     vary: 'Origin'
@@ -50,14 +51,27 @@ export function createLeadHandler({
     if (request.method === 'OPTIONS') return corsPreflight(origin);
     if (request.method !== 'POST') return responseJson(405, { success: false, message: ERROR_MESSAGE }, origin);
 
+    if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return responseJson(415, { success: false, message: ERROR_MESSAGE }, origin);
     const clientKey = requestClientKey(request);
-    if (!guard.allowRate(clientKey)) return responseJson(429, { success: false, message: ERROR_MESSAGE }, origin);
+    if (!(await guard.allowRate(clientKey))) return responseJson(429, { success: false, message: ERROR_MESSAGE }, origin);
     const declaredLength = Number(request.headers.get('content-length') || 0);
     if (declaredLength > MAX_PAYLOAD_BYTES) return responseJson(413, { success: false, message: ERROR_MESSAGE }, origin);
 
     let raw;
     try {
-      raw = await request.text();
+      const reader = request.body?.getReader();
+      if (!reader) throw new Error('empty body');
+      const chunks = []; let length = 0;
+      for (;;) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        length += value.byteLength;
+        if (length > MAX_PAYLOAD_BYTES) { await reader.cancel(); return responseJson(413, { success: false, message: ERROR_MESSAGE }, origin); }
+        chunks.push(value);
+      }
+      const bytes = new Uint8Array(length); let offset = 0;
+      for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+      raw = new TextDecoder('utf-8', {fatal:true}).decode(bytes);
     } catch {
       return responseJson(400, { success: false, message: ERROR_MESSAGE }, origin);
     }
@@ -75,11 +89,16 @@ export function createLeadHandler({
     if (!validated.ok) return responseJson(400, { success: false, message: ERROR_MESSAGE }, origin);
     const lead = validated.value;
 
+    // A forged client cannot opt in to a channel disabled in this environment.
+    if (lead.newsletter_consent && environment.NEWSLETTER_ENABLED !== 'true') {
+      return responseJson(400, { success: false, message: ERROR_MESSAGE }, origin);
+    }
+
     if (lead.website) return responseJson(200, { success: true, message: SUCCESS_MESSAGE }, origin);
     if (captchaVerifier && !(await captchaVerifier(lead.captcha_token, request))) {
       return responseJson(403, { success: false, message: ERROR_MESSAGE }, origin);
     }
-    if (!guard.claimSubmission(submissionFingerprint(lead))) {
+    if (!(await guard.claimSubmission(await submissionFingerprint(lead)))) {
       return responseJson(409, { success: false, message: ERROR_MESSAGE }, origin);
     }
 

@@ -49,14 +49,10 @@
     submit.hidden = current !== steps.length-1;
     steps[current].querySelector('select')?.focus();
   }
-  next.addEventListener('click', () => show(current+1));
+  function markStarted() { if (!started) { started = true; window.BlueWaveAutomation?.track('qualifier_start'); } }
+  next.addEventListener('click', () => { markStarted(); show(current+1); });
   prev.addEventListener('click', () => show(current-1));
-  form.addEventListener('change', () => {
-    if (!started) {
-      started = true;
-      window.BlueWaveAutomation?.track('qualifier_start');
-    }
-  });
+  form.addEventListener('change', markStarted);
 
   const canonicalMethod = 'Qualifier → cadrer → analyser → cartographier → structurer → restituer.';
   function orient(v){
@@ -83,6 +79,7 @@
 
   form.addEventListener('submit', e => {
     e.preventDefault();
+    markStarted();
     const v = {
       organisation: document.getElementById('q-organisation').value,
       territoire: document.getElementById('q-territoire').value,
@@ -94,7 +91,8 @@
     };
     const [offer,why,confirm] = orient(v);
     const summary = `Vous cherchez à ${labels.resultat[v.resultat]} sur ${labels.territoire[v.territoire]}, à un stade de ${labels.stade[v.stade]}, dans un contexte de ${labels.probleme[v.problematique]}.`;
-    lastOrientation = { ...v, offer, summary };
+    const offerId = Object.keys(offerPresets).find(key => offerPresets[key].label === offer);
+    lastOrientation = { ...v, offer, summary, offerId };
     document.getElementById('result-title').textContent = 'Une première orientation pour cadrer la suite.';
     document.getElementById('result-summary').textContent = summary;
     document.getElementById('result-offer').textContent = `${offer}. ${why}`;
@@ -103,12 +101,15 @@
     const subject = encodeURIComponent(`BlueWave — qualification d’un besoin — ${offer}`);
     const body = encodeURIComponent(`Bonjour,\n\nJe souhaite présenter le besoin suivant à BlueWave Solutions.\n\n${summary}\n\nOrientation indicative affichée : ${offer}.\n\nJe comprends que cette orientation ne constitue ni un diagnostic ni une proposition commerciale.\n\nCordialement,`);
     document.getElementById('result-mail').href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
-    window.BlueWaveAutomation?.track('qualifier_submit', { status: 'orientation-complete', offer });
+    window.BlueWaveAutomation?.track('qualifier_complete', { status: 'complete', offer: offerId });
+    window.BlueWaveAutomation?.track('lead_form_open', { offer: offerId });
     result.hidden = false;
     result.scrollIntoView({behavior:'smooth',block:'start'});
   });
   restart.addEventListener('click', () => {
     result.hidden = true;
+    lastOrientation = null;
+    started = false;
     leadForm?.reset();
     leadMessage.textContent = '';
     show(0);
@@ -129,6 +130,7 @@
   leadForm?.addEventListener('submit', async event => {
     event.preventDefault();
     if (submitting || !lastOrientation || !leadForm.reportValidity()) return;
+    const orientation = lastOrientation;
     submitting = true;
     leadSubmit.disabled = true;
     leadMessage.textContent = 'Transmission en cours…';
@@ -140,33 +142,40 @@
       email: data.get('email'),
       organisation: data.get('organisation_name'),
       type: data.get('request_type'),
-      geography: geographyTag[lastOrientation.territoire],
-      themes: [problemToTheme[lastOrientation.problematique]],
+      geography: geographyTag[orientation.territoire],
+      themes: [problemToTheme[orientation.problematique]],
       need: data.get('description'),
-      deadline: lastOrientation.delai,
+      deadline: orientation.delai,
       contact_preference: data.get('contact_preference'),
       source: 'SITE_QUALIFIER',
       newsletter_consent: data.get('newsletter_consent') === 'yes',
       privacy_acknowledged: data.get('consent') === 'yes',
       website: data.get('website') || ''
     };
+    const eventContext = { offer: orientation.offerId, journey: ({ 'projet-mission': 'projet', formation: 'formation', collaboration: 'collaboration', 'evenement-intervention': 'evenement' })[payload.type] };
+    window.BlueWaveAutomation?.track('lead_submit_attempt', eventContext);
+    const prepareFallback = status => {
+      const subject = encodeURIComponent(`BlueWave — ${payload.type} — ${orientation.offer}`);
+      const body = encodeURIComponent(`Bonjour,\n\nNom : ${payload.firstname} ${payload.lastname}\nOrganisation : ${payload.organisation}\nE-mail : ${payload.email}\nType de demande : ${payload.type}\nPréférence de contact : ${payload.contact_preference}\n\n${orientation.summary}\n\nDescription :\n${payload.need}\n\nOrientation indicative : ${orientation.offer}.\n\nJe comprends que cette prise de contact ne constitue ni une acceptation de mission ni une proposition commerciale.\n\nCordialement,`);
+      const mail = document.getElementById('result-mail');
+      mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
+      window.BlueWaveAutomation?.track('lead_submit_fallback_email', { ...eventContext, status });
+      mail.focus();
+    };
     try {
       const response = await window.BlueWaveAutomation.submit('lead', payload);
       if (response.configured && response.ok) {
         leadForm.reset();
-        leadMessage.textContent = 'Votre demande a bien été transmise à BlueWave Solutions. Un message de confirmation va vous être adressé par email.';
-        window.BlueWaveAutomation.track('qualifier_submit', { status: 'transmitted', request_type: payload.type, theme: payload.themes[0], territory: payload.geography });
+        leadMessage.textContent = 'Votre demande a bien été transmise à BlueWave Solutions. Un message de confirmation a été demandé au service d’envoi.';
+        window.BlueWaveAutomation.track('lead_submit_success', { ...eventContext, status: 'success' });
         await window.BlueWaveAutomation.showMeeting();
       } else {
-        const subject = encodeURIComponent(`BlueWave — ${payload.type} — ${lastOrientation.offer}`);
-        const body = encodeURIComponent(`Bonjour,\n\nNom : ${payload.firstname} ${payload.lastname}\nOrganisation : ${payload.organisation}\nE-mail : ${payload.email}\nType de demande : ${payload.type}\nPréférence de contact : ${payload.contact_preference}\n\n${lastOrientation.summary}\n\nDescription :\n${payload.need}\n\nOrientation indicative : ${lastOrientation.offer}.\n\nJe comprends que cette prise de contact ne constitue ni une acceptation de mission ni une proposition commerciale.\n\nCordialement,`);
-        const mail = document.getElementById('result-mail');
-        mail.href = `mailto:bluewavesolutions3399@gmail.com?subject=${subject}&body=${body}`;
+        prepareFallback('not-configured');
         leadMessage.textContent = 'La transmission automatisée n’est pas encore active. Votre message est prêt : utilisez le bouton de messagerie, relisez-le puis envoyez-le vous-même.';
-        mail.focus();
       }
     } catch (error) {
-      leadMessage.textContent = 'La transmission n’a pas pu aboutir. Vous pouvez réessayer ou écrire directement à BlueWave Solutions.';
+      prepareFallback('unavailable');
+      leadMessage.textContent = 'La transmission n’a pas pu aboutir. Votre courriel est prêt dans le bouton de messagerie ; relisez-le avant de l’envoyer. Si vous avez déjà reçu une confirmation, évitez un second envoi.';
     } finally {
       submitting = false;
       leadSubmit.disabled = false;

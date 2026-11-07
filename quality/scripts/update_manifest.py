@@ -37,6 +37,7 @@ CRITICAL_FILES = [
     "assets/js/actualites.js",
     "assets/js/activites-bluewave.js",
     "assets/js/automation.js",
+    "assets/js/analytics.js",
     "assets/js/main.js",
     "assets/js/mediatheque.js",
     "assets/js/qualifier.js",
@@ -46,6 +47,9 @@ CRITICAL_FILES = [
     "data/actualites-status.json",
     "data/actualites.json",
     "data/automation-config.json",
+    "data/analytics-config.json",
+    "package.json",
+    "package-lock.json",
     ".github/workflows/bluewave-quality.yml",
     ".github/workflows/check-links.yml",
     ".github/workflows/deploy-pages-manual.yml",
@@ -57,6 +61,10 @@ CRITICAL_FILES = [
     "quality/media-provenance-activites-bluewave.json",
     "quality/sources-candidates-afrique-ouest.md",
     "quality/scripts/build_dist.py",
+    "quality/scripts/build_production_dist.py",
+    "quality/scripts/render_production_wrangler.py",
+    "quality/tests/test_production.py",
+    "quality/scripts/check_preactivation.py",
     "quality/scripts/check_dist.py",
     "quality/scripts/check_external_links.py",
     "quality/scripts/check_secrets.py",
@@ -81,7 +89,7 @@ CRITICAL_FILES = [
 
 def canonical_paths() -> list[str]:
     images = [path.relative_to(ROOT).as_posix() for path in (ROOT / "assets" / "img").rglob("*") if path.is_file() and path.name != ".DS_Store"]
-    serverless = [path.relative_to(ROOT).as_posix() for path in (ROOT / "serverless").rglob("*") if path.is_file() and path.name != ".DS_Store"]
+    serverless = [path.relative_to(ROOT).as_posix() for path in (ROOT / "serverless").rglob("*") if path.is_file() and path.name != ".DS_Store" and ".wrangler" not in path.parts and not path.name.startswith('.wrangler-production.generated')]
     return sorted(set(CRITICAL_FILES + images + serverless))
 
 

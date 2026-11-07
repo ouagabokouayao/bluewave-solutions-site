@@ -11,7 +11,6 @@ export function validateEnvironment(environment) {
   const required = [
     'BREVO_API_KEY',
     'BREVO_LEADS_LIST_ID',
-    'BREVO_NEWSLETTER_LIST_ID',
     'BREVO_ACK_TEMPLATE_ID',
     'BREVO_INTERNAL_TEMPLATE_ID',
     'BLUEWAVE_INTERNAL_EMAIL',
@@ -20,7 +19,7 @@ export function validateEnvironment(environment) {
   const missing = required.filter(name => !String(environment[name] ?? '').trim());
   if (missing.length) throw new Error(`Configuration incomplète : ${missing.join(', ')}`);
   positiveInteger(environment.BREVO_LEADS_LIST_ID, 'BREVO_LEADS_LIST_ID');
-  positiveInteger(environment.BREVO_NEWSLETTER_LIST_ID, 'BREVO_NEWSLETTER_LIST_ID');
+  if (environment.NEWSLETTER_ENABLED === 'true') positiveInteger(environment.BREVO_NEWSLETTER_LIST_ID, 'BREVO_NEWSLETTER_LIST_ID');
   positiveInteger(environment.BREVO_ACK_TEMPLATE_ID, 'BREVO_ACK_TEMPLATE_ID');
   positiveInteger(environment.BREVO_INTERNAL_TEMPLATE_ID, 'BREVO_INTERNAL_TEMPLATE_ID');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(environment.BLUEWAVE_INTERNAL_EMAIL)) {
@@ -30,6 +29,7 @@ export function validateEnvironment(environment) {
   if (origin.protocol !== 'https:' || origin.origin !== environment.ALLOWED_ORIGIN) {
     throw new Error('Configuration invalide : ALLOWED_ORIGIN');
   }
+  if (environment.NEWSLETTER_ENABLED && environment.NEWSLETTER_ENABLED !== 'false' && environment.NEWSLETTER_ENABLED !== 'true') throw new Error('NEWSLETTER_ENABLED invalide');
   if (environment.BLUEWAVE_SITE_URL) {
     const site = new URL(environment.BLUEWAVE_SITE_URL);
     if (site.protocol !== 'https:') throw new Error('Configuration invalide : BLUEWAVE_SITE_URL');
@@ -52,7 +52,8 @@ export class BrevoClient {
         'content-type': 'application/json',
         'api-key': this.environment.BREVO_API_KEY
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000)
     });
     if (!response.ok) throw new Error('Service Brevo indisponible');
     return response;
@@ -60,7 +61,7 @@ export class BrevoClient {
 
   async upsertContact(lead) {
     const listIds = [positiveInteger(this.environment.BREVO_LEADS_LIST_ID, 'BREVO_LEADS_LIST_ID')];
-    if (lead.newsletter_consent) {
+    if (lead.newsletter_consent && this.environment.NEWSLETTER_ENABLED === 'true') {
       listIds.push(positiveInteger(this.environment.BREVO_NEWSLETTER_LIST_ID, 'BREVO_NEWSLETTER_LIST_ID'));
     }
     return this.request('/contacts', {
@@ -76,7 +77,7 @@ export class BrevoClient {
         BW_DELAI: lead.deadline,
         BW_SOURCE: lead.source,
         BW_STATUT: 'NOUVEAU',
-        BW_CONSENT_VEILLE: lead.newsletter_consent
+        ...(lead.newsletter_consent && this.environment.NEWSLETTER_ENABLED === 'true' ? { BW_CONSENT_VEILLE: true } : {})
       },
       listIds,
       updateEnabled: true
@@ -84,7 +85,7 @@ export class BrevoClient {
   }
 
   async sendAcknowledgement(lead) {
-    const site = String(this.environment.BLUEWAVE_SITE_URL || `${this.environment.ALLOWED_ORIGIN}/bluewave-solutions-site`).replace(/\/$/, '');
+    const site = String(this.environment.BLUEWAVE_SITE_URL || this.environment.ALLOWED_ORIGIN).replace(/\/$/, '');
     return this.request('/smtp/email', {
       to: [{ email: lead.email, name: `${lead.firstname} ${lead.lastname}`.trim() }],
       templateId: positiveInteger(this.environment.BREVO_ACK_TEMPLATE_ID, 'BREVO_ACK_TEMPLATE_ID'),

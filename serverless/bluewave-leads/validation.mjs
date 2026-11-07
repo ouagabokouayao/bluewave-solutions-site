@@ -25,7 +25,7 @@ const ALLOWED_FIELDS = new Set([
   'website', 'captcha_token'
 ]);
 const ALLOWED_VALUES = Object.freeze({
-  type: new Set(['projet-mission', 'formation', 'collaboration', 'partenariat', 'recherche-expertise', 'presse-intervention', 'autre']),
+  type: new Set(['projet-mission', 'formation', 'collaboration', 'partenariat', 'recherche-expertise', 'presse-intervention', 'evenement-intervention', 'autre']),
   geography: new Set(['france-mediterranee', 'cote-divoire', 'afrique-ouest', 'autre']),
   theme: new Set(['littoral-adaptation', 'gouvernance-maritime', 'environnement-marin', 'economie-bleue', 'ports-maritime', 'droit-securite']),
   deadline: new Set(['1m', '1-3m', '3-6m', '6-12m', 'plus', 'nondef']),

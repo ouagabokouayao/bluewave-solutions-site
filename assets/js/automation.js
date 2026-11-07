@@ -12,23 +12,24 @@
     return configPromise;
   };
 
-  const track = (name, detail = {}) => {
-    const event = { event: name, ...detail };
-    window.dispatchEvent(new CustomEvent('bluewave:event', { detail: event }));
-    if (Array.isArray(window.dataLayer)) window.dataLayer.push(event);
-  };
+  const ANALYTICS_MODULE = 'assets/js/analytics.js';
+  const analyticsReady = import(new URL(ANALYTICS_MODULE, location.href).href)
+    .then(module => module.createAnalytics(window, document, window.fetch.bind(window)))
+    .catch(() => null);
+  const track = (name, detail = {}) => { analyticsReady.then(analytics => analytics?.track(name, detail)); };
 
   const submit = async (kind, payload) => {
     if (kind !== 'lead') throw new Error('Type de transmission non pris en charge');
     const config = await loadConfig();
     if (!config.lead_endpoint) return { configured: false };
-    const endpoint = new URL(config.lead_endpoint);
-    if (endpoint.protocol !== 'https:') throw new Error('Endpoint non sécurisé');
+    const endpoint = new URL(config.lead_endpoint, location.origin);
+    if (endpoint.protocol !== 'https:' || endpoint.origin !== location.origin || endpoint.pathname !== '/api/leads' || endpoint.search || endpoint.hash) throw new Error('Endpoint non sécurisé');
     const response = await fetch(endpoint.href, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'omit',
-      referrerPolicy: 'strict-origin',
+      referrerPolicy: 'no-referrer',
+      signal: AbortSignal.timeout(25000),
       body: JSON.stringify(payload)
     });
     let result = {};
@@ -80,8 +81,6 @@
     const link = event.target.closest('a');
     if (!link) return;
     if (link.matches('a[href^="mailto:"]')) track('contact_email_click');
-    if (link.matches('a[href*="qualifier-un-besoin.html"]')) track('qualifier_open');
-    if (link.matches('a[href*="solutions.html"]')) track('solution_view', { href: link.getAttribute('href') });
     if (link.matches('[data-meeting-link]')) track('meeting_click');
   });
 
