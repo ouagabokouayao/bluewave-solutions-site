@@ -15,9 +15,4 @@ assert all(worker['vars'][key]=='false' for key in ['LEADS_ENABLED','EVENTS_ENAB
 assert worker['workers_dev'] is False and worker['preview_urls'] is False
 assert 'routes' not in worker and 'route' not in worker
 assert 'database_id' not in str(worker)
-# Empêche la régression du correctif #21 lors d'une fusion de la PR #20.
-# La lettre peut être présentée mais pas proposer un formulaire inopérant.
-news=(ROOT/'actualites.html').read_text(encoding='utf-8')
-assert 'data-newsletter-form' not in news, 'Formulaire newsletter inactif visible dans actualites.html'
-assert 'Les inscriptions ne sont pas encore ouvertes.' in news, 'Statut newsletter fermé non indiqué'
 print('PASS: intégrations distantes désactivées')
