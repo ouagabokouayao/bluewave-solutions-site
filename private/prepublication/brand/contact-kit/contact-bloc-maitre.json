@@ -29,7 +29,8 @@
     "telephone": null,
     "adresse_postale": null,
     "site_web_provisoire": "https://ouagabokouayao.github.io/bluewave-solutions-site/",
-    "domaine_definitif": null
+    "domaine_definitif": "bluewavesolutions.fr",
+    "note_domaine": "Domaine détenu chez OVH. Site non publié et adresses @bluewavesolutions.fr non créées : l'adresse Gmail reste la seule en service. Voir serverless/MESSAGERIE.md."
   },
   "identite_visuelle": {
     "logo_horizontal_clair": "assets/img/brand/logo/logo-bluewave-horizontal-officiel.png",

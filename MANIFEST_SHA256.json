@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "9514d199f686d843533ecbf475fcd4b5f19d91f2de28357dcd0359865b4d3dcc",
-    "bytes": 6857
+    "sha256": "e0217da5f917a09eec7d84000a6ff7cca08f2e2d4fed671b7845cabaedb03051",
+    "bytes": 6940
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -541,8 +541,8 @@
   },
   {
     "path": "quality/scripts/build_production_dist.py",
-    "sha256": "33a7703f8580dc4ac347c25ed15908776678fb5f0e4fed2f36af5e2c4f934b66",
-    "bytes": 25991
+    "sha256": "67569f0d651d965ea5fec90b233d5a6065852d8333f911f420e8ae6c7883cf89",
+    "bytes": 27842
   },
   {
     "path": "quality/scripts/check_brand_assets.py",
@@ -561,8 +561,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "a8263ef79ad795350abd88e20880a12599cf965f0def78dba1c1d7e3fe149f77",
-    "bytes": 16369
+    "sha256": "25cac42a3026e5c76c8c3eec1a47c2c615ee4de68639aead79f2a62244f8b545",
+    "bytes": 16631
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -638,6 +638,16 @@
     "path": "robots.txt",
     "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1",
     "bytes": 26
+  },
+  {
+    "path": "serverless/DNS-MATRICE.md",
+    "sha256": "660cdd7b681ca99cfad86a1b405cdc9522355bd4b8ad7833b16aac76cdbcab3c",
+    "bytes": 3765
+  },
+  {
+    "path": "serverless/MESSAGERIE.md",
+    "sha256": "0b6b0911fb1012e783f25c207f03d5366c804cb1ebf8d6d7270972928dd81b1c",
+    "bytes": 3639
   },
   {
     "path": "serverless/OPERATIONS.md",
@@ -846,13 +856,18 @@
   },
   {
     "path": "serverless/cloudflare/PRODUCTION.md",
-    "sha256": "3b7a447cf79d307b17254504388bfe310878367323b5389ac38d824994120e47",
-    "bytes": 6023
+    "sha256": "b577f0e969e9be31a200c514b23193a7e32b3046200d3d3dc266551ad3dd2984",
+    "bytes": 6156
   },
   {
     "path": "serverless/cloudflare/README.md",
     "sha256": "e5a9a51e294301793a5f71def46ef4fbfc0fb5438e05a1dc9f1190ca9b1fe895",
     "bytes": 2688
+  },
+  {
+    "path": "serverless/cloudflare/dns-reference-ovh-2026-11-06.json",
+    "sha256": "6d9c2e730dd3a34e3cd232a1c1115629e2a5d5587a9be673f0ae4077f5a8f9ca",
+    "bytes": 1838
   },
   {
     "path": "serverless/cloudflare/guard.mjs",

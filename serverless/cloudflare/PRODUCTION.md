@@ -1,6 +1,6 @@
 # BlueWave — activation contrôlée du profil de production
 
-Le commit de préparation ne publie rien. `wrangler.production.jsonc` est distinct du Preview, ferme les flags et ne contient ni route ni identifiant D1. Le domaine `bluewavesolutions.fr` était disponible au panier OVHcloud le 29 septembre 2026 ; disponibilité et prix sont à confirmer avant paiement. Il n'est pas acquis.
+Le commit de préparation ne publie rien. `wrangler.production.jsonc` est distinct du Preview, ferme les flags et ne contient ni route ni identifiant D1. Le domaine `bluewavesolutions.fr` est détenu chez OVH : statut ACTIVE au registre, expiration le 29 septembre 2027, zone sauvegardée le 6 novembre 2026 (`serverless/DNS-MATRICE.md`). Le site n'y est pas publié : `www` sert la page d'accueil OVH en HTTP, sans certificat HTTPS.
 
 Les deux configurations de publication sont décrites dans `serverless/PROFILS.md` : profil A sans collecte, profil B avec automatisation.
 
@@ -8,7 +8,7 @@ Les deux configurations de publication sont décrites dans `serverless/PROFILS.m
 
 - `main` et branche du candidat vérifiés ; CI du SHA final PASS ; Preview du même SHA PASS.
 - Source réelle de GitHub Pages vérifiée dans les réglages (un merge ne doit pas publier automatiquement la V3.4).
-- Domaine acheté après accord explicite ; zone Cloudflare, HTTPS et hôte `www.bluewavesolutions.fr` établis ; apex redirigé HTTPS vers `www` sans toucher à MX/SPF/DKIM/DMARC.
+- Domaine détenu (fait) ; DNSSEC traité avant toute délégation ; zone Cloudflare, HTTPS et hôte `www.bluewavesolutions.fr` établis ; apex redirigé HTTPS vers `www` sans toucher à MX/SPF/DKIM/DMARC.
 - Ressources **production séparées** : Worker `bluewave-site-production`, D1 `bluewave-conversions-production`, classe SQLite DO `LeadGuard` propre au script. Jamais de binding Preview.
 - Textes légaux du rendu final contrôlés par le responsable ; contrats des prestataires, transferts et durée des journaux confirmés.
 - Coût et plan de compte lus avant toute souscription ; aucun upgrade automatique.

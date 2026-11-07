@@ -31,6 +31,9 @@ NEWSLETTER_TEMPLATE = ROOT / 'quality/templates/lettre-de-veille.main.html'
 NEWSLETTER_SCRIPT = 'assets/js/newsletter.js'
 WITHDRAWAL_TEMPLATE = ROOT / 'quality/templates/lettre-de-veille-retrait.main.html'
 WITHDRAWAL_SCRIPT = 'assets/js/newsletter-retrait.js'
+# Archive éditoriale : vide tant qu'aucune édition n'est validée pour publication.
+PERSPECTIVES_ARCHIVE = ROOT / 'quality/perspectives/archive.json'
+PERSPECTIVES_EDITIONS = ROOT / 'quality/perspectives/editions'
 LEGAL_FOOTER = '<a href="politique-confidentialite.html">Confidentialité</a>'
 # Une demande de contact ne vaut jamais inscription : la lettre ouverte, cette case
 # n'aurait aucun effet. Elle cède la place à un lien vers la page dédiée.
@@ -100,8 +103,26 @@ def article(document, heading, body):
     return result
 
 
-def newsletter_page(template, script):
+def perspectives_archive():
+    """Éditions validées pour publication, de la plus récente à la plus ancienne."""
+    archive = json.loads(PERSPECTIVES_ARCHIVE.read_text(encoding='utf-8'))
+    editions = []
+    for entry in archive.get('editions', []):
+        if entry.get('public') is not True:
+            continue
+        numero, date, titre = entry.get('numero'), str(entry.get('date', '')), str(entry.get('titre', '')).strip()
+        if not isinstance(numero, int) or numero < 1 or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', date) or not titre:
+            raise ValueError(f'Édition invalide dans l’archive : {entry}')
+        source = PERSPECTIVES_EDITIONS / f'edition-{numero}.html'
+        if not source.is_file():
+            raise ValueError(f'Version web absente : {source.name}')
+        editions.append((numero, date, titre, source))
+    return sorted(editions, reverse=True)
+
+
+def newsletter_page(template, script, name=None):
     """Dérive la page de veille de la page de confidentialité déjà produite."""
+    name = name or NEWSLETTER_PAGE
     document = (OUT / 'politique-confidentialite.html').read_text(encoding='utf-8')
     main = template.read_text(encoding='utf-8').strip()
     document, count = re.subn(r'<main id="contenu">.*</main>', lambda _: main, document, flags=re.S)
@@ -111,8 +132,8 @@ def newsletter_page(template, script):
     document = re.sub(r'(<title>)[^<]*(</title>)', r'\g<1>BlueWave Perspectives | BlueWave Solutions\g<2>', document, count=1)
     document = re.sub(r'(<meta (?:name|property)="(?:og:|twitter:)?description" content=")[^"]*', lambda m: m.group(1) + description, document)
     document = re.sub(r'(<meta property="og:title" content=")[^"]*', r'\g<1>BlueWave Perspectives | BlueWave Solutions', document)
-    document = document.replace(ORIGIN + '/politique-confidentialite.html', ORIGIN + '/' + NEWSLETTER_PAGE)
-    return document.replace('</body>', f'<script src="{script}" defer></script></body>')
+    document = document.replace(ORIGIN + '/politique-confidentialite.html', ORIGIN + '/' + name)
+    return document.replace('</body>', f'<script src="{script}" defer></script></body>') if script else document
 
 
 def privacy(document, leads, events, traffic, newsletter=False):
@@ -293,6 +314,16 @@ def build(indexable=False, leads=False, events=False, token=None, campaigns=(), 
         page.write_text(document, encoding='utf-8')
     template, script = (NEWSLETTER_TEMPLATE, NEWSLETTER_SCRIPT) if newsletter else (WITHDRAWAL_TEMPLATE, WITHDRAWAL_SCRIPT)
     document = newsletter_page(template, script)
+    editions = perspectives_archive()
+    if editions:
+        items = ''
+        for numero, date, titre, source in editions:
+            # À la racine, comme les autres pages : les liens relatifs restent justes.
+            target = f'perspectives-{numero}.html'
+            (OUT / target).write_text(newsletter_page(source, None, target), encoding='utf-8')
+            items += f'<li><a href="{target}">Nº {numero} — {html.escape(titre)}</a> <span class="note">{date}</span></li>'
+        document = document.replace('</main>', '<section class="section"><div class="container narrow"><h2>Éditions précédentes</h2>'
+            f'<ul>{items}</ul></div></section></main>')
     if newsletter:
         pages.append(OUT / NEWSLETTER_PAGE)
     else:

@@ -17,6 +17,8 @@ STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const
 # Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
 # dans sa version exacte épinglée ici. Toute autre modification échoue.
 AUTHORIZED_VERSIONS = {
+    'private/prepublication/brand/contact-kit/contact-bloc-maitre.json': ('47aa083181731f56198683e72de6deb56eec7d4928d2bd7b0b0f906b4c347250',
+        'Préparation profil A : DNS, messagerie, Perspectives, radar'),
     'serverless/cloudflare/tests/production.test.mjs': ('0b8c1cc9bd4e77edeeef193fa9aefb11a23c6e01cfbb76677b14ac47945897a1',
         'Alias historique sans barre finale'),
     'serverless/a01/reporting.mjs': ('bedb0c2c1d8585294fc0a594b108544bb501e913f49d96b3b2e4ce8f97693a2f',
@@ -129,8 +131,8 @@ AUTHORIZED_VERSIONS = {
         'V3-FIN : textes visiteur, navigation, images et veille'),
     'quality/scripts/build_dist.py': ('f5c2c1bfe334dad6bbe5b0e11cb8f3650c9fe21799ec59fb76b3945468aebe7c',
         '02-E11 : seules les pages suivies par Git entrent dans le site servi'),
-    'serverless/cloudflare/PRODUCTION.md': ('3b7a447cf79d307b17254504388bfe310878367323b5389ac38d824994120e47',
-        'Alias historique sans barre finale'),
+    'serverless/cloudflare/PRODUCTION.md': ('b577f0e969e9be31a200c514b23193a7e32b3046200d3d3dc266551ad3dd2984',
+        'Préparation profil A : DNS, messagerie, Perspectives, radar'),
     'data/actualites.json': ('dfc7ac62fb5befca4ec0917a78332e47a00021a350b533bb3d70dc736c510cf8',
         '02-E11 : veille actualisée le 16/10/2026 par le collecteur existant (sources vérifiées)'),
     'data/actualites-status.json': ('5f1422c2ac5e4abf2f21ecb736cb22402265f5bd6ce253edeac3c387b239f377',
@@ -141,8 +143,8 @@ AUTHORIZED_VERSIONS = {
         'Idempotence durable des demandes'),
     'assets/js/qualifier.js': ('665d345fda61c0373462c4dc724cefcc97979ed29250b8942e9e17f2b426f1b7',
         'W14 : contrat navigateur-serveur et perte de réponse'),
-    'quality/scripts/build_production_dist.py': ('33a7703f8580dc4ac347c25ed15908776678fb5f0e4fed2f36af5e2c4f934b66',
-        'Textes de 02 pour BlueWave Perspectives'),
+    'quality/scripts/build_production_dist.py': ('67569f0d651d965ea5fec90b233d5a6065852d8333f911f420e8ae6c7883cf89',
+        'Préparation profil A : DNS, messagerie, Perspectives, radar'),
     'quality/tests/test_production.py': ('7cdfe8d7b669720ef37753c3de330b521dfdc0d3519bd63ad518a33ed7904e95',
         'Textes de 02 pour BlueWave Perspectives'),
     'projet.html': ('4c8232abb6d976005ad59d2d6aeb24f2fed07cf0b4da355c89a53a9742fff3ef',

@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+  Gabarit de BlueWave Perspectives — Mer, littoral & opportunités, pour l'éditeur de campagnes Brevo.
+  Inactif : aucune inscription n'est ouverte, aucun envoi n'est autorisé.
+  - Les crochets [ ] marquent le texte à rédiger pour chaque édition.
+  - {{ contact.BW_VEILLE_GESTION }} est le lien personnel de gestion et de désinscription.
+    Il met à jour NEWSLETTER_DB. Le lien de désinscription propre à Brevo ne le ferait pas.
+  - Aucune image de suivi n'est ajoutée ici.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>BlueWave Perspectives</title>
+<style>
+  @media (max-width: 620px) {
+    .bw-wrap { width: 100% !important; }
+    .bw-pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .bw-col { display: block !important; width: 100% !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#EEF3F6;">
+<div style="display:none;max-height:0;overflow:hidden;">[Phrase d'aperçu : l'essentiel de l'édition en une ligne.]</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#EEF3F6;">
+  <tr><td align="center" style="padding:24px 12px;">
+    <table role="presentation" class="bw-wrap" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#FFFFFF;font-family:Arial,Helvetica,sans-serif;color:#0A2540;">
+      <tr><td class="bw-pad" style="padding:28px 36px 12px;border-bottom:3px solid #00A6A6;">
+        <img src="https://www.bluewavesolutions.fr/assets/img/brand/logo/logo-bluewave-horizontal-officiel.png" width="160" height="64" alt="BlueWave Solutions" style="display:block;border:0;width:160px;height:auto;">
+        <p style="margin:18px 0 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#005BAA;">Édition nº [numéro] · [date]</p>
+        <h1 style="margin:0;font-size:24px;line-height:1.25;color:#0A2540;">BlueWave Perspectives — Mer, littoral &amp; opportunités</h1>
+        <p style="margin:8px 0 0;font-size:14px;line-height:1.5;color:#41566a;">Tous les quinze jours, en Méditerranée, en Côte d’Ivoire et en Afrique de l’Ouest.</p>
+      </td></tr>
+      <tr><td class="bw-pad" style="padding:24px 36px 8px;">
+        <h2 style="margin:0 0 8px;font-size:18px;color:#005BAA;">À la une</h2>
+        <p style="margin:0 0 6px;font-size:15px;line-height:1.55;">[Titre et résumé du sujet principal, avec sa source.]</p>
+        <p style="margin:0;font-size:14px;"><a href="[URL de la source]" style="color:#005BAA;">[Lire la source]</a></p>
+      </td></tr>
+      <tr><td class="bw-pad" style="padding:16px 36px 8px;">
+        <h2 style="margin:0 0 8px;font-size:18px;color:#005BAA;">Afrique de l’Ouest &amp; Méditerranée</h2>
+        <p style="margin:0;font-size:15px;line-height:1.55;">[Deux ou trois signaux, chacun avec sa source.]</p>
+      </td></tr>
+      <tr><td class="bw-pad" style="padding:16px 36px 8px;">
+        <h2 style="margin:0 0 8px;font-size:18px;color:#005BAA;">Opportunités</h2>
+        <p style="margin:0;font-size:15px;line-height:1.55;">[Appels, consultations ou financements publics, avec leur date limite.]</p>
+      </td></tr>
+      <tr><td class="bw-pad" style="padding:16px 36px 8px;">
+        <h2 style="margin:0 0 8px;font-size:18px;color:#005BAA;">Agenda</h2>
+        <p style="margin:0;font-size:15px;line-height:1.55;">[Événements à venir : date, lieu, lien.]</p>
+      </td></tr>
+      <tr><td class="bw-pad" style="padding:16px 36px 24px;">
+        <h2 style="margin:0 0 8px;font-size:18px;color:#005BAA;">Regard BlueWave</h2>
+        <p style="margin:0;font-size:15px;line-height:1.55;">[Courte analyse signée BlueWave Solutions, sans mission, client ou résultat non établi.]</p>
+        <p style="margin:14px 0 0;font-size:14px;font-style:italic;color:#005BAA;">Comprendre la mer. Éclairer la décision.</p>
+      </td></tr>
+      <tr><td class="bw-pad" style="padding:20px 36px 28px;background:#0A2540;color:#DCE6EE;font-size:12px;line-height:1.6;">
+        <p style="margin:0 0 8px;">Vous recevez BlueWave Perspectives parce que vous vous y êtes inscrit et que vous avez confirmé votre inscription.</p>
+        <p style="margin:0 0 8px;"><a href="{{ contact.BW_VEILLE_GESTION }}" style="color:#FFFFFF;">Gérer mes préférences ou me désinscrire</a></p>
+        <p style="margin:0;">BlueWave Solutions — SASU en cours de constitution · Marseille, France · <a href="mailto:contact@bluewavesolutions.fr" style="color:#FFFFFF;">contact@bluewavesolutions.fr</a></p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>
