@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import re, sys, json, hashlib
+import os, re, sys, json, hashlib
 from collections import Counter
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
@@ -439,17 +439,23 @@ def main():
             if not path.is_file():continue
             if path.suffix.lower()!='.svg':errors.append(f'visuel activités: média non éditorial dans le répertoire public {path.name}')
             if relative not in declarees:errors.append(f'visuel activités: média orphelin {path.name}')
-        # Les preuves internes restent tracées, intactes et hors du build public.
+        # Les preuves internes restent tracées, intactes, hors du build public et hors du
+        # dépôt public : leurs octets ne vivent que dans un stockage privé.
+        prive=os.environ.get('BLUEWAVE_PREUVES_PRIVEES')
+        if (ROOT/'quality/media-evidence').exists() and any((ROOT/'quality/media-evidence').iterdir()):
+            errors.append('preuves internes : photographies présentes dans le dépôt public (quality/media-evidence/)')
         for entry in preuves:
             chemin=entry.get('destination_path','')
-            if not chemin.startswith('quality/'):errors.append(f'provenance activités: preuve interne hors zone interne {chemin}')
+            if not chemin.startswith('prive:'):errors.append(f'provenance activités: preuve interne non déplacée hors dépôt {chemin}')
+            if not re.fullmatch(r'[0-9a-f]{64}',entry.get('sha256_destination') or ''):errors.append(f'provenance activités: empreinte de preuve interne absente {chemin}')
             if entry.get('servi_dans_dist'):errors.append(f'provenance activités: preuve interne marquée comme servie {chemin}')
             if entry.get('statut_oby')!='public-valide':errors.append(f'provenance activités: source non publiable {chemin}')
             if not entry.get('identique'):errors.append(f'provenance activités: copie non conforme {chemin}')
             if not (entry.get('motif_non_publication') or '').strip():errors.append(f'provenance activités: motif de non-publication absent {chemin}')
             if not (entry.get('preuve_rattachement_bluewave') or '').strip():errors.append(f'provenance activités: preuve de rattachement absente {chemin}')
-            cible=ROOT/chemin
-            if not cible.is_file():errors.append(f'provenance activités: preuve interne absente {chemin}')
+            if not prive:continue
+            cible=Path(prive)/Path(chemin.removeprefix('prive:')).name
+            if not cible.is_file():errors.append(f'provenance activités: preuve interne absente du stockage privé {chemin}')
             else:
                 octets=cible.read_bytes()
                 if entry.get('sha256_destination')!=hashlib.sha256(octets).hexdigest():errors.append(f'provenance activités: SHA-256 preuve interne incorrect {chemin}')

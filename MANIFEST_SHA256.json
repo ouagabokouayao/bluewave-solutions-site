@@ -41,8 +41,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "2a55290336c9880fbd9d113a4690a89e4d6d7f6e9637154fa2666b9c9c03cf44",
-    "bytes": 20053
+    "sha256": "71af2fd233a3699378d06e6d8a4dfd57010aae0db6e8c632a6556832c834bb99",
+    "bytes": 20398
   },
   {
     "path": "a-propos.html",
@@ -460,24 +460,9 @@
     "bytes": 14935
   },
   {
-    "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
-    "sha256": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
-    "bytes": 286800
-  },
-  {
-    "path": "quality/media-evidence/loi-littoral-marseille-2026.webp",
-    "sha256": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
-    "bytes": 196564
-  },
-  {
-    "path": "quality/media-evidence/rfdi-gouvernance-oceans-nice-2026.webp",
-    "sha256": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
-    "bytes": 410058
-  },
-  {
     "path": "quality/media-provenance-activites-bluewave.json",
-    "sha256": "d6e223ec45bbf678ae67e7ebe439fda81e674f0b72f91914f2261fd73eb7c226",
-    "bytes": 10620
+    "sha256": "b65ff4778077595e5b9ea901665bf0f03ead4fbeac61e1614e0fc4b51fae664b",
+    "bytes": 11587
   },
   {
     "path": "quality/privacy-approval.json",
@@ -561,8 +546,8 @@
   },
   {
     "path": "quality/scripts/check_home_conservation.py",
-    "sha256": "25cac42a3026e5c76c8c3eec1a47c2c615ee4de68639aead79f2a62244f8b545",
-    "bytes": 16631
+    "sha256": "266f912cb01f2b37489ddf3b283ac10a8a8c795bf2a340339e0ceb192ab7844a",
+    "bytes": 18305
   },
   {
     "path": "quality/scripts/check_preactivation.py",
@@ -581,8 +566,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "bea18b4870961067706a76cd3babc47f616b3e79d6efe9b8b11c3af1b244b14f",
-    "bytes": 50846
+    "sha256": "21d7af03774e979da08d4fdf9219654f330a58d17378a0eb30d9760b28a6139d",
+    "bytes": 51495
   },
   {
     "path": "quality/scripts/radar_check.py",
@@ -601,8 +586,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "078cda02cbc70be9a0ef80b154513410982f669a65d8e9cfe3683f6a024d076f",
-    "bytes": 5318
+    "sha256": "e86fa28d04785e23377ed447adacd9a20ea141654ca5868ddd74d0de5f3ec7e0",
+    "bytes": 5133
   },
   {
     "path": "quality/scripts/verify_manifest.py",

@@ -14,9 +14,25 @@ ALLOWED = {'index.html', 'MANIFEST_SHA256.json', 'quality/scripts/update_manifes
 # V03 est autorisée exclusivement dans renderStatus ; les données, filtres,
 # cartes et parcours historiques restent contrôlés octet pour octet.
 STATUS_BLOCK = re.compile(rb'  const renderStatus = \(status\) => \{.*?\n  const renderHome =', re.S)
+# Retraits autorisés (PR 23) : seuls ces fichiers du socle peuvent manquer, à
+# condition que le socle contienne exactement les octets épinglés ici. Ils ne
+# peuvent pas revenir : s'ils sont présents, la garde échoue. Tout autre
+# fichier manquant reste un « Fichier perdu ».
+AUTHORIZED_REMOVALS = {
+    'quality/media-evidence/arbe-sfn-aix-2026.webp': ('64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1',
+        'Preuve interne retirée du dépôt public, copie privée vérifiée'),
+    'quality/media-evidence/loi-littoral-marseille-2026.webp': ('86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb',
+        'Preuve interne retirée du dépôt public, copie privée vérifiée'),
+    'quality/media-evidence/rfdi-gouvernance-oceans-nice-2026.webp': ('3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1',
+        'Preuve interne retirée du dépôt public, copie privée vérifiée'),
+}
 # Correctifs 02 du 15/10/2026 : chaque fichier ne peut différer du socle que
 # dans sa version exacte épinglée ici. Toute autre modification échoue.
 AUTHORIZED_VERSIONS = {
+    'quality/media-provenance-activites-bluewave.json': ('b65ff4778077595e5b9ea901665bf0f03ead4fbeac61e1614e0fc4b51fae664b',
+        'PR 23 : preuves internes retirées du dépôt public'),
+    'README.md': ('71af2fd233a3699378d06e6d8a4dfd57010aae0db6e8c632a6556832c834bb99',
+        'PR 23 : preuves internes retirées du dépôt public'),
     'private/prepublication/brand/contact-kit/contact-bloc-maitre.json': ('47aa083181731f56198683e72de6deb56eec7d4928d2bd7b0b0f906b4c347250',
         'Préparation profil A : DNS, messagerie, Perspectives, radar'),
     'serverless/cloudflare/tests/production.test.mjs': ('0b8c1cc9bd4e77edeeef193fa9aefb11a23c6e01cfbb76677b14ac47945897a1',
@@ -91,8 +107,8 @@ AUTHORIZED_VERSIONS = {
         'V3-FIN : textes visiteur, navigation, images et veille'),
     '404.html': ('e39d0291ca7dddcc4859e7fe83e84126039e43bd3f7790a8d00cff459ae53c0a',
         'V3-FIN : textes visiteur, navigation, images et veille'),
-    'quality/scripts/quality_check.py': ('bea18b4870961067706a76cd3babc47f616b3e79d6efe9b8b11c3af1b244b14f',
-        'V3-FIN : textes visiteur, navigation, images et veille'),
+    'quality/scripts/quality_check.py': ('21d7af03774e979da08d4fdf9219654f330a58d17378a0eb30d9760b28a6139d',
+        'PR 23 : preuves internes retirées du dépôt public'),
     'assets/js/lead-schema.js': ('06640eb09919da8eaaa152852cbaad046c8a46de37eb71f80b70d359081d64a2',
         'W14 : contrat navigateur-serveur et perte de réponse'),
     'serverless/cloudflare/worker.mjs': ('d66fcfd8994a548b0b956d1453ec418fc94f85a142651847404f957e22e84b53',
@@ -180,6 +196,12 @@ def main():
     preserved=[]
     for path in paths:
         target=ROOT/path
+        if path in AUTHORIZED_REMOVALS:
+            pinned,reason=AUTHORIZED_REMOVALS[path]
+            if target.exists(): errors.append('Fichier retiré réintroduit : '+path)
+            elif hashlib.sha256(git('show',BASE+':'+path)).hexdigest()!=pinned: errors.append('Retrait hors version autorisée : '+path)
+            else: authorized.append(f'{path}: {reason}')
+            continue
         if not target.is_file(): errors.append('Fichier perdu : '+path); continue
         if path not in ALLOWED:
             before=git('show',BASE+':'+path)
