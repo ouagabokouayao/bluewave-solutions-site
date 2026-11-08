@@ -14,13 +14,15 @@
       "declare_via": "galerie",
       "statut_oby": "public-valide",
       "sha256_source": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
-      "destination_path": "quality/media-evidence/loi-littoral-marseille-2026.webp",
+      "destination_path": "prive:90_PREUVES_EXTERNES/bluewave-site-preuves-internes/loi-littoral-marseille-2026.webp",
       "sha256_destination": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
       "identique": true,
       "bytes": 196564,
       "preuve_rattachement_bluewave": "Participation en qualité d’auditeur, mobilisée dans les travaux de veille BlueWave sur la gouvernance littorale. La source OBY signale qu’aucune signalétique de l’événement n’est lisible sur les photographies : le rattachement repose sur les métadonnées de prise de vue.",
       "servi_dans_dist": false,
-      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public."
+      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public.",
+      "stockage": "Hors dépôt public depuis le 2026-11-08 : copie locale privée vérifiée par SHA-256. Le fichier reste dans l'historique Git tant qu'aucune réécriture n'est autorisée.",
+      "tiers_identifiable": true
     },
     {
       "activite_bluewave": "rfdi-gouvernance-oceans-nice-2026",
@@ -32,13 +34,14 @@
       "declare_via": "galerie",
       "statut_oby": "public-valide",
       "sha256_source": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
-      "destination_path": "quality/media-evidence/rfdi-gouvernance-oceans-nice-2026.webp",
+      "destination_path": "prive:90_PREUVES_EXTERNES/bluewave-site-preuves-internes/rfdi-gouvernance-oceans-nice-2026.webp",
       "sha256_destination": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
       "identique": true,
       "bytes": 410058,
       "preuve_rattachement_bluewave": "Participation au colloque, mobilisée dans le développement BlueWave sur le droit de la mer et la gouvernance maritime.",
       "servi_dans_dist": false,
-      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public."
+      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public.",
+      "stockage": "Hors dépôt public depuis le 2026-11-08 : copie locale privée vérifiée par SHA-256. Le fichier reste dans l'historique Git tant qu'aucune réécriture n'est autorisée."
     },
     {
       "activite_bluewave": "arbe-sfn-aix-2026",
@@ -50,13 +53,14 @@
       "declare_via": "fichier représentatif",
       "statut_oby": "public-valide",
       "sha256_source": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
-      "destination_path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
+      "destination_path": "prive:90_PREUVES_EXTERNES/bluewave-site-preuves-internes/arbe-sfn-aix-2026.webp",
       "sha256_destination": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
       "identique": true,
       "bytes": 286800,
       "preuve_rattachement_bluewave": "Participation réalisée à la rencontre régionale, mobilisée dans le développement BlueWave sur l’adaptation et l’acceptabilité des projets.",
       "servi_dans_dist": false,
-      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public."
+      "motif_non_publication": "Droits de republication et droit à l'image non définitivement documentés pour une publication au nom de BlueWave Solutions. Le média est conservé comme preuve interne de rattachement ; il n'entre pas dans le build public.",
+      "stockage": "Hors dépôt public depuis le 2026-11-08 : copie locale privée vérifiée par SHA-256. Le fichier reste dans l'historique Git tant qu'aucune réécriture n'est autorisée."
     }
   ],
   "medias_publics_editoriaux": [
@@ -156,5 +160,6 @@
       }
     ],
     "consequence": "Les trois photographies restent des preuves internes, tracées et intactes, hors du build public. La décision n'est plus une prudence générale mais un motif propre à chaque image."
-  }
+  },
+  "note_stockage_preuves": "Les preuves internes ne sont plus suivies dans le dépôt public. Leur empreinte et leur source restent tracées ici ; le contrôle de leurs octets se fait sur le stockage privé désigné par BLUEWAVE_PREUVES_PRIVEES."
 }

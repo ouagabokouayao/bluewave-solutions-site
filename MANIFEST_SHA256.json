@@ -41,8 +41,8 @@
   },
   {
     "path": "README.md",
-    "sha256": "74651d8e9be2f7a78292c56d6aa3573b4658bc19211a5b34ccabf4cce641b685",
-    "bytes": 19036
+    "sha256": "88ba295ae216a467f833ed68d3802996ceb349308783c2c7c797708fcd8dcb4a",
+    "bytes": 19381
   },
   {
     "path": "a-propos.html",
@@ -325,24 +325,9 @@
     "bytes": 13995
   },
   {
-    "path": "quality/media-evidence/arbe-sfn-aix-2026.webp",
-    "sha256": "64b316f195a7657676026737a90df8537c3e0a53c41ab58612849a2ff323e2c1",
-    "bytes": 286800
-  },
-  {
-    "path": "quality/media-evidence/loi-littoral-marseille-2026.webp",
-    "sha256": "86d999007033c0401533c2fbac5c87a7bf3a631d30e1029b34711f7c3df44feb",
-    "bytes": 196564
-  },
-  {
-    "path": "quality/media-evidence/rfdi-gouvernance-oceans-nice-2026.webp",
-    "sha256": "3bed79197a912ebbc7f10b612ceeabdaa3cfe5dd9adf2c34c6c38d789ecd17d1",
-    "bytes": 410058
-  },
-  {
     "path": "quality/media-provenance-activites-bluewave.json",
-    "sha256": "d6e223ec45bbf678ae67e7ebe439fda81e674f0b72f91914f2261fd73eb7c226",
-    "bytes": 10620
+    "sha256": "b65ff4778077595e5b9ea901665bf0f03ead4fbeac61e1614e0fc4b51fae664b",
+    "bytes": 11587
   },
   {
     "path": "quality/radar/README.md",
@@ -421,8 +406,8 @@
   },
   {
     "path": "quality/scripts/quality_check.py",
-    "sha256": "e08193adb5d8e1315d830336ec5336cef5d262dfe8fef3111796884bead76d37",
-    "bytes": 44862
+    "sha256": "96982933435dfcd4ae780b97c40bed0cd4c53af0ea553e94ce15d3c3032c99dc",
+    "bytes": 45511
   },
   {
     "path": "quality/scripts/radar_check.py",
@@ -436,8 +421,8 @@
   },
   {
     "path": "quality/scripts/update_manifest.py",
-    "sha256": "41ad0fa711327aee88f1407cddd3040b94b221046267f5666511506958cff3f2",
-    "bytes": 4318
+    "sha256": "f53cd44618d0a737dd03c47a439fd4480eb5b48289ee9b45676f725665750e3a",
+    "bytes": 4133
   },
   {
     "path": "quality/scripts/verify_manifest.py",
