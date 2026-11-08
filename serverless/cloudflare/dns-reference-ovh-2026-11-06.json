@@ -1,0 +1,25 @@
+{
+  "objet": "Zone DNS de bluewavesolutions.fr telle que sauvegardée chez OVH, référence de comparaison avant toute migration.",
+  "source": "BlueWave_Zone_DNS_OVH_2026-11-06_152355_CET.txt, relue sur l'issue 22 le 7 novembre 2026",
+  "observation_publique": "Identique en résolution publique le 8 novembre 2026 (SOA 2092849087, résolveur 1.1.1.1).",
+  "domaine": "bluewavesolutions.fr",
+  "soa_serial": 2092849087,
+  "fournisseur": {
+    "registrar": "OVH",
+    "ns": ["ns111.ovh.net", "dns111.ovh.net"],
+    "dnssec": {"actif": true, "ds_registre": "14294 8 2", "note": "DS publié au registre .fr : à retirer ou à migrer avant tout changement de serveurs de noms."}
+  },
+  "enregistrements": [
+    {"nom": "@", "type": "MX", "valeur": "1 mx1.mail.ovh.net", "role": "messagerie", "statut": "documenté"},
+    {"nom": "@", "type": "MX", "valeur": "5 mx2.mail.ovh.net", "role": "messagerie", "statut": "documenté"},
+    {"nom": "@", "type": "MX", "valeur": "100 mx3.mail.ovh.net", "role": "messagerie", "statut": "documenté"},
+    {"nom": "@", "type": "TXT", "valeur": "v=spf1 include:mx.ovh.com -all", "role": "spf", "statut": "documenté"},
+    {"nom": "@", "type": "A", "valeur": "213.186.33.5", "role": "web-ovh", "statut": "à remplacer à la bascule"},
+    {"nom": "www", "type": "A", "valeur": "213.186.33.5", "role": "web-ovh", "statut": "à remplacer à la bascule"},
+    {"nom": "ftp", "type": "CNAME", "valeur": "bluewavesolutions.fr", "role": "ftp-ovh", "statut": "à relire"},
+    {"nom": "@", "type": "TXT", "valeur": "1|www.bluewavesolutions.fr", "role": "marqueur-ovh", "statut": "à relire"},
+    {"nom": "www", "type": "TXT", "valeur": "3|welcome", "role": "marqueur-ovh", "statut": "à relire"}
+  ],
+  "absents": ["AAAA", "DKIM", "DMARC", "CAA"],
+  "hors_comparaison": ["SOA", "NS", "DNSKEY", "RRSIG", "DS"]
+}

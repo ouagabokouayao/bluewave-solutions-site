@@ -1,0 +1,16 @@
+;; Zone cible de bluewavesolutions.fr pour l'import Cloudflare (format BIND).
+;; Préparée le 8 novembre 2026 à partir de la sauvegarde OVH du 6 novembre. NON IMPORTÉE.
+;; Ni SOA ni NS : Cloudflare les crée. www n'y figure pas : le domaine personnalisé du
+;; Worker bluewave-site-production le crée. Les marqueurs OVH « 1|… » et « 3|welcome »
+;; ne sont pas repris. Contrôle : python quality/scripts/compare_dns.py <ce fichier>
+$ORIGIN bluewavesolutions.fr.
+$TTL 3600
+; Messagerie OVH, recopiée à l'identique : jamais en mode proxy.
+@     3600  IN  MX   1   mx1.mail.ovh.net.
+@     3600  IN  MX   5   mx2.mail.ovh.net.
+@     3600  IN  MX   100 mx3.mail.ovh.net.
+@     3600  IN  TXT  "v=spf1 include:mx.ovh.com -all"
+; Apex : adresse fictive en mode proxy, seulement pour porter la redirection vers www.
+@     3600  IN  AAAA 100:: ; cf_tags=cf-proxied:true
+; FTP OVH : à garder seulement si un hébergement OVH reste actif.
+ftp   3600  IN  CNAME bluewavesolutions.fr.

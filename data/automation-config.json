@@ -3,5 +3,9 @@
   "lead_endpoint": null,
   "chat_enabled": false,
   "newsletter_enabled": false,
-  "meeting_url": null
+  "meeting_url": null,
+  "turnstile": {
+    "enabled": false,
+    "site_key": null
+  }
 }

@@ -1,0 +1,8 @@
+{
+  "objet": "Archive éditoriale de BlueWave Perspectives — Mer, littoral & opportunités.",
+  "regle": "Une édition n'entre dans editions qu'une fois envoyée aux inscrits et validée pour publication par Joseph. Sa version web se place dans quality/perspectives/editions/ ; la construction la publie alors avec la liste des éditions.",
+  "editions": [],
+  "hors_archive": [
+    {"numero": 0, "nature": "édition de test, envoyée en privé", "public": false}
+  ]
+}

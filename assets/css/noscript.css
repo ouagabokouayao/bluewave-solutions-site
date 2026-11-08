@@ -1,0 +1,8 @@
+/* Sans JavaScript, les formulaires sont inertes : ils sont masqués et le courriel direct prend le relais. */
+form[inert],
+.qualifier-layout,
+[data-collaboration-choice],
+#demande-formation,
+.format-card a[href="#demande-formation"] {
+  display: none !important;
+}
