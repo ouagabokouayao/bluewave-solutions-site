@@ -25,6 +25,8 @@ dns = load('compare_dns', 'quality/scripts/compare_dns.py')
 preflight = load('dns_preflight', 'quality/scripts/dns_preflight.py')
 radar = load('radar_export_crm', 'quality/scripts/radar_export_crm.py')
 build = load('production_build', 'quality/scripts/build_production_dist.py')
+profile = load('check_profile', 'quality/scripts/check_profile.py')
+publication = load('render_profil_a', 'quality/scripts/render_profil_a.py')
 REFERENCE = json.loads(dns.REFERENCE.read_text(encoding='utf-8'))
 CLOUDFLARE_EXPORT = """;; Exportation de zone fictive, au format BIND
 $ORIGIN bluewavesolutions.fr.
@@ -107,6 +109,48 @@ class Raccordement(unittest.TestCase):
         self.assertNotIn('SOA', text.split('$TTL')[1])
         self.assertNotRegex(text, r'\n\S+\s+\d+\s+IN\s+NS\s')
         self.assertNotIn('3|welcome', text.split('$TTL')[1])
+
+
+class Publication(unittest.TestCase):
+    """Configuration de publication du profil A : seule la route www s'ajoute."""
+
+    def render(self, route):
+        target = Path(tempfile.mkdtemp()) / 'profil-a.json'
+        return json.loads(publication.render(route, target).read_text(encoding='utf-8'))
+
+    def test_sans_route_la_configuration_reste_celle_du_profil_a(self):
+        config = self.render(False)
+        self.assertNotIn('routes', config)
+        self.assertEqual(profile.route_errors(config), [])
+        self.assertTrue(profile.route_errors(config, publication=True))
+
+    def test_route_unique_sur_le_domaine_personnalise_www(self):
+        config = self.render(True)
+        self.assertEqual(config['routes'], [{'pattern': 'www.bluewavesolutions.fr', 'custom_domain': True}])
+        self.assertEqual(profile.route_errors(config, publication=True), [])
+        self.assertTrue(profile.route_errors(config), 'une route reste interdite hors publication')
+
+    def test_toute_autre_route_est_refusee(self):
+        for routes in ([{'pattern': 'bluewavesolutions.fr', 'custom_domain': True}],
+                       [{'pattern': 'www.bluewavesolutions.fr/*', 'zone_name': 'bluewavesolutions.fr'}],
+                       profile.PUBLICATION_ROUTES + [{'pattern': 'bluewavesolutions.fr', 'custom_domain': True}]):
+            self.assertTrue(profile.route_errors({'routes': routes}, publication=True), routes)
+
+    def test_la_publication_ne_rouvre_rien(self):
+        config = self.render(True)
+        self.assertIs(config['workers_dev'], False)
+        self.assertIs(config['preview_urls'], False)
+        source = profile.load_config(publication.SOURCE)
+        self.assertEqual(config['vars'], source['vars'])
+        self.assertTrue(all(value in ('false', '') for value in config['vars'].values()))
+        for key in ('d1_databases', 'durable_objects', 'triggers'):
+            self.assertNotIn(key, config)
+
+    def test_chemins_reecrits_vers_le_worker_et_le_build(self):
+        target = Path(tempfile.mkdtemp()) / 'a' / 'profil-a.json'
+        config = json.loads(publication.render(True, target).read_text(encoding='utf-8'))
+        self.assertEqual((target.parent / config['main']).resolve(), (ROOT / 'serverless/cloudflare/worker.mjs').resolve())
+        self.assertEqual((target.parent / config['assets']['directory']).resolve(), (ROOT / 'dist-production').resolve())
 
 
 class Messagerie(unittest.TestCase):

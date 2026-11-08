@@ -33,14 +33,45 @@ Le script interroge le registre et, avec `--cible`, les serveurs de Cloudflare. 
 5. **Attendre le retrait du DS** au registre, puis au moins deux durées de vie (2 × 3600 s). `dns_preflight.py` ne doit plus signaler de DS.
 6. **Changer les serveurs de noms** chez OVH (registrar) pour ceux de Cloudflare. C'est la bascule DNS.
 7. **Contrôler** depuis plusieurs résolveurs : MX, SPF, résolution de l'apex. Envoyer et recevoir un courriel de test.
-8. **Raccorder le site** : construire avec `--indexable` seulement si l'indexation est décidée, rendre la configuration avec `--route`, déployer, puis rediriger l'apex vers `https://www.bluewavesolutions.fr/` par une règle Cloudflare.
+8. **Raccorder le site**, dans la foulée de l'étape 7 : commandes ci-dessous. Entre les étapes 6 et 8, `www` ne résout plus. Il sert aujourd'hui la page OVH « Site en construction », donc aucun contenu n'est perdu.
 9. **Réactiver DNSSEC** dans Cloudflare, puis publier chez OVH le DS que Cloudflare fournit. Vérifier la chaîne de validation.
+
+## Commandes définitives du site (étape 8)
+
+Elles supposent la zone active chez Cloudflare et un GO de Joseph pour la publication. Le site part en profil A : contact par courriel préparé, aucune collecte, veille fermée, `noindex` partout.
+
+```sh
+npm ci
+python quality/scripts/build_production_dist.py
+python quality/scripts/render_profil_a.py --route
+python quality/scripts/check_profile.py A --publication --config serverless/cloudflare/.wrangler/profil-a-publication.generated.json
+npx wrangler deploy --config serverless/cloudflare/.wrangler/profil-a-publication.generated.json --dry-run --outdir ../../../quality/reports/cloudflare-profil-a-publication
+npx wrangler login        # connexion par le navigateur, aucun jeton copié
+npx wrangler deploy --config serverless/cloudflare/.wrangler/profil-a-publication.generated.json
+```
+
+- `render_profil_a.py --route` ajoute une seule route : `www.bluewavesolutions.fr` en domaine personnalisé. Cloudflare crée alors l'enregistrement `www` et son certificat. `check_profile.py A --publication` refuse toute autre route, toute base, toute collecte et toute indexation.
+- **Apex** : règle de redirection, dans *Rules › Redirect Rules › Single Redirects*.
+  - Condition : `(http.host eq "bluewavesolutions.fr")`.
+  - Destination dynamique : `concat("https://www.bluewavesolutions.fr", http.request.uri.path)`.
+  - Code 301, chaîne de requête conservée.
+  - L'enregistrement `AAAA 100::` proxifié de la zone cible porte cette règle.
+- **HTTPS** : activer *SSL/TLS › Edge Certificates › Always Use HTTPS*. HSTS reste désactivé jusqu'à ce que `www` et l'apex répondent en HTTPS depuis plusieurs jours : c'est une décision distincte, difficile à défaire.
+- **Indexation** : décision éditoriale distincte. `--indexable` fait échouer le contrôle du profil A tant que ce contrôle n'a pas été revu.
+- **Contrôles après déploiement** :
+  - `curl -sI https://www.bluewavesolutions.fr/` : 200, avec `content-security-policy` et `x-robots-tag: noindex, nofollow`.
+  - `curl -sI http://bluewavesolutions.fr/contact.html` : 301 vers `https://www.bluewavesolutions.fr/contact.html`.
+  - `curl -sI https://www.bluewavesolutions.fr/page-absente` : 404.
+  - `curl -s https://www.bluewavesolutions.fr/robots.txt` : `Disallow: /`.
+  - `curl -s -o /dev/null -w '%{http_code}' -X POST https://www.bluewavesolutions.fr/api/leads` : 503, car la collecte est fermée.
+  - Ces réponses ont été obtenues le 8 novembre 2026 sur le Worker servi localement (`wrangler dev --local`) avec cette configuration. `services.html` et `contact.html` répondent 301 vers leurs pages actuelles, et `/bluewave-solutions-site` répond 308 vers la racine.
 
 ## Retour arrière
 
 - Avant l'étape 6 : supprimer la zone en attente chez Cloudflare. Rien d'autre n'a changé.
 - Après l'étape 6 : remettre `ns111.ovh.net` et `dns111.ovh.net` chez OVH. La zone OVH n'a pas été supprimée. Réactiver ensuite DNSSEC chez OVH.
 - Ne jamais réactiver DNSSEC d'un côté tant que les serveurs de noms désignent l'autre.
+- Site, après l'étape 8 : `npx wrangler rollback` revient à la version précédente du Worker. Pour retirer le site, supprimer le domaine personnalisé `www` dans *Workers › bluewave-site-production › Settings › Domains*, puis, si besoin, recréer `www A 213.186.33.5` en DNS seul : la page OVH revient. La messagerie n'est pas touchée.
 
 ## Ce qui n'est pas prouvé
 

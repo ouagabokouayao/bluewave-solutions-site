@@ -16,8 +16,8 @@
   },
   {
     "path": ".github/workflows/site-quality.yml",
-    "sha256": "e0217da5f917a09eec7d84000a6ff7cca08f2e2d4fed671b7845cabaedb03051",
-    "bytes": 6940
+    "sha256": "6cabc0c9d3c8bd09ad6a2c9811ed9e09a880316c559eb9bd5f761d34cea9a70b",
+    "bytes": 7693
   },
   {
     "path": ".github/workflows/update-actualites.yml",
@@ -846,8 +846,8 @@
   },
   {
     "path": "serverless/cloudflare/RACCORDEMENT.md",
-    "sha256": "518703093edc4c582fb9dad392db6c62c5c0744af9c994d9ba1199fe81a58596",
-    "bytes": 3647
+    "sha256": "2c49eec0814ffbf95ed3e51ec0d0e141b2f455b910a7760f8c346b1afb235abe",
+    "bytes": 6676
   },
   {
     "path": "serverless/cloudflare/README.md",

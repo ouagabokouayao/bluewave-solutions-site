@@ -67,13 +67,25 @@ def indexing_closed(config, site):
     return errors
 
 
-def profile_a(config, site):
-    errors = common(config, site) + indexing_closed(config, site)
+PUBLICATION_ROUTES = [{'pattern': 'www.bluewavesolutions.fr', 'custom_domain': True}]
+
+
+def route_errors(config, publication=False):
+    """Profil A : aucune route, sauf la publication autorisée, limitée au domaine personnalisé www."""
+    if not publication:
+        return ['ressource interdite au profil A : routes'] if 'routes' in config else []
+    if config.get('routes') != PUBLICATION_ROUTES:
+        return ['route de publication attendue : www.bluewavesolutions.fr en domaine personnalisé, et rien d’autre']
+    return []
+
+
+def profile_a(config, site, publication=False):
+    errors = common(config, site) + indexing_closed(config, site) + route_errors(config, publication)
     variables = config.get('vars', {})
     for name in ('LEADS_ENABLED', 'LEADS_CONTACT_SYNC_ENABLED', 'LEADS_ACK_ENABLED', 'LEADS_NOTIFY_ENABLED',
                  'LEADS_REPLAY_ENABLED', 'CAMPAIGNS_ENABLED', 'EVENTS_ENABLED', 'TURNSTILE_ENABLED'):
         if variables.get(name) != 'false': errors.append(f'{name} doit valoir false')
-    for key in ('d1_databases', 'durable_objects', 'migrations', 'triggers', 'routes', 'kv_namespaces', 'r2_buckets'):
+    for key in ('d1_databases', 'durable_objects', 'migrations', 'triggers', 'kv_namespaces', 'r2_buckets'):
         if key in config: errors.append(f'ressource interdite au profil A : {key}')
     if variables.get('LEAD_RETENTION_DAYS') != '': errors.append('LEAD_RETENTION_DAYS doit rester vide')
     automation, analytics = site_config(site)
@@ -119,14 +131,18 @@ def main():
     parser.add_argument('--site', type=Path, default=SITE)
     parser.add_argument('--simulation', action='store_true', help='Profil B seulement : contrôle hors publication.')
     parser.add_argument('--newsletter', action='store_true', help='Profil B seulement : la lettre de veille est censée être ouverte.')
+    parser.add_argument('--publication', action='store_true', help='Profil A seulement : configuration de publication, avec la seule route www.')
     options = parser.parse_args()
+    if options.publication and options.profile != 'A':
+        parser.error('--publication ne concerne que le profil A')
     config = load_config(options.config or (CONFIG_A if options.profile == 'A' else CONFIG_B))
-    errors = profile_a(config, options.site) if options.profile == 'A' else profile_b(config, options.site, options.simulation, options.newsletter)
+    errors = profile_a(config, options.site, options.publication) if options.profile == 'A' else profile_b(config, options.site, options.simulation, options.newsletter)
     for error in errors:
         print(f'FAIL: {error}')
     if errors:
         return 1
-    print(f'PASS: profil {options.profile}' + (' (simulation, non publiable)' if options.simulation else ''))
+    print(f'PASS: profil {options.profile}' + (' (simulation, non publiable)' if options.simulation else '')
+          + (' (publication sur www.bluewavesolutions.fr)' if options.publication else ''))
     return 0
 
 
