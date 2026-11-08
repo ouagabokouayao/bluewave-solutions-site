@@ -115,6 +115,13 @@ jobs:
           python quality/scripts/build_production_dist.py
           python quality/scripts/check_profile.py A
           npx wrangler deploy --config serverless/cloudflare/wrangler.profil-a.jsonc --dry-run --outdir ../../quality/reports/cloudflare-profil-a-build
+      - name: Profile A publication on www, packaged without deployment
+        run: |
+          python quality/scripts/build_production_dist.py
+          python quality/scripts/render_profil_a.py --route
+          if python quality/scripts/check_profile.py A --config serverless/cloudflare/.wrangler/profil-a-publication.generated.json; then echo "::error title=profil A::une route est acceptée hors publication"; exit 1; fi
+          python quality/scripts/check_profile.py A --publication --config serverless/cloudflare/.wrangler/profil-a-publication.generated.json
+          npx wrangler deploy --config serverless/cloudflare/.wrangler/profil-a-publication.generated.json --dry-run --outdir ../../../quality/reports/cloudflare-profil-a-publication
       - name: Workers package and native runtime
         run: npm run cloudflare:test-runtime
       - name: Journey forms in a real browser (prepared message, transmission off)
